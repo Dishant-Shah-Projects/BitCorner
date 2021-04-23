@@ -3,6 +3,7 @@ package com.bitcorner.controller;
 import com.bitcorner.DataModel.ErrorResponse;
 import com.bitcorner.entity.UserInfo;
 import com.bitcorner.service.UserInfoService;
+import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.management.BadAttributeValueExpException;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 /**
  * Controller for the User APIs
@@ -36,6 +38,15 @@ public class UserInfoController {
                 throw new BadAttributeValueExpException("Invalid UserId");
             }
             UserInfo userInfo=userInfoService.getById(userId);
+
+            UserInfo userInfo1=userInfoService.getByNickName(userInfo.getNickName());
+            System.out.println("userInfo1");
+            System.out.println(userInfo1);
+
+            UserInfo userInfo2=userInfoService.getByUserName(userInfo.getUserName());
+            System.out.println("userInfo2");
+            System.out.println(userInfo2);
+
             return new ResponseEntity<>(userInfo, HttpStatus.OK);
         }
         catch (EntityNotFoundException ex){
@@ -72,6 +83,22 @@ public class UserInfoController {
         }
         catch (BadAttributeValueExpException ex){
             return new ResponseEntity<>(new ErrorResponse(ex.toString()), HttpStatus.BAD_REQUEST);
+        }
+        catch (Exception ex){
+            return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
+    @RequestMapping(value = "search",method = RequestMethod.GET, produces =  MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<?> searchUserByNickName(@RequestParam(name = "query", required = true) String nickName)
+    {
+        try {
+            List<UserInfo> userInfoList=userInfoService.searchUsersByNickName(nickName);
+            return new ResponseEntity<>(userInfoList, HttpStatus.OK);
+        }
+        catch (EntityNotFoundException ex){
+            return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
         }
         catch (Exception ex){
             return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);

@@ -28,6 +28,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     private CurrencyService currencyService;
 
 
+    @Transactional
     @Override
     public void create(UserInfo userInfo) throws BadAttributeValueExpException {
         repository.save(userInfo);
@@ -39,6 +40,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         }
     }
 
+    @Transactional
     @Override
     public void update(UserInfo userInfo) {
         repository.save(userInfo);
@@ -55,6 +57,7 @@ public class UserInfoServiceImpl implements UserInfoService {
         return userInfo;
     }
 
+    @Transactional
     @Override
     public boolean isUserInfoAvailable(String userId) {
         UserInfo userInfo=repository.findById(userId).orElse(null);
@@ -62,9 +65,10 @@ public class UserInfoServiceImpl implements UserInfoService {
         return userInfo==null?false:true;
     }
 
+    @Transactional
     @Override
     public UserInfo getByNickName(String nickName)throws EntityNotFoundException{
-        UserInfo userInfo=repository.findByNickname(nickName);
+        UserInfo userInfo=repository.findByNickName(nickName);
 
         if(userInfo==null){
             throw new EntityNotFoundException("User Does not exists");
@@ -72,8 +76,20 @@ public class UserInfoServiceImpl implements UserInfoService {
         return userInfo;
     }
 
+    @Transactional
     @Override
-    public List<String> searchUsersByNickName(String nickName) {
-        return repository.searchUsersByNickName(nickName);
+    public UserInfo getByUserName(String userName) throws EntityNotFoundException{
+        UserInfo userInfo=repository.findByUserNameIgnoreCase(userName);
+
+        if(userInfo==null){
+            throw new EntityNotFoundException("User Does not exists");
+        }
+        return userInfo;
+    }
+
+    @Transactional
+    @Override
+    public List<UserInfo> searchUsersByNickName(String nickName) {
+        return repository.findByNickNameContainingIgnoreCase(nickName);
     }
 }

@@ -16,5 +16,7 @@ public interface UserInfoService {
 
     UserInfo getByNickName(String nickName);
 
-    List<String> searchUsersByNickName(String nickName);
+    UserInfo getByUserName(String userName);
+
+    List<UserInfo> searchUsersByNickName(String nickName);
 }
