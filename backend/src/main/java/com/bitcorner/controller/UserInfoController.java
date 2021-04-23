@@ -38,14 +38,6 @@ public class UserInfoController {
             }
             UserInfo userInfo=userInfoService.getById(userId);
 
-            UserInfo userInfo1=userInfoService.getByNickName(userInfo.getNickName());
-            System.out.println("userInfo1");
-            System.out.println(userInfo1);
-
-            UserInfo userInfo2=userInfoService.getByUserName(userInfo.getUserName());
-            System.out.println("userInfo2");
-            System.out.println(userInfo2);
-
             return new ResponseEntity<>(userInfo, HttpStatus.OK);
         }
         catch (EntityNotFoundException ex){
