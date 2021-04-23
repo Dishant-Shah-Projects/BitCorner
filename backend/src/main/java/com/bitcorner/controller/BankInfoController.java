@@ -1,6 +1,6 @@
 package com.bitcorner.controller;
 
-import com.bitcorner.DataModel.ErrorResponse;
+import com.bitcorner.dataModel.ErrorResponse;
 import com.bitcorner.entity.BankInfo;
 import com.bitcorner.entity.Currency;
 import com.bitcorner.service.BankInfoService;

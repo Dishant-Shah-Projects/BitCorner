@@ -1,6 +1,6 @@
 package com.bitcorner.controller;
 
-import com.bitcorner.DataModel.ErrorResponse;
+import com.bitcorner.dataModel.ErrorResponse;
 import com.bitcorner.entity.Message;
 import com.bitcorner.entity.UserInfo;
 import com.bitcorner.service.MessageService;

@@ -1,7 +1,7 @@
 package com.bitcorner.controller;
 
-import com.bitcorner.DataModel.ErrorResponse;
-import com.bitcorner.DataModel.SuccessResponse;
+import com.bitcorner.dataModel.ErrorResponse;
+import com.bitcorner.dataModel.SuccessResponse;
 import com.bitcorner.entity.Balance;
 import com.bitcorner.service.BalanceService;
 import com.bitcorner.service.UserInfoService;

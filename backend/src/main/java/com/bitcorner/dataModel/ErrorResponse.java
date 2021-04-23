@@ -1,4 +1,4 @@
-package com.bitcorner.DataModel;
+package com.bitcorner.dataModel;
 /**
  * error response object
  */

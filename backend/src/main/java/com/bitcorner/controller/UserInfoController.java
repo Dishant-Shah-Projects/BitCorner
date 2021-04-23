@@ -1,9 +1,8 @@
 package com.bitcorner.controller;
 
-import com.bitcorner.DataModel.ErrorResponse;
+import com.bitcorner.dataModel.ErrorResponse;
 import com.bitcorner.entity.UserInfo;
 import com.bitcorner.service.UserInfoService;
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
