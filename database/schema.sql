@@ -74,7 +74,7 @@ foreign key (CURRENCY_ID) references CURRENCY(ID)
    `AMOUNT` float  not null,
    `DUE_DATE` date not null,
    `STATUS` enum('Waiting','Rejected','Paid','Overdue','Cancelled') not null default 'Waiting',
-   `PAID_CURRENCY` bigint,
+   `PAID_CURRENCY` bigint, 
    `SERVICE_FEE` float not null default 0,
    foreign key (FROM_USER) references USER_INFO(USER_ID),
 	 foreign key (TO_USER) references USER_INFO(USER_ID),

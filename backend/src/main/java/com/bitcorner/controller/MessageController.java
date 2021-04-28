@@ -40,6 +40,7 @@ public class MessageController {
             if(fromUser.getId().equals(toUser.getId())){
                 throw new BadAttributeValueExpException("Cannot send message to yourself");
             }
+            
             // TODO remove message and take it from body param
             String messageText="Some message";
             Message message=new Message(fromUserId,toUser.getId(),messageText);
