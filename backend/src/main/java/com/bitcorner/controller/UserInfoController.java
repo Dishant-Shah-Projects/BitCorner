@@ -1,14 +1,18 @@
 package com.bitcorner.controller;
 
+import com.bitcorner.auth.SecurityService;
 import com.bitcorner.dataModel.ErrorResponse;
 import com.bitcorner.entity.UserInfo;
 import com.bitcorner.service.UserInfoService;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseToken;
 import javax.management.BadAttributeValueExpException;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
@@ -23,6 +27,9 @@ public class UserInfoController {
 
     @Autowired
     UserInfoService userInfoService;
+
+    @Autowired
+    SecurityService securityService;
 
     @Autowired
     private HttpServletRequest request;
@@ -96,7 +103,20 @@ public class UserInfoController {
         }
     }
 
-    public String getUserId(){
+    public String getId(){
         return request.getHeader("userId");
+    }
+    public String getUserId() throws FirebaseAuthException {
+        String token = securityService.getBearerToken(request);
+        FirebaseToken decodedToken =null;
+        try {
+            decodedToken = FirebaseAuth.getInstance().verifyIdToken(token);
+        }
+        catch (FirebaseAuthException e) {
+            e.printStackTrace();
+        }
+        System.out.println(decodedToken.getUid());
+        return decodedToken.getUid();
+
     }
 }
