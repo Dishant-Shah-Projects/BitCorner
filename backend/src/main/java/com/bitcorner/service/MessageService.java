@@ -7,17 +7,18 @@ import com.bitcorner.entity.UserInfo;
 import java.util.List;
 
 public interface MessageService {
-    void save(Message message);
+void save(Message message);
 
     List<Message> getMessageThread(String userId1, String userId2);
 
-    default void sendEmail(Message message){
-        UserInfo toUser=message.getToUser();
-        UserInfo fromUser=message.getFromUser();
-        System.out.println(toUser.getUserName());
-        System.out.println(fromUser.getNickName());
-        // TODO Send Email From here
-    }
+    // default void sendEmail(Message message){
+    //     UserInfo toUser=message.getToUser();
+    //     UserInfo fromUser=message.getFromUser();
+    //     String msg = message.getMessage();
+    //     System.out.println(toUser.getUserName()); //this fetches the email_id of toUser
+    //     System.out.println(fromUser.getNickName());
+    //     // TODO Send Email From here
+    // }
 
     List<String> getConnectedUsers(String userId);
 }
