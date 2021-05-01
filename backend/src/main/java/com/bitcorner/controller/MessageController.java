@@ -32,7 +32,8 @@ public class MessageController {
 
     @RequestMapping(value = "{toNickName}",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<?> sendMessage(@PathVariable("toNickName") String toNickName){
+    public ResponseEntity<?> sendMessage(@PathVariable("toNickName") String toNickName, @RequestParam(name = "message", required = true) String msg)
+    {
         try {
             String fromUserId=getUserId();
             UserInfo fromUser=userInfoService.getById(fromUserId);
@@ -42,7 +43,7 @@ public class MessageController {
             }
             
             // TODO remove message and take it from body param
-            String messageText="Some message";
+            String messageText = msg ;
             Message message=new Message(fromUserId,toUser.getId(),messageText);
             message.setToUser(toUser);
             message.setFromUser(fromUser);
