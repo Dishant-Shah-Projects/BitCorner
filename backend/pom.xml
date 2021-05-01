@@ -6,13 +6,13 @@
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.4.5</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath/>
 	</parent>
 	<groupId>com.example</groupId>
 	<artifactId>bit-corner</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>bit-corner</name>
-	<description>Bit Corner, a Bit Coin trading application for CMPE 275</description>
+	<description>Bit Corner, a Bitcoin trading application for CMPE 275</description>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
@@ -59,7 +59,17 @@
             <artifactId>lombok</artifactId>
             <version>1.18.20</version>
         </dependency>
-    </dependencies>
+		<dependency>
+			<groupId>org.springframework.data</groupId>
+			<artifactId>spring-data-jpa</artifactId>
+			<version>2.3.2.RELEASE</version>
+		</dependency>
+		<dependency>
+			<groupId>com.fasterxml.jackson.core</groupId>
+			<artifactId>jackson-annotations</artifactId>
+			<version>2.11.4</version>
+		</dependency>
+	</dependencies>
 
 	<build>
 		<plugins>

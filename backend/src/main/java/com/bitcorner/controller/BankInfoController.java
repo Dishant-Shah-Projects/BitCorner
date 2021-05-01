@@ -38,7 +38,7 @@ public class BankInfoController {
     {
         try {
             String userId=getUserId();
-            if(userId==null && userId.isEmpty()){
+            if(userId==null || userId.isEmpty()){
                 throw new BadAttributeValueExpException("Invalid UserId");
             }
             BankInfo bankInfo=bankInfoService.getById(userId);
@@ -49,7 +49,8 @@ public class BankInfoController {
         }
         catch (BadAttributeValueExpException ex){
             return new ResponseEntity<>(new ErrorResponse(ex.toString()), HttpStatus.BAD_REQUEST);
-        }catch (Exception ex){
+        }
+        catch (Exception ex){
             return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
