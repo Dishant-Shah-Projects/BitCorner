@@ -14,11 +14,10 @@ import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
 import Table from "@material-ui/core/Table";
-import TableBody from "@material-ui/core/TableBody";
 import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
+import TableBody from "@material-ui/core/TableBody";
 import { BASE_URL } from "../../../constants.js";
 import Paper from "@material-ui/core/Paper";
 import Axios from "axios";
@@ -47,7 +46,14 @@ const styles = makeStyles((theme) => ({
 }));
 
 function Content(props) {
-  const { classes, onRequestBankInfo, isPending, bankInfo, error } = props;
+  const {
+    classes,
+    onRequestBankInfo,
+    isPending,
+    bankInfo,
+    error,
+    isLoaded,
+  } = props;
   const [open, setOpen] = React.useState(false);
   const styling = styles();
   const formData = {
@@ -85,7 +91,7 @@ function Content(props) {
 
   return (
     <div>
-      {isPending ? (
+      {isPending && isLoaded && error.response.status === 404 ? (
         <div className={styling.contentWrapper}>
           <div>
             <Button
@@ -215,49 +221,52 @@ function Content(props) {
         <div className={classes.contentWrapper}>
           <TableContainer component={Paper}>
             <Table className={classes.table} aria-label="simple table">
-              <TableRow>
-                <TableCell>Bank Name</TableCell>
-                <TableCell>{bankInfo.data["bankName"]}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Account Number</TableCell>
-                <TableCell>{bankInfo.data["accountNumber"]}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Owner Name</TableCell>
-                <TableCell>{bankInfo.data["ownerName"]}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Street</TableCell>
-                <TableCell>{bankInfo.data["street"]}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>City</TableCell>
-                <TableCell>{bankInfo.data["city"]}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>State</TableCell>
-                <TableCell>{bankInfo.data["state"]}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Zip</TableCell>
-                <TableCell>{bankInfo.data["zip"]}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Country</TableCell>
-                <TableCell>{bankInfo.data["country"]}</TableCell>
-              </TableRow>
-              <TableRow>
-                <TableCell>Primary Currency</TableCell>
-                <TableCell>{bankInfo.data["primaryCurrency"]["name"]}</TableCell>
-              </TableRow>
+              <TableBody>
+                <TableRow>
+                  <TableCell>Bank Name</TableCell>
+                  <TableCell>{bankInfo.data["bankName"]}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Account Number</TableCell>
+                  <TableCell>{bankInfo.data["accountNumber"]}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Owner Name</TableCell>
+                  <TableCell>{bankInfo.data["ownerName"]}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Street</TableCell>
+                  <TableCell>{bankInfo.data["street"]}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>City</TableCell>
+                  <TableCell>{bankInfo.data["city"]}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>State</TableCell>
+                  <TableCell>{bankInfo.data["state"]}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Zip</TableCell>
+                  <TableCell>{bankInfo.data["zip"]}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Country</TableCell>
+                  <TableCell>{bankInfo.data["country"]}</TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Primary Currency</TableCell>
+                  <TableCell>
+                    {bankInfo.data["primaryCurrency"]["name"]}
+                  </TableCell>
+                </TableRow>
+              </TableBody>
             </Table>
           </TableContainer>
         </div>
       ) : (
         <div>
-          Nothing to show!!
-          {console.log("################", bankInfo.data)}
+          <Typography>Nothing to show!!</Typography>
         </div>
       )}
     </div>
@@ -269,6 +278,7 @@ const mapStateToProps = (state) => {
     bankInfo: state.bank.bankInfo,
     isPending: state.bank.isPending,
     error: state.bank.error,
+    isLoaded: state.bank.isLoaded,
   };
 };
 

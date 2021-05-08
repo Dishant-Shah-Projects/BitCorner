@@ -109,7 +109,6 @@ public class BankInfo {
     }
 
     public String getCity() {
-
         return city;
     }
 
@@ -128,7 +127,6 @@ public class BankInfo {
         if(state==null || state.isEmpty()||state.length()>50){
             throw new BadAttributeValueExpException("State is invalid");
         }
-
         this.state = state;
     }
 

@@ -41,5 +41,6 @@ security:
     - /favicon.ico
     - /session/login
     - /public/**
+    - /**
   exposed-headers:
     - X-Xsrf-Token

@@ -117,6 +117,5 @@ public class UserInfoController {
         }
         System.out.println(decodedToken.getUid());
         return decodedToken.getUid();
-
     }
 }
