@@ -203,12 +203,12 @@ function Content(props) {
                   autoFocus
                   required
                   margin="dense"
-                  name="primaryCurrencyInitialValue"
+                  name="initialBalance"
                   label="Initial Bank Balance"
                   fullWidth
-                  // onInput={(e) =>
-                  //   (formData["primaryCurrency"]["initialValue"] = e.target.value)
-                  // }
+                  onInput={(e) =>
+                    (formData[e.target.name] = e.target.value)
+                  }
                 />
               </DialogContent>
               <DialogActions>
@@ -268,7 +268,7 @@ function Content(props) {
                 <TableRow>
                   <TableCell>Initial Bank Balance</TableCell>
                   <TableCell>
-                    {bankInfo.data["primaryCurrency"]["initialValue"]}
+                    {bankInfo.data['initialBalance']}
                   </TableCell>
                 </TableRow>
               </TableBody>
