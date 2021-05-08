@@ -17,6 +17,7 @@ import BankInfo from "./BankInfo";
 import Message from "./Message";
 import Profile from "./Profile";
 import Bills from "./Bills";
+import Orders from "./Orders";
 import VerifyEmailMessage from "./VerifyEmailMessage";
 import { connect } from "react-redux";
 
@@ -205,7 +206,7 @@ function Admin(props) {
 
               <Route
                 path={`/orders`}
-                component={(props) => <BankInfo classes={classes} {...props} />}
+                component={(props) => <Orders classes={classes} {...props} />}
                 exact
               />
               <Route
