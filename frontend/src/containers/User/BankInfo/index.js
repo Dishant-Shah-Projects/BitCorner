@@ -56,16 +56,7 @@ function Content(props) {
   } = props;
   const [open, setOpen] = React.useState(false);
   const styling = styles();
-  const formData = {
-    primaryCurrency: {
-      id: 1,
-      name: "testium",
-      conversionRate: 5.0,
-      initialValue: 10.0,
-      crypto: false,
-      base: false,
-    },
-  };
+  const formData = {};
 
   const handleClickOpen = () => setOpen(true);
 
@@ -79,6 +70,7 @@ function Content(props) {
       if (response.status === 200) {
         console.log("Successfully Added Bank Account");
         setOpen(false);
+        window.location.reload(false);
       } else {
         console.log("Failed");
       }
@@ -203,7 +195,20 @@ function Content(props) {
                   name="primaryCurrencyId"
                   label="Currency"
                   fullWidth
-                  onInput={(e) => (formData[e.target.name] = e.target.value)}
+                  onInput={(e) =>
+                    (formData[e.target.name] = e.target.value)
+                  }
+                />
+                <TextField
+                  autoFocus
+                  required
+                  margin="dense"
+                  name="primaryCurrencyInitialValue"
+                  label="Initial Bank Balance"
+                  fullWidth
+                  // onInput={(e) =>
+                  //   (formData["primaryCurrency"]["initialValue"] = e.target.value)
+                  // }
                 />
               </DialogContent>
               <DialogActions>
@@ -258,6 +263,12 @@ function Content(props) {
                   <TableCell>Primary Currency</TableCell>
                   <TableCell>
                     {bankInfo.data["primaryCurrency"]["name"]}
+                  </TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Initial Bank Balance</TableCell>
+                  <TableCell>
+                    {bankInfo.data["primaryCurrency"]["initialValue"]}
                   </TableCell>
                 </TableRow>
               </TableBody>

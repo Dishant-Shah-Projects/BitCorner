@@ -62,7 +62,7 @@ public class UserInfoServiceImpl implements UserInfoService {
     public boolean isUserInfoAvailable(String userId) {
         UserInfo userInfo=repository.findById(userId).orElse(null);
 
-        return userInfo==null?false:true;
+        return userInfo != null;
     }
 
     @Transactional

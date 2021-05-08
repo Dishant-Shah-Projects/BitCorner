@@ -38,8 +38,23 @@ public class BankInfo {
     private String zip;
 
     @ManyToOne()
-    @JoinColumn(name="PRIMARY_CURRENCY_ID")
+    @JoinColumn(name="PRIMARY_CURRENCY_ID",insertable = false,updatable = false)
     private Currency primaryCurrency;
+
+    @Column(name="PRIMARY_CURRENCY_ID")
+    private long primaryCurrencyId;
+
+    public float getInitialBalance()
+    {
+        return initialBalance;
+    }
+
+    public void setInitialBalance(float initialBalance)
+    {
+        this.initialBalance = initialBalance;
+    }
+
+    private float initialBalance;
 
     @JsonIgnore
     public String getUserId() {
@@ -51,6 +66,19 @@ public class BankInfo {
             throw new BadAttributeValueExpException("User is invalid");
         }
         this.userId = userId;
+    }
+
+    public long getPrimaryCurrencyId()
+    {
+        return primaryCurrencyId;
+    }
+
+    public void setPrimaryCurrencyId(long primaryCurrencyId) throws BadAttributeValueExpException
+    {
+        if(primaryCurrencyId <= 0){
+            throw new BadAttributeValueExpException("Currency Id is invalid");
+        }
+        this.primaryCurrencyId = primaryCurrencyId;
     }
 
     public String getBankName() {
@@ -152,7 +180,7 @@ public class BankInfo {
         this.primaryCurrency = primaryCurrency;
     }
 
-    public BankInfo(String userId, String bankName, String country, long accountNumber, String ownerName, String street, String city, String state, String zip, Currency primaryCurrency) throws BadAttributeValueExpException{
+    public BankInfo(String userId, String bankName, String country, long accountNumber, String ownerName, String street, String city, String state, String zip, long primaryCurrencyId) throws BadAttributeValueExpException{
         this.setUserId(userId);
         this.setBankName(bankName);
         this.setCountry(country);
@@ -162,7 +190,7 @@ public class BankInfo {
         this.setCity(city);
         this.setState(state);
         this.setZip(zip);
-        this.setPrimaryCurrency(primaryCurrency);
+        this.setPrimaryCurrencyId(primaryCurrencyId);
     }
 
     public BankInfo() {

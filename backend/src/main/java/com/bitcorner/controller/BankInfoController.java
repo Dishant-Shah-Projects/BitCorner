@@ -70,7 +70,7 @@ public class BankInfoController {
     {
         try {
             String userId=getUserId();
-            Currency currency=currencyService.getById(bankInfo.getPrimaryCurrency().getId());
+//            Currency currency=currencyService.getById(bankInfo.getPrimaryCurrencyId());
             bankInfo.setUserId(userId);
             bankInfoService.save(bankInfo);
 

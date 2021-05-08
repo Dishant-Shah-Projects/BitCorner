@@ -1,15 +1,21 @@
 package com.bitcorner.controller;
 
+import com.bitcorner.auth.SecurityService;
 import com.bitcorner.dataModel.ErrorResponse;
 import com.bitcorner.dataModel.SuccessResponse;
 import com.bitcorner.entity.Balance;
 import com.bitcorner.service.BalanceService;
 import com.bitcorner.service.UserInfoService;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
+import com.google.firebase.auth.FirebaseToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseToken;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
@@ -27,6 +33,9 @@ public class BalanceController {
 
     @Autowired
     private HttpServletRequest request;
+
+    @Autowired
+    SecurityService securityService;
 
     @RequestMapping(method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
@@ -84,6 +93,15 @@ public class BalanceController {
     }
 
     public String getUserId(){
-        return request.getHeader("userId");
+        String token = securityService.getBearerToken(request);
+        FirebaseToken decodedToken =null;
+        try {
+            decodedToken = FirebaseAuth.getInstance().verifyIdToken(token);
+        }
+        catch (FirebaseAuthException e) {
+            e.printStackTrace();
+        }
+        System.out.println(decodedToken.getUid());
+        return decodedToken.getUid();
     }
 }

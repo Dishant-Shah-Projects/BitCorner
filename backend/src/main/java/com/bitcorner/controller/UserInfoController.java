@@ -69,10 +69,10 @@ public class UserInfoController {
             if(userExists){
                 userInfo=userInfoService.getById(userId);
                 userInfo.setNickName(nickName);
-                userInfoService.create(userInfo);
+                userInfoService.update(userInfo);
             }else{
                 userInfo=new UserInfo(userId, userName, nickName);
-                userInfoService.update(userInfo);
+                userInfoService.create(userInfo);
             }
             return new ResponseEntity<>(userInfo, HttpStatus.OK);
         }
