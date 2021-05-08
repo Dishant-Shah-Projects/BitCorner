@@ -18,7 +18,6 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@material-ui/core/TableBody";
-import { BASE_URL } from "../../../constants.js";
 import Paper from "@material-ui/core/Paper";
 import Axios from "axios";
 
@@ -65,8 +64,8 @@ function Content(props) {
   const handleInput = (event) => {
     event.preventDefault();
     console.log("FormData", formData);
-    console.log(BASE_URL);
-    Axios.put(BASE_URL + "/bank", formData).then((response) => {
+
+    Axios.put("/bank", formData).then((response) => {
       if (response.status === 200) {
         console.log("Successfully Added Bank Account");
         setOpen(false);
@@ -195,9 +194,7 @@ function Content(props) {
                   name="primaryCurrencyId"
                   label="Currency"
                   fullWidth
-                  onInput={(e) =>
-                    (formData[e.target.name] = e.target.value)
-                  }
+                  onInput={(e) => (formData[e.target.name] = e.target.value)}
                 />
                 <TextField
                   autoFocus

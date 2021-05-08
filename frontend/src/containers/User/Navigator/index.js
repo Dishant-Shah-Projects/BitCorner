@@ -62,6 +62,13 @@ const categories = [
     to: "/profile",
   },
   {
+    id: "Update Nick Name",
+    icon: <PersonIcon />,
+    expandable: false,
+    to: "/updateNickName",
+  },
+
+  {
     id: "Contact Us",
     icon: <ContactPhoneIcon />,
     expandable: false,
