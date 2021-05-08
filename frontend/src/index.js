@@ -29,9 +29,10 @@ firebase.auth().onAuthStateChanged((user) => {
   if (user) {
     console.log("User loggeed in is: ", user);
     store.dispatch({ type: "SIGNIN", payload: user });
-    console.log(user.getIdToken());
-    const token = user.getIdToken();
-    axios.defaults.headers.common["Authorization"] = `Bearer ${token["i"]}`;
+    user.getIdToken(true).then((idToken) => {
+      console.log(idToken)
+      axios.defaults.headers.common["Authorization"] = `Bearer ${idToken}`;
+    });
   } else {
     store.dispatch({ type: "SIGNOUT", payload: null });
     axios.defaults.headers.common["Authorization"] = null;
