@@ -60,7 +60,7 @@ public class UserInfoController {
 
     @RequestMapping(method = RequestMethod.PUT, produces =  MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<?> saveUserInfo(@RequestParam(name = "nickname", required = true) String nickName,@RequestParam(name = "username", required = false) String userName)
+    public ResponseEntity<?> saveUserInfo(@RequestParam(name = "nickname", required = true) String nickName)
     {
         try {
             String userId=getUserId();
@@ -71,6 +71,7 @@ public class UserInfoController {
                 userInfo.setNickName(nickName);
                 userInfoService.update(userInfo);
             }else{
+                String userName=getEmail();
                 userInfo=new UserInfo(userId, userName, nickName);
                 userInfoService.create(userInfo);
             }
@@ -103,9 +104,6 @@ public class UserInfoController {
         }
     }
 
-    public String getId(){
-        return request.getHeader("userId");
-    }
     public String getUserId() throws FirebaseAuthException {
         String token = securityService.getBearerToken(request);
         FirebaseToken decodedToken =null;
@@ -117,5 +115,18 @@ public class UserInfoController {
         }
         System.out.println(decodedToken.getUid());
         return decodedToken.getUid();
+    }
+
+    public String getEmail() throws FirebaseAuthException {
+        String token = securityService.getBearerToken(request);
+        FirebaseToken decodedToken =null;
+        try {
+            decodedToken = FirebaseAuth.getInstance().verifyIdToken(token);
+        }
+        catch (FirebaseAuthException e) {
+            e.printStackTrace();
+        }
+        System.out.println(decodedToken.getEmail());
+        return decodedToken.getEmail();
     }
 }

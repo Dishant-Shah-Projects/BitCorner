@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import {
   createMuiTheme,
@@ -20,7 +20,8 @@ import Bills from "./Bills";
 import Orders from "./Orders";
 import VerifyEmailMessage from "./VerifyEmailMessage";
 import { connect } from "react-redux";
-
+import { requestUserInfo } from "./actions";
+import UpdateNickName from "./Profile/UpdateNickName";
 let theme = createMuiTheme({
   typography: {
     h5: {
@@ -159,8 +160,11 @@ const styles = {
 };
 
 function Admin(props) {
-  const { classes, user } = props;
+  const { classes, user, userInfo, onRequestUserInfo } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  useEffect(() => {
+    onRequestUserInfo();
+  }, []);
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -185,7 +189,7 @@ function Admin(props) {
         </nav>
         <div className={classes.app}>
           <Header onDrawerToggle={handleDrawerToggle} classes={classes} />
-          {user.emailVerified ? (
+          {user.emailVerified && !userInfo.isPending && (
             <Switch>
               <Route
                 path={`/`}
@@ -225,6 +229,11 @@ function Admin(props) {
                 exact
               />
               <Route
+                path={`/updateNickName`}
+                component={(props) => <UpdateNickName classes={classes} {...props} />}
+                exact
+              />
+              <Route
                 path={`/contact-us`}
                 component={(props) => (
                   <ContactUs classes={classes} {...props} />
@@ -232,8 +241,10 @@ function Admin(props) {
                 exact
               />
             </Switch>
-          ) : (
-            <VerifyEmailMessage classes={classes}/>
+          )}
+          {!user.emailVerified && <VerifyEmailMessage classes={classes} />}
+          {user.emailVerified && userInfo.isPending && (
+            <UpdateNickName classes={classes} />
           )}
 
           <footer className={classes.footer}>
@@ -252,8 +263,16 @@ Admin.propTypes = {
 const mapStateToProps = (state) => {
   return {
     user: state.auth.user,
+    userInfo: state.userInfo,
+  };
+};
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onRequestUserInfo: () => dispatch(requestUserInfo()),
   };
 };
 
-
-export default connect(mapStateToProps, null)(withStyles(styles)(Admin));
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(withStyles(styles)(Admin));

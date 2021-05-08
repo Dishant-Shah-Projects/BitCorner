@@ -8,6 +8,7 @@ import { Provider } from "react-redux";
 import store from "./reduxStrore/index";
 import axios from "axios";
 
+axios.defaults.baseURL = "http://10.0.0.215:8080";
 let hasAppRendered = false;
 
 const Application = (
@@ -30,14 +31,15 @@ firebase.auth().onAuthStateChanged((user) => {
     console.log("User loggeed in is: ", user);
     store.dispatch({ type: "SIGNIN", payload: user });
     user.getIdToken(true).then((idToken) => {
-      console.log(idToken)
+      console.log(idToken);
       axios.defaults.headers.common["Authorization"] = `Bearer ${idToken}`;
+      renderApp();
     });
   } else {
     store.dispatch({ type: "SIGNOUT", payload: null });
     axios.defaults.headers.common["Authorization"] = null;
+    renderApp();
   }
-  renderApp();
 });
 
 // If you want your app to work offline and load faster, you can change

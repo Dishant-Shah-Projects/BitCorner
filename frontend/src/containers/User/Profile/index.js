@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
 import { withStyles } from "@material-ui/core/styles";
-import ComponentWrapper from '../ComponentWrapper';
+import ComponentWrapper from "../ComponentWrapper";
 
 const styles = (theme) => ({
   paper: {
