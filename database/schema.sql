@@ -41,16 +41,17 @@ CREATE TABLE `USER_BALANCE` (
   foreign key (CURRENCY_ID) references CURRENCY(ID),
   primary key (USER_ID,CURRENCY_ID)
 );
-
 CREATE TABLE `ORDER`(
 `ID` bigint  auto_increment primary key,
 `USER_ID` varchar(100) not null,
 `TYPE` enum('BUY','SELL') not null,
 `PRICE_TYPE` enum('MARKET','LIMIT') not null,
 `QUANTITY` float not null,
-`RATE` float,
-`STATUS` enum('PENDING','EXECUTED') not null default 'PENDING',
+`LIMIT_PRICE` float,
+`EXECUTION_PRICE` float,
+`STATUS` enum('PENDING','EXECUTED','CANCELLED') not null default 'PENDING',
 `CURRENCY_ID` bigint not null,
+`SERVICE_FEE` float,
 foreign key (USER_ID) references USER_INFO(USER_ID),
 foreign key (CURRENCY_ID) references CURRENCY(ID)
 );
@@ -80,5 +81,10 @@ foreign key (CURRENCY_ID) references CURRENCY(ID)
 	 foreign key (TO_USER) references USER_INFO(USER_ID),
    foreign key (TARGET_CURRENCY) references CURRENCY(ID),
    foreign key (PAID_CURRENCY) references CURRENCY(ID)
- )
+ );
  
+ CREATE TABLE `MARKET_PRICE` (
+   `ID` bigint primary key auto_increment,
+   `BID_PRICE` float not null,
+   `ASK_PRICE` float not null
+ );
