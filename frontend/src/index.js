@@ -8,7 +8,7 @@ import { Provider } from "react-redux";
 import store from "./reduxStrore/index";
 import axios from "axios";
 
-axios.defaults.baseURL = "http://10.0.0.215:8080";
+axios.defaults.baseURL = "http://localhost:8080";
 let hasAppRendered = false;
 
 const Application = (
