@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-
+import React from "react";
 import Button from "@material-ui/core/Button";
 import PropTypes from "prop-types";
 import Paper from "@material-ui/core/Paper";
@@ -15,7 +14,6 @@ import Axios from "axios";
 
 function Grid(props) {
   const { balanceInfo, onRequestUserBalance } = props;
-  console.log(balanceInfo);
 
   let balance = 0;
 
@@ -90,11 +88,6 @@ function Grid(props) {
     </TableContainer>
   );
 }
-
-Grid.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
   
   const mapDispatchToProps = (dispatch) => {
     return {
