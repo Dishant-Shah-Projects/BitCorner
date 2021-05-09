@@ -69,7 +69,7 @@ function Content(props) {
       if (response.status === 200) {
         console.log("Successfully Added Bank Account");
         setOpen(false);
-        window.location.reload(false);
+        onRequestBankInfo();
       } else {
         console.log("Failed");
       }
@@ -200,12 +200,12 @@ function Content(props) {
                   autoFocus
                   required
                   margin="dense"
-                  name="primaryCurrencyInitialValue"
+                  name="initialBalance"
                   label="Initial Bank Balance"
                   fullWidth
-                  // onInput={(e) =>
-                  //   (formData["primaryCurrency"]["initialValue"] = e.target.value)
-                  // }
+                  onInput={(e) =>
+                    (formData[e.target.name] = e.target.value)
+                  }
                 />
               </DialogContent>
               <DialogActions>
@@ -260,12 +260,6 @@ function Content(props) {
                   <TableCell>Primary Currency</TableCell>
                   <TableCell>
                     {bankInfo.data["primaryCurrency"]["name"]}
-                  </TableCell>
-                </TableRow>
-                <TableRow>
-                  <TableCell>Initial Bank Balance</TableCell>
-                  <TableCell>
-                    {bankInfo.data["primaryCurrency"]["initialValue"]}
                   </TableCell>
                 </TableRow>
               </TableBody>

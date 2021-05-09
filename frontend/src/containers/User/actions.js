@@ -23,3 +23,16 @@ export const requestUserInfo = () => (dispatch) => {
       dispatch({ type: "REQUEST_USER_INFO_FAIL", payload: error })
     );
 };
+
+export const requestUserBalance = () => (dispatch) => {
+    dispatch({ type: "REQUEST_USER_BALANCE_PENDING" });
+    Axios.get("/balance")
+      .then((response) => response)
+      .then((data) =>
+        dispatch({ type: "REQUEST_USER_BALANCE_SUCCESS", payload: data })
+      )
+      .catch((error) =>
+        dispatch({ type: "REQUEST_USER_BALANCE_FAIL", payload: error })
+      );
+  };
+  
