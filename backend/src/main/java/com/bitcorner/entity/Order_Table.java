@@ -8,6 +8,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import javax.management.BadAttributeValueExpException;
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.util.Date;
 
 @Entity
 @Table(name="ORDER_TABLE")
@@ -47,6 +48,9 @@ public class Order_Table{
 
     @Column(name="CURRENCY_ID")
     private long currencyId;
+
+    @Column(name="TIME")
+    private Date time;
 
     @ManyToOne()
     @JoinColumn(name="CURRENCY_ID",insertable = false,updatable = false)
@@ -143,7 +147,6 @@ public class Order_Table{
     public void setCurrencyId(long currencyId) {
         this.currencyId = currencyId;
     }
-
     @JsonIgnore
     public Currency getCurrency() {
         return currency;
@@ -151,6 +154,14 @@ public class Order_Table{
 
     public void setCurrency(Currency currency) {
         this.currency = currency;
+    }
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
     }
 
     public Order_Table(){}
