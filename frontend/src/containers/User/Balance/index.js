@@ -64,7 +64,7 @@ function Content(props) {
                   <TableCell align="center">Currency</TableCell>
                   <TableCell align="center">Balance</TableCell>
                   <TableCell align="center">
-                    Withdraw/Desposit Amount{" "}
+                    Withdraw/Desposit Amount
                   </TableCell>
                   <TableCell align="center">Deposit</TableCell>
                   <TableCell align="center">Withdraw</TableCell>
