@@ -9,12 +9,11 @@ import ComponentWrapper from "../ComponentWrapper";
 import Table from "@material-ui/core/Table";
 import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
+import TableHead from "@material-ui/core/TableHead";
+import TableRow from "@material-ui/core/TableRow";
 
 import { connect } from "react-redux";
-import { requestUserBalance } from "../actions.js";
-import Axios from "axios";
+import { requestUserBalance, requestBankInfo } from "../actions.js";
 import BalanceGrid from "./BalanceGrid";
 
 const styles = makeStyles({
@@ -34,33 +33,45 @@ function Content(props) {
     classes,
     balanceInfo,
     onRequestUserBalance,
+    onRequestBankInfo,
     isPending,
     error,
     isLoaded,
+    bankInfo,
   } = props;
   const styling = styles();
 
+  console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+  console.log(bankInfo.status);
+  console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^");
+
   useEffect(() => {
     onRequestUserBalance();
+    onRequestBankInfo();
   }, []);
 
   return (
     <div>
-      <TableContainer component={Paper}>
-        <Table className={styling.table} aria-label="simple table">
-          <TableHead>
-            <TableRow>
-              <TableCell align="center">Currency</TableCell>
-              <TableCell align="center">Balance</TableCell>
-              <TableCell align="center">Withdraw/Desposit Amount </TableCell>
-              <TableCell align="center">Deposit</TableCell>
-              <TableCell align="center">Withdraw</TableCell>
-            </TableRow>
-          </TableHead>
-        </Table>
-      </TableContainer>
-      {isLoaded && !isPending && balanceInfo?.data ? (
+      {isLoaded &&
+      !isPending &&
+      balanceInfo?.data &&
+      bankInfo?.status === 200 ? (
         <div>
+          <TableContainer component={Paper}>
+            <Table className={styling.table} aria-label="simple table">
+              <TableHead>
+                <TableRow>
+                  <TableCell align="center">Currency</TableCell>
+                  <TableCell align="center">Balance</TableCell>
+                  <TableCell align="center">
+                    Withdraw/Desposit Amount
+                  </TableCell>
+                  <TableCell align="center">Deposit</TableCell>
+                  <TableCell align="center">Withdraw</TableCell>
+                </TableRow>
+              </TableHead>
+            </Table>
+          </TableContainer>
           {balanceInfo.data.map((balanceInfo) => {
             return <BalanceGrid balanceInfo={balanceInfo} />;
           })}
@@ -69,7 +80,7 @@ function Content(props) {
         <Paper className={classes.paper}>
           <div className={classes.contentWrapper}>
             <Typography color="textSecondary" align="center">
-              No Balance Available to Display
+              Please set up your bank account to view balance information
             </Typography>
           </div>
         </Paper>
@@ -84,12 +95,14 @@ const mapStateToProps = (state) => {
     isPending: state.userBalance.isPending,
     error: state.userBalance.error,
     isLoaded: state.userBalance.isLoaded,
+    bankInfo: state.bank.bankInfo,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
     onRequestUserBalance: () => dispatch(requestUserBalance()),
+    onRequestBankInfo: () => dispatch(requestBankInfo()),
   };
 };
 

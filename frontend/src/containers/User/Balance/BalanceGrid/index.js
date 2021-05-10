@@ -1,105 +1,115 @@
-import React, { useEffect } from "react";
-
+import React from "react";
 import Button from "@material-ui/core/Button";
-import PropTypes from "prop-types";
 import Paper from "@material-ui/core/Paper";
 import Table from "@material-ui/core/Table";
 import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@material-ui/core/TableBody";
-import TextField from "@material-ui/core/TextField";
+import TextField from "../../../../components/TextField";
 import { requestUserBalance } from "../../actions.js";
 import { connect } from "react-redux";
+import { useForm } from "../../../../hooks/useForm";
 import Axios from "axios";
 
 function Grid(props) {
   const { balanceInfo, onRequestUserBalance } = props;
-  console.log(balanceInfo);
 
-  let balance = 0;
+  const {
+    errors,
+    setErrors,
+    formSubmit,
+    handleInputChange,
+    isFormValid,
+    isValid,
+    setFieldValid,
+    setValues,
+    values,
+  } = useForm({ amount: 0 }, { amount: false });
 
-  const handleDeposit = () => {
-    if (balance > 0) {
+
+  const handleDeposit = (event) => {
+    formSubmit(event, () => {
       Axios.put(
-        "balance/" + balanceInfo.currencyId + "/deposit?amount=" + balance
+        "balance/" + balanceInfo.currencyId + "/deposit?amount=" + values.amount
       ).then((response) => {
         if (response.status === 200) {
           console.log("Successfully Deposited Amount");
           onRequestUserBalance();
-        } else {
-          console.log("Failed");
         }
       });
-    }
+    });
   };
 
-  const handleWithdraw = () => {
-    if (balance > 0) {
-        Axios.put(
-          "balance/" + balanceInfo.currencyId + "/withdraw?amount=" + balance
-        ).then((response) => {
-          if (response.status === 200) {
-            console.log("Successfully Deposited Amount");
-            onRequestUserBalance();
-          } else {
-            console.log("Failed");
-          }
-        });
-      }
+  const handleWithdraw = (event) => {
+    formSubmit(event, () => {
+      Axios.put(
+        "balance/" + balanceInfo.currencyId + "/withdraw?amount=" + values.amount
+      ).then((response) => {
+        if (response.status === 200) {
+          console.log("Successfully Deposited Amount");
+          onRequestUserBalance();
+        }
+      });
+    });
   };
+
 
   return (
     <TableContainer component={Paper}>
-      <Table aria-label="simple table">
-        <TableBody>
-          <TableRow>
-            <TableCell align="center">{balanceInfo.currency.name}</TableCell>
-            <TableCell align="center">{balanceInfo.amount}</TableCell>
-            <TableCell align="center">
-              <TextField
-                autoFocus
-                required
-                label="Amount to deposit or withdraw"
-                name="amount"
-                fullWidth
-                onInput={(e) => (balance = e.target.value)}
-              />
-            </TableCell>
-            <TableCell align="center">
-              <Button
-                variant="outlined"
-                color="primary"
-                onClick={handleDeposit}
-              >
-                Deposit
-              </Button>
-            </TableCell>
-            <TableCell align="center">
-              <Button
-                variant="outlined"
-                color="secondary"
-                onClick={handleWithdraw}
-              >
-                Withdraw
-              </Button>
-            </TableCell>
-          </TableRow>
-        </TableBody>
-      </Table>
+      <form noValidate>
+        <Table aria-label="simple table">
+          <TableBody>
+            <TableRow>
+              <TableCell align="center">{balanceInfo.currency.name}</TableCell>
+              <TableCell align="center">{balanceInfo.amount}</TableCell>
+              <TableCell align="center">
+                <TextField
+                  autoFocus
+                  required
+                  label="Amount to deposit or withdraw"
+                  name="amount"
+                  pattern="^[+]?([.]\d+|\d+([.]\d\d?)?)$"
+                  helperText="Please enter a valid amount greater than 0"
+                  fullWidth
+                  margin="normal"
+                  onChange={handleInputChange}
+                  value={values["amount"]}
+                  error={errors["amount"]}
+                />
+              </TableCell>
+              <TableCell align="center">
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  onClick={handleDeposit}
+                  disabled={!isFormValid}
+                >
+                  Deposit
+                </Button>
+              </TableCell>
+              <TableCell align="center">
+                <Button
+                  variant="outlined"
+                  color="secondary"
+                  onClick={handleWithdraw}
+                  disabled={!isFormValid}
+                >
+                  Withdraw
+                </Button>
+              </TableCell>
+            </TableRow>
+          </TableBody>
+        </Table>
+      </form>
     </TableContainer>
   );
 }
 
-Grid.propTypes = {
-  classes: PropTypes.object.isRequired,
-};
-
-  
-  const mapDispatchToProps = (dispatch) => {
-    return {
-      onRequestUserBalance: () => dispatch(requestUserBalance()),
-    };
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onRequestUserBalance: () => dispatch(requestUserBalance()),
   };
+};
 
 export default connect(null, mapDispatchToProps)(Grid);
