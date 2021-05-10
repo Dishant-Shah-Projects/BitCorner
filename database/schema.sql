@@ -41,17 +41,17 @@ CREATE TABLE `USER_BALANCE` (
   foreign key (CURRENCY_ID) references CURRENCY(ID),
   primary key (USER_ID,CURRENCY_ID)
 );
-CREATE TABLE `ORDER`(
+CREATE TABLE `ORDER_TABLE`(
 `ID` bigint  auto_increment primary key,
 `USER_ID` varchar(100) not null,
 `TYPE` enum('BUY','SELL') not null,
 `PRICE_TYPE` enum('MARKET','LIMIT') not null,
 `QUANTITY` float not null,
 `LIMIT_PRICE` float,
-`EXECUTION_PRICE` float,
+`EXECUTION_PRICE` float default 0,
 `STATUS` enum('PENDING','EXECUTED','CANCELLED') not null default 'PENDING',
 `CURRENCY_ID` bigint not null,
-`SERVICE_FEE` float,
+`SERVICE_FEE` float default 0,
 foreign key (USER_ID) references USER_INFO(USER_ID),
 foreign key (CURRENCY_ID) references CURRENCY(ID)
 );

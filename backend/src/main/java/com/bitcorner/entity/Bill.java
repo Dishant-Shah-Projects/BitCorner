@@ -18,6 +18,8 @@ public class Bill {
 
     @Column(name="TO_USER")
     private String toUserId;
+    @Column(name="DESCRIPTION")
+    private String description;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name="FROM_USER",insertable = false,updatable = false)
@@ -134,6 +136,13 @@ public class Bill {
     public void setStatus(String status) {
         this.status = status;
     }
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
     public Currency getPaidCurrency() {
         return paidCurrency;
@@ -151,12 +160,14 @@ public class Bill {
         this.serviceFee = serviceFee;
     }
 
-    public Bill(String fromUserId, String toUserId, Currency targetCurrency, float amount, Date dueDate) throws BadAttributeValueExpException{
+    public Bill(String fromUserId, String toUserId, Currency targetCurrency, float amount, Date dueDate,String description) throws BadAttributeValueExpException{
         this.setFromUserId(fromUserId);
         this.setToUserId(toUserId);
         this.setTargetCurrency(targetCurrency);
         this.setAmount(amount);
         this.setDueDate(dueDate);
+        this.description=description;
+
     }
 
     public Bill() {
