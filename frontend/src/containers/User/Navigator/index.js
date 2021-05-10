@@ -15,10 +15,8 @@ import ExpandMore from "@material-ui/icons/ExpandMore";
 import Collapse from "@material-ui/core/Collapse";
 import AccountBalanceWalletIcon from "@material-ui/icons/AccountBalanceWallet";
 import AccountBalanceIcon from "@material-ui/icons/AccountBalance";
-import MessageIcon from "@material-ui/icons/Message";
 import MonetizationOnIcon from "@material-ui/icons/MonetizationOn";
 import firebase from "../../Firebase";
-import ContactPhoneIcon from "@material-ui/icons/ContactPhone";
 import ReceiptIcon from "@material-ui/icons/Receipt";
 import PersonIcon from "@material-ui/icons/Person";
 
@@ -44,12 +42,6 @@ const categories = [
     to: "/orders",
   },
   {
-    id: "Messages",
-    icon: <MessageIcon />,
-    expandable: false,
-    to: "/messages",
-  },
-  {
     id: "Bills",
     icon: <ReceiptIcon />,
     expandable: false,
@@ -60,19 +52,6 @@ const categories = [
     icon: <PersonIcon />,
     expandable: false,
     to: "/profile",
-  },
-  {
-    id: "Update Nick Name",
-    icon: <PersonIcon />,
-    expandable: false,
-    to: "/updateNickName",
-  },
-
-  {
-    id: "Contact Us",
-    icon: <ContactPhoneIcon />,
-    expandable: false,
-    to: "/contact-us",
   },
 ];
 const styles = (theme) => ({

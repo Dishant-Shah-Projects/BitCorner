@@ -15,7 +15,6 @@ import ContactUs from "./ContactUs";
 import Balance from "./Balance";
 import BankInfo from "./BankInfo";
 import Message from "./Message";
-import Profile from "./Profile";
 import Bills from "./Bills";
 import Orders from "./Orders";
 import VerifyEmailMessage from "./VerifyEmailMessage";
@@ -225,11 +224,6 @@ function Admin(props) {
               />
               <Route
                 path={`/profile`}
-                component={(props) => <Profile classes={classes} {...props} />}
-                exact
-              />
-              <Route
-                path={`/updateNickName`}
                 component={(props) => <UpdateNickName classes={classes} {...props} />}
                 exact
               />
