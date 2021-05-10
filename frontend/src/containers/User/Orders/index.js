@@ -62,15 +62,15 @@ function Content(props) {
 
     console.log("FormData", formData);
     
-    // Axios.put("/order", formData).then((response) => {
-    //   if (response.status === 200) {
-    //     console.log("Successfully Added Order");
-    //     setOpen(false);
-    //     window.location.reload(false);
-    //   } else {
-    //     console.log("Failed");
-    //   }
-    // });
+    Axios.put("/order", formData).then((response) => {
+      if (response.status === 200) {
+        console.log("Successfully Added Order");
+        setOpen(false);
+        window.location.reload(false);
+      } else {
+        console.log("Failed");
+      }
+    });
   };
 
   useEffect(() => {
