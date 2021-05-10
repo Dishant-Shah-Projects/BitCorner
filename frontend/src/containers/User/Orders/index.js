@@ -18,7 +18,7 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@material-ui/core/TableBody";
-import { requestOrderInfo } from "../actions.js";
+import { requestOrderInfo, requestBankInfo } from "../actions.js";
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
@@ -44,7 +44,7 @@ const styles = (theme) => ({
 });
 
 function Content(props) {
-  const { classes , orderInfo, error, onRequestOrderInfo } = props;
+  const { classes , orderInfo, error, onRequestOrderInfo, onRequestBankInfo, bankInfo } = props;
   const [open, setOpen] = React.useState(false);
   const [type, setType] = React.useState("");
   const styling = styles();
@@ -61,23 +61,26 @@ function Content(props) {
     event.preventDefault();
 
     console.log("FormData", formData);
-
-    Axios.put("/order", formData).then((response) => {
-      if (response.status === 200) {
-        console.log("Successfully Added Order");
-        setOpen(false);
-        window.location.reload(false);
-      } else {
-        console.log("Failed");
-      }
-    });
+    
+    // Axios.put("/order", formData).then((response) => {
+    //   if (response.status === 200) {
+    //     console.log("Successfully Added Order");
+    //     setOpen(false);
+    //     window.location.reload(false);
+    //   } else {
+    //     console.log("Failed");
+    //   }
+    // });
   };
 
   useEffect(() => {
     onRequestOrderInfo();
+    onRequestBankInfo();
   }, []);
 
   return (
+    <div>
+      {bankInfo?.status === 200 ? (
     <div>
       <div className={styling.contentWrapper}>
           <div>
@@ -177,7 +180,7 @@ function Content(props) {
           <hr></hr>
           <div className={styling.contentWrapper}>
             <h3>Your Orders:</h3>
-            {orderInfo.data && typeof orderInfo.data !== undefined ? (
+            {orderInfo.data && typeof orderInfo.data !== undefined && orderInfo.data.length!=0 ? (
               <div className={classes.contentWrapper}>
                 <div>
                 <TableContainer component={Paper}>
@@ -209,11 +212,25 @@ function Content(props) {
                   </div>
                 </div>
             ) : (
-              <div>
-                <Typography>No Orders placed yet!!</Typography>
-              </div>
-            )}
+              <Paper className={classes.paper}>
+                <div className={classes.contentWrapper}>
+                  <Typography color="textSecondary" align="center">
+                    No orders placed yet!!
+                  </Typography>
+                </div>
+              </Paper>
+               )}
           </div>
+    </div>
+      ):(
+        <Paper className={classes.paper}>
+          <div className={classes.contentWrapper}>
+            <Typography color="textSecondary" align="center">
+              Please set up your bank account to place orders
+            </Typography>
+          </div>
+        </Paper>
+      )}
     </div>
   );
 }
@@ -226,12 +243,14 @@ const mapStateToProps = (state) => {
   return {
     orderInfo: state.order.orderInfo,
     error: state.order.error,
+    bankInfo : state.bank.bankInfo
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
     onRequestOrderInfo: () => dispatch(requestOrderInfo()),
+    onRequestBankInfo: () => dispatch(requestBankInfo())
   };
 };
 
