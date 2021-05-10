@@ -7,7 +7,8 @@ import Button from "@material-ui/core/Button";
 import { connect } from "react-redux";
 import ComponentWrapper from "../ComponentWrapper";
 import { requestBankInfo } from "../actions.js";
-import TextField from "@material-ui/core/TextField";
+import { useForm } from "../../../hooks/useForm";
+import TextField from "../../../components/TextField";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -53,26 +54,45 @@ function Content(props) {
     error,
     isLoaded,
   } = props;
+
+  const {
+    errors,
+    setErrors,
+    formSubmit,
+    handleInputChange,
+    isFormValid,
+    isValid,
+    setFieldValid,
+    setValues,
+    values,
+  } = useForm(
+    { bankName: "" },
+    { bankName: false },
+    { initialBalance: 0 },
+    { initialBalance: false }
+  );
+
   const [open, setOpen] = React.useState(false);
   const styling = styles();
-  const formData = {};
 
   const handleClickOpen = () => setOpen(true);
 
   const handleClose = () => setOpen(false);
 
-  const handleInput = (event) => {
-    event.preventDefault();
-    console.log("FormData", formData);
-
-    Axios.put("/bank", formData).then((response) => {
-      if (response.status === 200) {
-        console.log("Successfully Added Bank Account");
-        setOpen(false);
-        onRequestBankInfo();
-      } else {
-        console.log("Failed");
-      }
+  const onFormSubmit = (event) => {
+    formSubmit(event, () => {
+      event.preventDefault();
+      Axios.put("/bank", values)
+        .then((response) => {
+          if (response.status === 200) {
+            alert("Successfully Added Bank Account!");
+            setOpen(false);
+            onRequestBankInfo();
+          }
+        })
+        .catch((error) => {
+          alert("Successfully Added Bank Account");
+        });
     });
   };
 
@@ -103,7 +123,7 @@ function Content(props) {
               className={styling.root}
               noValidate
               autoComplete="off"
-              onSubmit={handleInput}
+              onSubmit={onFormSubmit}
             >
               <DialogTitle id="form-dialog-title">
                 Set up Bank Account
@@ -121,98 +141,123 @@ function Content(props) {
                   label="Bank Name"
                   name="bankName"
                   fullWidth
-                  onInput={(e) => (formData[e.target.name] = e.target.value)}
+                  pattern="^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$"
+                  helperText="Please enter a valid bank name"
+                  onChange={handleInputChange}
+                  value={values["bankName"]}
+                  error={errors["bankName"]}
                 />
                 <TextField
-                  autoFocus
                   required
                   margin="dense"
                   id="country"
                   label="Country"
                   name="country"
                   fullWidth
-                  onInput={(e) => (formData[e.target.name] = e.target.value)}
+                  pattern="^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$"
+                  helperText="Please enter a valid Country"
+                  onChange={handleInputChange}
+                  value={values["country"]}
+                  error={errors["country"]}
                 />
                 <TextField
-                  autoFocus
                   required
                   margin="dense"
                   name="accountNumber"
                   label="Account Number"
                   fullWidth
-                  onInput={(e) => (formData[e.target.name] = e.target.value)}
+                  pattern="^[0-9]{1,20}$"
+                  helperText="Please enter a valid account number"
+                  onChange={handleInputChange}
+                  value={values["accountNumber"]}
+                  error={errors["accountNumber"]}
                 />
                 <TextField
-                  autoFocus
                   required
                   margin="dense"
                   name="ownerName"
                   label="Account Holder Name"
                   fullWidth
-                  onInput={(e) => (formData[e.target.name] = e.target.value)}
+                  pattern="^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$"
+                  helperText="Please enter a valid account holder name"
+                  onChange={handleInputChange}
+                  value={values["ownerName"]}
+                  error={errors["ownerName"]}
                 />
                 <TextField
-                  autoFocus
                   required
                   margin="dense"
                   name="street"
                   label="Street"
                   fullWidth
-                  onInput={(e) => (formData[e.target.name] = e.target.value)}
+                  pattern="^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$"
+                  helperText="Please enter a valid street name"
+                  onChange={handleInputChange}
+                  value={values["street"]}
+                  error={errors["street"]}
                 />
                 <TextField
-                  autoFocus
                   required
                   margin="dense"
                   name="city"
                   label="City"
                   fullWidth
-                  onInput={(e) => (formData[e.target.name] = e.target.value)}
+                  pattern="^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$"
+                  helperText="Please enter a valid city"
+                  onChange={handleInputChange}
+                  value={values["city"]}
+                  error={errors["city"]}
                 />
                 <TextField
-                  autoFocus
                   required
                   margin="dense"
                   name="state"
                   label="State"
                   fullWidth
-                  onInput={(e) => (formData[e.target.name] = e.target.value)}
+                  pattern="^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$"
+                  helperText="Please enter a valid state"
+                  onChange={handleInputChange}
+                  value={values["state"]}
+                  error={errors["state"]}
                 />
                 <TextField
-                  autoFocus
                   required
                   margin="dense"
                   name="zip"
                   label="Zip Code"
                   fullWidth
-                  onInput={(e) => (formData[e.target.name] = e.target.value)}
+                  pattern="^[0-9]{5}(?:-[0-9]{4})?$"
+                  helperText="Please enter a valid zip code"
+                  onChange={handleInputChange}
+                  value={values["zip"]}
+                  error={errors["zip"]}
                 />
                 <TextField
-                  autoFocus
                   required
                   margin="dense"
                   name="primaryCurrencyId"
                   label="Currency"
                   fullWidth
-                  onInput={(e) => (formData[e.target.name] = e.target.value)}
+                  onChange={handleInputChange}
                 />
                 <TextField
-                  autoFocus
                   required
                   margin="dense"
                   name="initialBalance"
                   label="Initial Bank Balance"
                   fullWidth
-                  onInput={(e) =>
-                    (formData[e.target.name] = e.target.value)
-                  }
+                  pattern="^[+]?([.]\d+|\d+([.]\d\d?)?)$"
+                  helperText="Please enter a valid intital balance"
+                  onChange={handleInputChange}
+                  value={values["initialBalance"]}
+                  error={errors["initialBalance"]}
                 />
               </DialogContent>
               <DialogActions>
                 <Button onClick={handleClose} color="primary">
                   Cancel
                 </Button>
-                <Button type="submit" color="primary">
+                <Button type="submit" disabled={!isFormValid} color="primary">
                   Add Account
                 </Button>
               </DialogActions>
