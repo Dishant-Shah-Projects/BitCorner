@@ -36,3 +36,14 @@ export const requestUserBalance = () => (dispatch) => {
       );
   };
   
+export const requestOrderInfo = () => (dispatch) => {
+  dispatch({ type: "REQUEST_ORDER_INFO" });
+  Axios.get("/order")
+    .then((response) => response)
+    .then((data) =>
+      dispatch({ type: "REQUEST_ORDER_INFO_SUCCESS", payload: data })
+    )
+    .catch((error) =>
+      dispatch({ type: "REQUEST_ORDER_INFO_FAIL", payload: error })
+    );
+};
