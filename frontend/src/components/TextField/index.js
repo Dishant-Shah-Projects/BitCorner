@@ -3,7 +3,6 @@ import TextField from "@material-ui/core/TextField";
 
 export default function index(props) {
   const { onChange, pattern, helperText, error, name } = props;
-  console.log(name);
   return (
     <TextField
       variant="outlined"
