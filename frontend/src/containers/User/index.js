@@ -14,7 +14,6 @@ import { Switch, Route } from "react-router-dom";
 import ContactUs from "./ContactUs";
 import Balance from "./Balance";
 import BankInfo from "./BankInfo";
-import Message from "./Message";
 import Bills from "./Bills";
 import Orders from "./Orders";
 import VerifyEmailMessage from "./VerifyEmailMessage";
@@ -210,11 +209,6 @@ function Admin(props) {
               <Route
                 path={`/orders`}
                 component={(props) => <Orders classes={classes} {...props} />}
-                exact
-              />
-              <Route
-                path={`/messages`}
-                component={(props) => <Message classes={classes} {...props} />}
                 exact
               />
               <Route

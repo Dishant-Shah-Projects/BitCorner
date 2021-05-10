@@ -66,10 +66,8 @@ function Content(props) {
     setValues,
     values,
   } = useForm(
-    { bankName: "" },
-    { bankName: false },
-    { initialBalance: 0 },
-    { initialBalance: false }
+    { bankName: "", initialBalance: 0, country: "", ownerName: "", city: "", state: ""},
+    { bankName: false, initialBalance: false, country: false, ownerName: false, city: false, state: false }
   );
 
   const [open, setOpen] = React.useState(false);
