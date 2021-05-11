@@ -5,6 +5,7 @@ import com.sun.xml.bind.v2.TODO;
 
 import javax.management.BadAttributeValueExpException;
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name="USER_BALANCE")
@@ -20,7 +21,7 @@ public class Balance {
     private long currencyId;
 
     @Column(name="AMOUNT")
-    private float amount;
+    private BigDecimal amount;
 
     @ManyToOne()
     @JoinColumn(name="CURRENCY_ID",insertable = false,updatable = false)
@@ -40,7 +41,7 @@ public class Balance {
 
 
     @JsonIgnore
-    public String    getUserId() {
+    public String  getUserId() {
         return userId;
     }
 
@@ -60,28 +61,37 @@ public class Balance {
         this.currencyId = currencyId;
     }
 
-    public float getAmount() {
-        return amount;
+    public BigDecimal getAmount() {
+        return this.amount;
     }
 
-    public void setAmount(float amount) throws BadAttributeValueExpException{
-        if(amount<0){
+    public void setAmount(BigDecimal amount) throws BadAttributeValueExpException{
+        if(amount==null){
+            amount=new BigDecimal(0);
+        }
+        if(amount.signum()<0){
             throw new BadAttributeValueExpException("Amount is invalid");
         }
         this.amount = amount;
     }
 
-    public void addAmount(float amount)throws BadAttributeValueExpException{
-        this.setAmount(this.amount+amount);
+    public void addAmount(BigDecimal amount)throws BadAttributeValueExpException{
+        if(this.amount==null){
+            this.amount=new BigDecimal(0);
+        }
+        this.setAmount(this.amount.add(amount));
     }
 
-    public void subtractAmount(float amount)throws BadAttributeValueExpException{
-        this.setAmount(this.amount-amount);
+    public void subtractAmount(BigDecimal amount)throws BadAttributeValueExpException{
+        if(this.amount==null){
+            this.amount=new BigDecimal(0);
+        }
+        this.setAmount(this.amount.subtract(amount));
     }
     public Balance(){
 
     }
-    public Balance(String userId, long currencyId, float amount) throws BadAttributeValueExpException{
+    public Balance(String userId, long currencyId, BigDecimal amount) throws BadAttributeValueExpException{
 
         this.setUserId(userId);
         this.setCurrencyId(currencyId);

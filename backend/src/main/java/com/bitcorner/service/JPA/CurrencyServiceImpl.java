@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -37,14 +38,15 @@ public class CurrencyServiceImpl implements CurrencyService {
         return repository.findAll();
     }
 
-    public float convertAmount(Currency fromCurrency, Currency toCurrency, float amount){
+    public BigDecimal convertAmount(Currency fromCurrency, Currency toCurrency, BigDecimal amount){
         if(fromCurrency.getId()==toCurrency.getId()){
             return amount;
         }
-        return amount * (fromCurrency.getConversionRate()/toCurrency.getConversionRate());
+        BigDecimal conversionFactor=new BigDecimal(toCurrency.getConversionRate()/fromCurrency.getConversionRate());
+        return amount.multiply(conversionFactor);
     }
 
-    public float convertAmount(long fromCurrencyId, long toCurrencyId, float amount){
+    public BigDecimal convertAmount(long fromCurrencyId, long toCurrencyId, BigDecimal amount){
         Currency fromCurrency=getById(fromCurrencyId);
         Currency toCurrency=getById(toCurrencyId);
         return  convertAmount(fromCurrency,toCurrency,amount);

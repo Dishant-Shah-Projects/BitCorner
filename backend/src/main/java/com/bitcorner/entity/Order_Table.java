@@ -35,16 +35,16 @@ public class Order_Table{
     private BigDecimal quantity;
 
     @Column(name="LIMIT_PRICE")
-    private long limitPrice;
+    private BigDecimal limitPrice;
 
     @Column(name="EXECUTION_PRICE")
-    private long executionPrice;
+    private BigDecimal executionPrice;
 
     @Column(name="STATUS")
     private String status;
 
     @Column(name="SERVICE_FEE")
-    private long serviceFee;
+    private BigDecimal serviceFee;
 
     @Column(name="CURRENCY_ID")
     private long currencyId;
@@ -94,6 +94,10 @@ public class Order_Table{
 
     public void setPriceType(String priceType) {
         this.priceType = priceType;
+
+        if(this.priceType!=null && this.priceType.equals("MARKET")){
+            this.limitPrice=new BigDecimal(0);
+        }
     }
 
     public BigDecimal getQuantity() {
@@ -108,19 +112,27 @@ public class Order_Table{
         this.quantity = quantity;
     }
 
-    public long getLimitPrice() {
+    public BigDecimal getLimitPrice() {
         return limitPrice;
     }
 
-    public void setLimitPrice(long limitPrice) {
+    public void setLimitPrice(BigDecimal limitPrice) {
+
         this.limitPrice = limitPrice;
+        if(this.limitPrice==null || (this.priceType!=null && this.priceType.equals("MARKET"))){
+            this.limitPrice=new BigDecimal(0);
+        }
+
     }
 
-    public long getExecutionPrice() {
+    public BigDecimal getExecutionPrice() {
         return executionPrice;
     }
 
-    public void setExecutionPrice(long executionPrice) {
+    public void setExecutionPrice(BigDecimal executionPrice) {
+        if(executionPrice==null){
+            executionPrice=new BigDecimal(0);
+        }
         this.executionPrice = executionPrice;
     }
 
@@ -132,11 +144,14 @@ public class Order_Table{
         this.status = status;
     }
 
-    public long getServiceFee() {
+    public BigDecimal getServiceFee() {
         return serviceFee;
     }
 
-    public void setServiceFee(long serviceFee) {
+    public void setServiceFee(BigDecimal serviceFee) {
+        if(serviceFee==null){
+            serviceFee=new BigDecimal(0);
+        }
         this.serviceFee = serviceFee;
     }
 
@@ -166,8 +181,8 @@ public class Order_Table{
 
     public Order_Table(){}
 
-    public Order_Table(String userId,String type,String priceType,BigDecimal quantity,long limitPrice,
-                 long executionPrice,String status,long serviceFee)
+    public Order_Table(String userId,String type,String priceType,BigDecimal quantity,BigDecimal limitPrice,
+                       BigDecimal executionPrice,String status,BigDecimal serviceFee)
             throws BadAttributeValueExpException
     {
         this.setUserId(userId);

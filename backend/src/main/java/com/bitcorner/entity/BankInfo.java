@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import javax.management.BadAttributeValueExpException;
 import javax.persistence.*;
+import java.math.BigDecimal;
 
 @Entity
 @Table(name="USER_BANK_INFO")
@@ -44,17 +45,20 @@ public class BankInfo {
     @Column(name="PRIMARY_CURRENCY_ID")
     private long primaryCurrencyId;
 
-    public float getInitialBalance()
+    public BigDecimal getInitialBalance()
     {
         return initialBalance;
     }
 
-    public void setInitialBalance(float initialBalance)
+    public void setInitialBalance(BigDecimal initialBalance)
     {
+        if(initialBalance==null){
+            initialBalance=new BigDecimal(0);
+        }
         this.initialBalance = initialBalance;
     }
 
-    private float initialBalance;
+    private BigDecimal initialBalance;
 
     @JsonIgnore
     public String getUserId() {

@@ -16,6 +16,7 @@ import com.bitcorner.auth.SecurityService;
 import javax.management.BadAttributeValueExpException;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.text.DateFormat;
 import java.util.List;
 import java.util.Date;
@@ -81,20 +82,22 @@ public class OrderTableController {
 //            Currency currency=currencyService.getById(bankInfo.getPrimaryCurrencyId());
             order_table.setUserId(userId);
             order_table.setStatus("Open");
-            order_table.setExecutionPrice(0);
-            order_table.setServiceFee(0);
+            order_table.setExecutionPrice(null);
+            order_table.setServiceFee(null);
             Date d = new Date();
 //            DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm:ss");
             order_table.setTime(d);
+
             Orderservice.save(order_table);
+
             return new ResponseEntity<>(order_table, HttpStatus.OK);
         }
         catch (EntityNotFoundException ex){
             return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
         }
-//        catch (BadAttributeValueExpException ex){
-//            return new ResponseEntity<>(new ErrorResponse(ex.toString()), HttpStatus.BAD_REQUEST);
-//        }
+        catch (BadAttributeValueExpException ex){
+            return new ResponseEntity<>(new ErrorResponse(ex.toString()), HttpStatus.BAD_REQUEST);
+        }
         catch (Exception ex){
             return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }

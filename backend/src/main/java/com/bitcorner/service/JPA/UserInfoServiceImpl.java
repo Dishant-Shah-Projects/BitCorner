@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import javax.management.BadAttributeValueExpException;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -35,7 +36,7 @@ public class UserInfoServiceImpl implements UserInfoService {
 
         List<Currency> currencyList=currencyService.getAllCurrency();
         for(Currency currency:currencyList){
-            Balance balance=new Balance(userInfo.getId(),currency.getId(),currency.getInitialValue());
+            Balance balance=new Balance(userInfo.getId(),currency.getId(),new BigDecimal(0));
             balanceService.save(balance);
         }
     }
