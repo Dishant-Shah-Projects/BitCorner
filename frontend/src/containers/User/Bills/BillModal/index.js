@@ -11,11 +11,15 @@ import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import MenuItem from '@material-ui/core/MenuItem';
+import Typography from "@material-ui/core/Typography";
+import Paper from "@material-ui/core/Paper";
 import Axios from "axios";
-import Select from '@material-ui/core/Select';
+// import Select from '@material-ui/core/Select';
 import TextField from "../../../../components/TextField";
+import Select from "../../../../components/Select";
 import { useForm } from "../../../../hooks/useForm";
+import { requestBankInfo } from "../../actions";
+import CurrencyDropdown from "../../CurrencyDropdown/index"
 const styles = makeStyles((theme) => ({
   paper: {
     maxWidth: 936,
@@ -40,20 +44,11 @@ const styles = makeStyles((theme) => ({
 }));
 
 function BillModal(props) {
-  const { classes, onRequestBankInfo, currencies, user, onrequestCurrencyInfo,onrequestBillInfo} = props;
+  const { classes, onRequestBankInfo, currencies, user, onrequestCurrencyInfo,onrequestBillInfo,bankInfo} = props;
   console.log(currencies);
   const [open, setOpen] = React.useState(false);
   const styling = styles();
-  const formData = {
-    primaryCurrency: {
-      id: 1,
-      name: "testium",
-      conversionRate: 5.0,
-      initialValue: 10.0,
-      crypto: false,
-      base: false,
-    },
-  };
+
 
   const handleClickOpen = () => setOpen(true);
 
@@ -83,36 +78,47 @@ function BillModal(props) {
     setValues,
     values,
   } = useForm(
-    { toEmail: "", Description:"",target_currency:"",amount:"",duedate:""},
-    {  }
+    { toEmail: "", Description:"",target_currency:bankInfo?.data?.primaryCurrencyId,amount:"",duedate:""},
+    {  toEmail:false, Description:false, target_currency:true,amount:false,duedate:false}
   );
   const handleInput = (event) => {
     formSubmit(event, () => {
       console.log("values", values);
-      Axios.put(`/bill?&toEmail=${values["toEmail"]}&Description=${values["Description"]}&target_currency=${values["target_currency"]}&amount=${values["amount"]}&duedate=${values["duedate"]}`,values)
+      
+      var date = new Date(values["duedate"]); 
+      let val =(date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear()
+      Axios.put(`/bill?&toEmail=${values["toEmail"]}&Description=${values["Description"]}&target_currency=${values["target_currency"]}&amount=${values["amount"]}&duedate=${val}`,values)
         .then((response) => {
           if (response.status === 200) {
             console.log("Successfully Added Bank Account");
             setOpen(false);
+            values["toEmail"]="";
+            values["Description"]="";
+            values["target_currency"]=bankInfo?.data?.primaryCurrencyId;
+            values["amount"]=0;
+            values["duedate"]=Date.now()
             onrequestBillInfo();
           } else {
             console.log("Failed");
           }
         });
         })
-        .catch((error) => {
-         
-    });
+
   };
 
   useEffect(() => {
     onrequestCurrencyInfo();
+    onRequestBankInfo();
+    
   }, []);
 
 
   return (
+
     <div>
+      
         <div className={styling.contentWrapper}>
+          
           <div>
             <Button
               style={{ margin: "0 auto", display: "flex" }}
@@ -145,92 +151,85 @@ function BillModal(props) {
                 <TextField
                   autoFocus
                   required
+                  pattern="^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$"
+                  helperText="Please enter a valid Email"
                   margin="dense"
-                  label="PayEmail"
+                  label="Pay Email"
                   name="toEmail"
                   fullWidth
                   onChange={handleInputChange}
                   value = {values["toEmail"]}
-                  errors={errors["toEmail"]}
+                  error={errors["toEmail"]}
                   
                 />
                 <TextField
-                  autoFocus
+                  
                   required
                   margin="dense"
                   id="country"
+                  pattern="^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$"
+                  helperText="Please enter a valid Description"
                   label="Description"
                   name="Description"
                   fullWidth
                   onChange={handleInputChange}
                   value = {values["Description"]}
-                  errors={errors["Description"]}
+                  error={errors["Description"]}
                   
                 />
-                {/* <TextField
-                  autoFocus
+                  <CurrencyDropdown
                   required
                   margin="dense"
+                  id="currency"
+                  label="Currency"
                   name="target_currency"
-                  label="target "
                   fullWidth
-                  onInput={(e) => (formData[e.target.name] = e.target.value)}
-                /> */}
-                <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    name="target_currency"
-                    label="target "
-                    onChange={handleInputChange}
-                    value = {values["target_currency"]}
-                    errors={errors["target_currency"]}
-                    
-                  >
-                    {currencies.map((row)=>
-                    (
-                      <MenuItem value={row.id}>{row.name}</MenuItem>
-                    )
-                    
-                    )}
-                </Select>
+                  helperText="Please select atleast one"
+                  onChange={handleInputChange}
+                  value = {values["target_currency"]}
+                  error={errors["target_currency"]}
+                  
+                />
                 <TextField
-                  autoFocus
+                  
                   required
+                  pattern="^(([1-9]*)|(([1-9]*)\.([0-9]*)))$"
+                  helperText="Please enter a valid Amount"
                   margin="dense"
                   name="amount"
-                  label="amount"
+                  label="Amount"
                   fullWidth
                   onChange={handleInputChange}
                   value = {values["amount"]}
-                  errors={errors["amount"]}
+                  error={errors["amount"]}
                   
                 />
                 <TextField
-                  autoFocus
+                  
                   required
                   type="date"
                   margin="dense"
                   name="duedate"
-                  label="duedate"
+                  label="Due Date"
                   fullWidth
                   onChange={handleInputChange}
                   value = {values["duedate"]}
-                  errors={errors["duedate"]}
+                  error={errors["duedate"]}
                   
                 />
               </DialogContent>
               <DialogActions>
-                <Button onClick={handleClose} color="primary"disabled={!isFormValid}> 
+                <Button onClick={handleClose} color="primary" > 
                   Cancel
                 </Button>
-                <Button type="submit" color="primary">
+                <Button type="submit" color="primary" disabled={!isFormValid}>
                   Add Bill
                 </Button>
               </DialogActions>
             </form>
           </Dialog>
+          
         </div>
-      
     </div>
   );
 }
@@ -238,7 +237,8 @@ function BillModal(props) {
 const mapStateToProps = (state) => {
   return {
     user: state.user,
-    currencies :state.currency.currencies
+    currencies :state.currency.currencies,
+    bankInfo:state.bank.bankInfo
   };
 };
 
@@ -246,7 +246,8 @@ const mapDispatchToProps = (dispatch) => {
   return {
     
     onrequestCurrencyInfo: ()  => dispatch(requestCurrencyInfo()),
-    onrequestBillInfo: () => dispatch(requestBillInfo())
+    onrequestBillInfo: () => dispatch(requestBillInfo()),
+    onRequestBankInfo: () => dispatch(requestBankInfo())
   };
 };
 

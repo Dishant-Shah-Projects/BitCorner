@@ -14,11 +14,11 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Axios from "axios";
-import Select from '@material-ui/core/Select';
 import EditIcon from '@material-ui/icons/Edit';
 import PaymentIcon from '@material-ui/icons/Payment';
 import TextField from "../../../../components/TextField";
 import { useForm } from "../../../../hooks/useForm";
+import Select from "../../../../components/Select";
 const styles = makeStyles((theme) => ({
   paper: {
     maxWidth: 936,
@@ -44,7 +44,7 @@ const styles = makeStyles((theme) => ({
 
 function EditBillModal(props) {
   const { classes, onRequestBankInfo, currencies, user, onrequestCurrencyInfo,onrequestBillInfo,bill} = props;
-  console.log(currencies);
+  
   const [open, setOpen] = React.useState(false);
   const styling = styles();
   const formData = {
@@ -62,7 +62,7 @@ function EditBillModal(props) {
     values,
   } = useForm(
     {  Description:bill.description,target_currency:bill.target_currency,amount:bill.amount,duedate:bill.dueDate},
-    {  }
+    { Description:false, target_currency:false, amount:false, duedate:false }
   );
   const handleClickOpen = () => setOpen(true);
 
@@ -84,7 +84,9 @@ function EditBillModal(props) {
   const handleInput = (event) => {
     formSubmit(event, () => {
       console.log("values", values);
-      Axios.post(`/bill?&ID=${bill.id}&Description=${values["Description"]}&target_currency=${values["target_currency"]}&amount=${values["amount"]}&duedate=${values["duedate"]}`,values)
+      var date = new Date(values["duedate"]); 
+      let val =(date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear()
+      Axios.post(`/bill?&ID=${bill.id}&Description=${values["Description"]}&target_currency=${values["target_currency"]}&amount=${values["amount"]}&duedate=${val}`,values)
       .then((response) => {
         if (response.status === 200) {
           console.log("Successfully UPDATED Bank Account");
@@ -115,7 +117,7 @@ function EditBillModal(props) {
               onClick={handleClickOpen}
               disabled={disabled}
             >
-              Add Bill
+             <EditIcon/>
             </Button>
           </div>
           <Dialog
@@ -150,6 +152,8 @@ function EditBillModal(props) {
                 <TextField
                   autoFocus
                   required
+                  pattern="^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$"
+                  helperText="Please enter a valid Description"
                   margin="dense"
                   id="country"
                   label="Description"
@@ -157,7 +161,7 @@ function EditBillModal(props) {
                   fullWidth
                   onChange={handleInputChange}
                   value = {values["Description"]}
-                  errors={errors["Description"]}
+                  error={errors["Description"]}
                   
                 />
                 {/* <TextField
@@ -169,54 +173,56 @@ function EditBillModal(props) {
                   fullWidth
                   onInput={(e) => (formData[e.target.name] = e.target.value)}
                 /> */}
-                <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    name="target_currency"
-                    label="target "
-                    onChange={handleInputChange}
-                    value = {values["target_currency"]}
-                    errors={errors["target_currency"]}
-                   
-                  >
-                    {currencies.map((row)=>
-                    (
-                      <MenuItem value={row.id}>{row.name}</MenuItem>
-                    )
-                    
-                    )}
-                </Select>
-                <TextField
-                  autoFocus
+                  <Select
                   required
                   margin="dense"
-                  name="amount"
-                  label="amount"
+                  id="country"
+                  label="Currency"
+                  name="target_currency"
                   fullWidth
+                  options = {currencies}
+                  valueKey="id"
+                  displayKey="name"
+                  helperText="Please select atleast one"
                   onChange={handleInputChange}
-                  value = {values["amount"]}
-                  errors={errors["amount"]}
+                  value = {values["target_currency"]}
+                  error={errors["target_currency"]}
                   
                 />
                 <TextField
-                  autoFocus
+                  
                   required
+                  pattern="^(([1-9]*)|(([1-9]*)\.([0-9]*)))$"
+                  helperText="Please enter a valid Amount"
+                  margin="dense"
+                  name="amount"
+                  label="Amount"
+                  fullWidth
+                  onChange={handleInputChange}
+                  value = {values["amount"]}
+                  error={errors["amount"]}
+                  
+                />
+                <TextField
+                  
+                  required
+                  type="date"
                   margin="dense"
                   name="duedate"
-                  type="date"
-                  label="duedate"
+                  
+                  label="Due Date"
                   fullWidth
                   onChange={handleInputChange}
                   value = {values["duedate"]}
-                  errors={errors["duedate"]}
+                  error={errors["duedate"]}
                   
                 />
               </DialogContent>
               <DialogActions>
-                <Button onClick={handleClose} color="primary"disabled={!isFormValid}> 
+                <Button onClick={handleClose} color="primary"> 
                   Cancel
                 </Button>
-                <Button type="submit" color="primary">
+                <Button type="submit" color="primary"disabled={!isFormValid}>
                   Add Bill
                 </Button>
               </DialogActions>

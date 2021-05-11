@@ -6,7 +6,7 @@ import Button from "@material-ui/core/Button";
 import { connect } from "react-redux";
 // import ComponentWrapper from "../ComponentWrapper";
 import { requestBillInfo,requestCurrencyInfo } from "../action";
-import TextField from "@material-ui/core/TextField";
+
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -15,9 +15,12 @@ import DialogTitle from "@material-ui/core/DialogTitle";
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Axios from "axios";
-import Select from '@material-ui/core/Select';
 import EditIcon from '@material-ui/icons/Edit';
 import PaymentIcon from '@material-ui/icons/Payment';
+
+import TextField from "../../../../components/TextField";
+import { useForm } from "../../../../hooks/useForm";
+import Select from "../../../../components/Select";
 const styles = makeStyles((theme) => ({
   paper: {
     maxWidth: 936,
@@ -42,13 +45,56 @@ const styles = makeStyles((theme) => ({
 }));
 
 function PayBillModal(props) {
-  const { classes, onRequestBankInfo, currencies, user, onrequestCurrencyInfo,onrequestBillInfo,bill} = props;
+  const { classes, currencies, user, onrequestCurrencyInfo,onrequestBillInfo,bill,bankInfo} = props;
   console.log(currencies);
   const [open, setOpen] = React.useState(false);
   const styling = styles();
+  let id =bankInfo?.data?.primaryCurrencyId;
+  
   const formData = {
     ID: bill.id,
   };
+  const {
+    errors,
+    setErrors,
+    formSubmit,
+    handleInputChange,
+    isFormValid,
+    isValid,
+    setFieldValid,
+    setValues,
+    values,
+  } = useForm(
+    {  Description:bill.description,target_currency:bill.target_currency,amount:bill.amount,duedate:bill.dueDate},
+    { Description:false, target_currency:false, amount:false, duedate:false }
+  );
+
+  const calculateamount =(target, pay) =>{
+    if (target===pay){
+      return bill.amount
+    }
+    let amount =0;
+    let curtar = null
+    let curpay = null
+
+    for (var i = 0; i < currencies.length; i++){
+      // look for the entry with a matching `code` value
+      if (currencies[i].id == target){
+        curtar=currencies[i]
+         // we found it
+        // obj[i].name is the matched result
+      }
+      if (currencies[i].id == pay){
+        curpay=currencies[i]
+         // we found it
+        // obj[i].name is the matched result
+      }
+    }
+
+    amount = (bill.amount/curtar.conversionRate)*curpay.conversionRate*1.01
+
+    return amount
+  }
 
   const handleClickOpen = () => setOpen(true);
 
@@ -70,6 +116,7 @@ function PayBillModal(props) {
 
   useEffect(() => {
     onrequestCurrencyInfo();
+    
   }, []);
 
   return (
@@ -104,51 +151,22 @@ function PayBillModal(props) {
                   Please Pay or Cancle the Bill
                 </DialogContentText>
 
-                {/* <TextField
-                  autoFocus
-                  required
-                  margin="dense"
-                  label="PayEmail"
-                  name="toEmail"
-                  fullWidth
-                  value={bill.toEmail}
-                  onInput={(e) => (formData[e.target.name] = e.target.value)}
-                /> */}
-                {/* <TextField
-                  autoFocus
+                  <Select
                   required
                   margin="dense"
                   id="country"
-                  label="Description"
-                  name="Description"
-                  fullWidth
-                  value={bill.description}
-                  onChange={(e) => (formData[e.target.name] = e.target.value)}
-                /> */}
-                {/* <TextField
-                  autoFocus
-                  required
-                  margin="dense"
+                  label="Currency"
                   name="target_currency"
-                  label="target "
                   fullWidth
-                  onInput={(e) => (formData[e.target.name] = e.target.value)}
-                /> */}
-                <Select
-                    labelId="demo-simple-select-label"
-                    id="demo-simple-select"
-                    name="target_currency"
-                    label="target "
-                    value={bill.target_currency}
-                    onChange={(e) => (formData[e.target.name] = e.target.value)}
-                  >
-                    {currencies.map((row)=>
-                    (
-                      <MenuItem value={row.id}>{row.name}</MenuItem>
-                    )
-                    
-                    )}
-                </Select>
+                  options = {currencies}
+                  valueKey="id"
+                  displayKey="name"
+                  helperText="Please select atleast one"
+                  onChange={handleInputChange}
+                  value = {values["target_currency"]}
+                  errors={errors["target_currency"]}
+                  
+                />
                 <TextField
                   autoFocus
                   required
@@ -156,8 +174,8 @@ function PayBillModal(props) {
                   name="amount"
                   label="amount"
                   fullWidth
-                  value={bill.amount}
-                  onChange={(e) => (formData[e.target.name] = e.target.value)}
+                  value={calculateamount(bill.targetCurrency.id,values["target_currency"])}
+                  
                 />
                 {/* <TextField
                   autoFocus
@@ -189,15 +207,17 @@ function PayBillModal(props) {
 const mapStateToProps = (state) => {
   return {
     user: state.user,
-    currencies :state.currency.currencies
+    currencies :state.currency.currencies,
+    bankInfo:state.bank.bankInfo
   };
-};
+  };
+
 
 const mapDispatchToProps = (dispatch) => {
   return {
     
     onrequestCurrencyInfo: ()  => dispatch(requestCurrencyInfo()),
-    onrequestBillInfo: () => dispatch(requestBillInfo())
+    
   };
 };
 

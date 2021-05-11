@@ -49,9 +49,10 @@ CREATE TABLE `ORDER_TABLE`(
 `QUANTITY` float not null,
 `LIMIT_PRICE` float,
 `EXECUTION_PRICE` float default 0,
-`STATUS` enum('PENDING','EXECUTED','CANCELLED') not null default 'PENDING',
+`STATUS` enum('Open','Fulfilled','Cancelled') not null default 'Open',
 `CURRENCY_ID` bigint not null,
 `SERVICE_FEE` float default 0,
+`TIME` datetime not null,
 foreign key (USER_ID) references USER_INFO(USER_ID),
 foreign key (CURRENCY_ID) references CURRENCY(ID)
 );

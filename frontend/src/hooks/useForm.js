@@ -47,8 +47,9 @@ export const useForm = (
     const { name, value, pattern } = event.target;
 
     // If unwanted key is pressed then remove not allowed value and update value
-    const dontAllow = event.target.getAttribute("data-dontallow");
-    const newValue = removedNotAllowedValues(value, dontAllow);
+    // const dontAllow = event?.target?.getAttribute('data-dontallow');
+    // const newValue = removedNotAllowedValues(value, dontAllow);
+    const newValue = value;
 
     // Update value in state
     setValues({ ...values, [name]: newValue });
