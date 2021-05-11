@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import javax.management.BadAttributeValueExpException;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.util.List;
 
 @Service
@@ -45,7 +46,7 @@ public class BalanceServiceImpl implements BalanceService {
 
     @Transactional
     @Override
-    public void depositBalance(String userId,long currencyId,float depositAmount) throws EntityNotFoundException, BadAttributeValueExpException {
+    public void depositBalance(String userId, long currencyId, BigDecimal depositAmount) throws EntityNotFoundException, BadAttributeValueExpException {
         BalanceCompositeId balanceCompositeId=new BalanceCompositeId(userId,currencyId);
         Balance balance=repository.findById(balanceCompositeId).orElse(null);
         if(balance==null){
@@ -57,7 +58,7 @@ public class BalanceServiceImpl implements BalanceService {
 
     @Transactional
     @Override
-    public void withdrawBalance(String userId, long currencyId, float withdrawAmount) throws EntityNotFoundException, BadAttributeValueExpException {
+    public void withdrawBalance(String userId, long currencyId, BigDecimal withdrawAmount) throws EntityNotFoundException, BadAttributeValueExpException {
         BalanceCompositeId balanceCompositeId=new BalanceCompositeId(userId,currencyId);
         Balance balance=repository.findById(balanceCompositeId).orElse(null);
         if(balance==null){

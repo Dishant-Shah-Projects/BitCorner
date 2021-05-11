@@ -19,6 +19,7 @@ import com.google.firebase.auth.FirebaseToken;
 
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
@@ -69,7 +70,7 @@ public class BalanceController {
     public ResponseEntity<?> depositBalance(@PathVariable("currencyId") long currencyId,@RequestParam(name = "amount", required = true) float depositAmount){
         try {
             String userId=getUserId();
-            balanceService.depositBalance(userId,currencyId,depositAmount);
+            balanceService.depositBalance(userId,currencyId,new BigDecimal(depositAmount));
             return new ResponseEntity<>(new SuccessResponse("Amount deposited to account"), HttpStatus.OK);
         }catch (EntityNotFoundException ex){
             return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
@@ -83,7 +84,7 @@ public class BalanceController {
     public ResponseEntity<?> withdrawBalance(@PathVariable("currencyId") long currencyId,@RequestParam(name = "amount", required = true) float withdrawAmount){
         try {
             String userId=getUserId();
-            balanceService.withdrawBalance(userId,currencyId,withdrawAmount);
+            balanceService.withdrawBalance(userId,currencyId,new BigDecimal(withdrawAmount));
             return new ResponseEntity<>(new SuccessResponse("Amount withdrawn from account"), HttpStatus.OK);
         }catch (EntityNotFoundException ex){
             return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);

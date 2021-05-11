@@ -21,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.management.BadAttributeValueExpException;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.List;
 
@@ -117,14 +118,14 @@ public class BillController {
 
             Bill bill = billService.getById(id);
             if(currid2==bill.getTargetCurrency().getId()){
-                balanceService.withdrawBalance(bill.getToUserId(),currid2,amount);
-                balanceService.depositBalance(bill.getFromUserId(),currid2,amount);
+                balanceService.withdrawBalance(bill.getToUserId(),currid2,new BigDecimal(amount));
+                balanceService.depositBalance(bill.getFromUserId(),currid2,new BigDecimal(amount));
                 bill.setStatus("Paid");
                 bill.setServiceFee(0);
             }
             else{
-                balanceService.withdrawBalance(bill.getToUserId(),currid2, (float) (amount*1.0001));
-                balanceService.depositBalance(bill.getFromUserId(),bill.getTargetCurrency().getId(),amount);
+                balanceService.withdrawBalance(bill.getToUserId(),currid2, new BigDecimal (amount*1.0001));
+                balanceService.depositBalance(bill.getFromUserId(),bill.getTargetCurrency().getId(),new BigDecimal(amount));
                 bill.setStatus("Paid");
                 bill.setServiceFee((float) (amount*0.0001));
 
