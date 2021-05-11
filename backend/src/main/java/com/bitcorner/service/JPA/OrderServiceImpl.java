@@ -194,6 +194,11 @@ public class OrderServiceImpl implements OrderService {
         System.out.println(pendingOrders);
     }
 
+    @Override
+    public void update(Order_Table order) {
+        repository.save(order);
+    }
+
     @Transactional
     @Override
     public List<Order_Table> getAllOrders() {

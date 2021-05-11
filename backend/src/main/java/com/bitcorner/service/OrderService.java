@@ -8,6 +8,7 @@ import java.util.List;
 
 public interface OrderService {
     void save(Order_Table order) throws BadAttributeValueExpException;
+    void update(Order_Table order);
     List<Order_Table> getAllOrders();
     List<Order_Table> getSpecificOrders(String userId);
     void isOrderValid(Order_Table order) throws BadAttributeValueExpException;
