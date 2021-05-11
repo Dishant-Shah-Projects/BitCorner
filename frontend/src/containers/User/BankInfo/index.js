@@ -20,6 +20,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@material-ui/core/TableBody";
 import Paper from "@material-ui/core/Paper";
+import CurrencyDropdown from "../CurrencyDropdown/index"
 import Axios from "axios";
 
 const styles = makeStyles((theme) => ({
@@ -230,13 +231,17 @@ function Content(props) {
                   value={values["zip"]}
                   error={errors["zip"]}
                 />
-                <TextField
+                <CurrencyDropdown
+                  isCrypto = {false}
                   required
                   margin="dense"
-                  name="primaryCurrencyId"
                   label="Currency"
+                  name="primaryCurrencyId"
                   fullWidth
+                  helperText="Please select atleast one"
                   onChange={handleInputChange}
+                  value = {values["primaryCurrencyId"]}
+                  error={errors["primaryCurrencyId"]}
                 />
                 <TextField
                   required

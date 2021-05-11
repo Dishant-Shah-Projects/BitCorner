@@ -4,22 +4,20 @@ import { withStyles } from "@material-ui/core/styles";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import { connect } from "react-redux";
-// import ComponentWrapper from "../ComponentWrapper";
 import { requestBillInfo,requestCurrencyInfo } from "../action";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
 import DialogContentText from "@material-ui/core/DialogContentText";
 import DialogTitle from "@material-ui/core/DialogTitle";
-import Typography from "@material-ui/core/Typography";
-import Paper from "@material-ui/core/Paper";
 import Axios from "axios";
-// import Select from '@material-ui/core/Select';
 import TextField from "../../../../components/TextField";
-import Select from "../../../../components/Select";
 import { useForm } from "../../../../hooks/useForm";
 import { requestBankInfo } from "../../actions";
 import CurrencyDropdown from "../../CurrencyDropdown/index"
+import InputLabel from '@material-ui/core/InputLabel';
+import { TrendingUpRounded } from "@material-ui/icons";
+
 const styles = makeStyles((theme) => ({
   paper: {
     maxWidth: 936,
@@ -54,19 +52,6 @@ function BillModal(props) {
 
   const handleClose = () => setOpen(false);
 
-  // const handleInput = (event) => {
-  //   event.preventDefault();
-  //   console.log("FormData", formData);
-  //   Axios.put(`/bill?&toEmail=${formData["toEmail"]}&Description=${formData["Description"]}&target_currency=${formData["target_currency"]}&amount=${formData["amount"]}&duedate=${formData["duedate"]}`,null).then((response) => {
-  //     if (response.status === 200) {
-  //       console.log("Successfully Added Bank Account");
-  //       setOpen(false);
-  //       onrequestBillInfo();
-  //     } else {
-  //       console.log("Failed");
-  //     }
-  //   });
-  // };
   const {
     errors,
     setErrors,
@@ -178,6 +163,7 @@ function BillModal(props) {
                   
                 />
                   <CurrencyDropdown
+                  isCrypto = {TrendingUpRounded}
                   required
                   margin="dense"
                   id="currency"
@@ -191,7 +177,6 @@ function BillModal(props) {
                   
                 />
                 <TextField
-                  
                   required
                   pattern="^(([1-9]*)|(([1-9]*)\.([0-9]*)))$"
                   helperText="Please enter a valid Amount"
@@ -204,13 +189,12 @@ function BillModal(props) {
                   error={errors["amount"]}
                   
                 />
+                <InputLabel id="Data">Due Date</InputLabel>
                 <TextField
-                  
                   required
                   type="date"
                   margin="dense"
                   name="duedate"
-                  label="Due Date"
                   fullWidth
                   onChange={handleInputChange}
                   value = {values["duedate"]}

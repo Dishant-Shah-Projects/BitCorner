@@ -3,13 +3,16 @@ import Select from "../../../components/Select";
 import { connect } from "react-redux";
 import { requestCurrencyInfo } from "../Bills/action";
 export const CurrencyDropdown = (props) => {
-  const { onrequestCurrencyInfo, currencies } = props;
-
-
+const { onrequestCurrencyInfo, currencies, isCrypto } = props;
 
   useEffect(() => {
     onrequestCurrencyInfo();
   }, []);
+
+  if(!isCrypto)
+  {
+    delete currencies[5];
+  }
 
   return (
     <Select

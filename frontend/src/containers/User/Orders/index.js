@@ -22,6 +22,7 @@ import { requestOrderInfo, requestBankInfo } from "../actions.js";
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
+import CurrencyDropdown from "../CurrencyDropdown/index"
 import Axios from "axios";
 
 const styles = (theme) => ({
@@ -163,6 +164,19 @@ function Content(props) {
                   fullWidth
                   onInput={(e) => (formData[e.target.name] = e.target.value)}
                 />  
+{/* 
+                <CurrencyDropdown
+                  isCrypto = {false}
+                  required
+                  margin="dense"
+                  label="Currency"
+                  name="primaryCurrencyId"
+                  fullWidth
+                  helperText="Please select atleast one"
+                  onChange={handleInputChange}
+                  value = {values["primaryCurrencyId"]}
+                  error={errors["primaryCurrencyId"]}
+                /> */}
 
                 </DialogContent>
                 <DialogActions>
