@@ -44,14 +44,11 @@ const styles = makeStyles((theme) => ({
 }));
 
 function EditOrderModal(props) {
-  const { classes, onRequestBankInfo, currencies, user, onrequestCurrencyInfo,onrequestBillInfo,order,onrequestOrderInfo} = props;
+  const { classes, currencies, onrequestCurrencyInfo, order, onrequestOrderInfo} = props;
   console.log(currencies);
   console.log(order);
   const [open, setOpen] = React.useState(false);
   const styling = styles();
-  const formData = {
-    ID: order.id,
-  };
   const {
     errors,
     setErrors,
@@ -105,7 +102,7 @@ function EditOrderModal(props) {
     onrequestOrderInfo();
   }, []);
   let disabled = false
-  if(order.status=="Fulfilled"){
+  if(order.status=="Fulfilled" || order.status=="Cancelled"){
     disabled = true
   }
   return (
@@ -138,7 +135,7 @@ function EditOrderModal(props) {
               </DialogTitle>
               <DialogContent>
                 <DialogContentText>
-                  Please Update out the details 
+                  Please Update your order the details 
                 </DialogContentText>
                 <InputLabel id="type">Type</InputLabel>
                 <Select
@@ -181,7 +178,7 @@ function EditOrderModal(props) {
                   fullWidth
                   onChange={handleInputChange}
                   value = {values["priceType"]}
-                  errors={errors["priceType"]}
+                  error={errors["priceType"]}
                   
                 />
                 {/* <TextField
@@ -220,7 +217,7 @@ function EditOrderModal(props) {
                   fullWidth
                   onChange={handleInputChange}
                   value = {values["quantity"]}
-                  errors={errors["quantity"]}
+                  error={errors["quantity"]}
                   
                 />
                 <TextField
@@ -233,7 +230,7 @@ function EditOrderModal(props) {
                   fullWidth
                   onChange={handleInputChange}
                   value = {values["limitPrice"]}
-                  errors={errors["limitPrice"]}
+                  error={errors["limitPrice"]}
                   
                 />
                 <TextField
@@ -246,7 +243,7 @@ function EditOrderModal(props) {
                   fullWidth
                   onChange={handleInputChange}
                   value = {values["currencyId"]}
-                  errors={errors["currencyId"]}
+                  error={errors["currencyId"]}
                   
                 />
               </DialogContent>
@@ -277,7 +274,6 @@ const mapDispatchToProps = (dispatch) => {
   return {
     
     onrequestCurrencyInfo: ()  => dispatch(requestCurrencyInfo()),
-    onrequestBillInfo: () => dispatch(requestBillInfo()),
     onrequestOrderInfo: () => dispatch(requestOrderInfo())
   };
 };

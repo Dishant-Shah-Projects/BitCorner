@@ -24,7 +24,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import CurrencyDropdown from "../CurrencyDropdown/index"
 import { useForm } from "../../../hooks/useForm";
-import EditOrderModal from "./EditOrder"
+import EditOrderModal from "./EditOrder";
+import CancelOrder from "./CancelOrder";
 import Axios from "axios";
 
 const styles = (theme) => ({
@@ -263,6 +264,9 @@ function Content(props) {
                           <TableCell align="center">
                             <b>Edit</b>
                           </TableCell>
+                          <TableCell align="center">
+                            <b>Cancel</b>
+                          </TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
@@ -288,6 +292,9 @@ function Content(props) {
                             </TableCell>
                             <TableCell>
                               <EditOrderModal order={ordern}></EditOrderModal>
+                            </TableCell>
+                            <TableCell>
+                              <CancelOrder order={ordern}></CancelOrder>
                             </TableCell>
                           </TableRow>
                         ))}
