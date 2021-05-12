@@ -129,14 +129,51 @@ public class OrderServiceImpl implements OrderService
                                 executeOrder(order, openOrder, minLimitPriceBigDecimal);
                             }
                         }
+
                     }
-                    else if (openOrder.getPriceType().equals("MARKET") && order.getPriceType().equals("LIMIT"))
+                    else if (openOrder.getPriceType().equals("LIMIT") && order.getPriceType().equals("MARKET"))
                     {
                         // Add logic
+                        if (openOrder.getType().equals("SELL"))
+                        {
+                            // check if orger limit price is lower than market price
+                            if (openOrder.getLimitPrice().compareTo(minMarketPriceBigDecimal) < 0)
+                            {
+                                // BigDecimal minLimitPriceBigDecimal = openOrder.getLimitPrice().min(minMarketPriceBigDecimal);
+                                executeOrder(order, openOrder, minMarketPriceBigDecimal);
+                                return true;
+                            }
+                        }
+                        else{
+                            if (openOrder.getLimitPrice().compareTo(minMarketPriceBigDecimal) >= 0)
+                            {
+                                // BigDecimal minLimitPriceBigDecimal = openOrder.getLimitPrice().min(order.getLimitPrice());
+                                executeOrder(openOrder, order, minMarketPriceBigDecimal);
+                                return true;
+                            }
+
+                        }
                     }
                     else
                     {
                         // Add logic
+                        if (order.getType().equals("SELL"))
+                        {
+                            if (order.getLimitPrice().compareTo(minMarketPriceBigDecimal) < 0)
+                            {
+                                // BigDecimal minLimitPriceBigDecimal = order.getLimitPrice().min(minMarketPriceBigDecimal);
+                                executeOrder(openOrder, order, minMarketPriceBigDecimal);
+                                return true;
+                            }
+                        }
+                        else{
+                            if (order.getLimitPrice().compareTo(minMarketPriceBigDecimal) >= 0)
+                            {
+                                executeOrder(order, openOrder, minMarketPriceBigDecimal);
+                                return true;
+
+                            }
+                        }
                     }
                 }
             }
