@@ -21,6 +21,14 @@ import { connect } from "react-redux";
 import { requestUserInfo } from "./actions";
 import UpdateNickName from "./Profile/UpdateNickName";
 let theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: "#3eb7b7",
+    },
+    secondary: {
+      main: "#11cb5f",
+    },
+  },
   typography: {
     h5: {
       fontWeight: 500,
@@ -191,7 +199,7 @@ function Admin(props) {
             <Switch>
               <Route
                 path={`/`}
-                component={(props) => <Balance classes={classes} {...props} />}
+                component={(props) => <BankInfo classes={classes} {...props} />}
                 exact
               />
               <Route
@@ -218,7 +226,9 @@ function Admin(props) {
               />
               <Route
                 path={`/profile`}
-                component={(props) => <UpdateNickName classes={classes} {...props} />}
+                component={(props) => (
+                  <UpdateNickName classes={classes} {...props} />
+                )}
                 exact
               />
               <Route

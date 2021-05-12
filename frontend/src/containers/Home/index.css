@@ -1,18 +1,20 @@
-.home{
-    background-size: cover;
-    height: 900px;
-    position: relative;
-  }
+.home {
+  background-size: cover;
+  height: 900px;
+  position: relative;
+}
 
-  .description {
-    color: rgb(10, 1, 1);
-  }
-  
-  .header{
-    margin: 0;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    -ms-transform: translate(-50%, -50%);
-    transform: translate(-50%, -50%);
-  }
+.description {
+  color: rgb(10, 1, 1);
+  margin: 0;
+  text-align: center;
+}
+
+.header {
+  margin: 0;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+}

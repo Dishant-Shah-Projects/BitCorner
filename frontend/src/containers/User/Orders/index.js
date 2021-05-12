@@ -19,11 +19,11 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@material-ui/core/TableBody";
 import { requestOrderInfo, requestBankInfo } from "../actions.js";
-import InputLabel from '@material-ui/core/InputLabel';
+import InputLabel from "@material-ui/core/InputLabel";
 import CurrencyDropdown from "../CurrencyDropdown/index";
-import Radio from '@material-ui/core/Radio';
-import RadioGroup from '@material-ui/core/RadioGroup';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
+import Radio from "@material-ui/core/Radio";
+import RadioGroup from "@material-ui/core/RadioGroup";
+import FormControlLabel from "@material-ui/core/FormControlLabel";
 import { useForm } from "../../../hooks/useForm";
 import EditOrderModal from "./EditOrder";
 import CancelOrder from "./CancelOrder";
@@ -69,10 +69,19 @@ function Content(props) {
     setValues,
     values,
   } = useForm(
-    { priceType: "", quantity: "", limitPrice: 0,currencyId: "" },
     {
-      priceType: false,
+      priceType: "MARKET",
+      quantity: "",
+      type: "SELL",
+      limitPrice: 0,
+      currencyId: bankInfo?.data?.primaryCurrencyId,
+    },
+    {
+      priceType: true,
       quantity: false,
+      type: true,
+      limitPrice: true,
+      currencyId: true,
     }
   );
   const [open, setOpen] = React.useState(false);
@@ -81,22 +90,19 @@ function Content(props) {
 
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-  
+
   const onFormSubmit = (event) => {
     formSubmit(event, () => {
       event.preventDefault();
       console.log("form data:", values);
-      Axios.put("/order", values)
-        .then((response) => {
-          if (response.status === 200) {
-            alert("Successfully Added the Order!");
-            setOpen(false);
-            onRequestOrderInfo();
-          }
-        })
-        .catch((error) => {
-          alert("Order not added!!");
-        });
+      Axios.put("/order", values).then((response) => {
+        if (response.status === 200) {
+          setOpen(false);
+          setValues({});
+          setFieldValid();
+          onRequestOrderInfo();
+        }
+      });
     });
   };
 
@@ -104,7 +110,7 @@ function Content(props) {
     onRequestOrderInfo();
     onRequestBankInfo();
   }, []);
-
+  console.log(values);
   return (
     <div>
       {bankInfo?.status === 200 ? (
@@ -120,87 +126,121 @@ function Content(props) {
                 Place a new order
               </Button>
             </div>
-            <Dialog
-              open={open}
-              onClose={handleClose}
-              aria-labelledby="form-dialog-title"
-            >
-              <form
-                className={styling.root}
-                noValidate
-                autoComplete="off"
-                onSubmit={onFormSubmit}
+            {open && (
+              <Dialog
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="form-dialog-title"
               >
-                <DialogTitle id="form-dialog-title">
-                  Place your Order
-                </DialogTitle>
-                <DialogContent>
-                  <DialogContentText>
-                    Place your order to BUY/SELL here.
-                  </DialogContentText>
+                <form
+                  className={styling.root}
+                  noValidate
+                  autoComplete="off"
+                  onSubmit={onFormSubmit}
+                >
+                  <DialogTitle id="form-dialog-title">
+                    Place your Order
+                  </DialogTitle>
+                  <DialogContent>
+                    <DialogContentText>
+                      Place your order to BUY/SELL here.
+                    </DialogContentText>
 
-                  <InputLabel id="type">Type</InputLabel>
-                  <RadioGroup aria-label="Type" name="type" value={values["type"]} onChange={handleInputChange} row>
-                    <FormControlLabel value="SELL" control={<Radio />} label="Sell" />
-                    <FormControlLabel value="BUY" control={<Radio />} label="Buy" />
-                  </RadioGroup>
+                    <InputLabel id="type">Type</InputLabel>
+                    <RadioGroup
+                      aria-label="Type"
+                      name="type"
+                      value={values["type"]}
+                      onChange={handleInputChange}
+                      row
+                    >
+                      <FormControlLabel
+                        value="SELL"
+                        control={<Radio />}
+                        label="Sell"
+                      />
+                      <FormControlLabel
+                        value="BUY"
+                        control={<Radio />}
+                        label="Buy"
+                      />
+                    </RadioGroup>
 
-                  <InputLabel id="type">Price Type</InputLabel>
-                  <RadioGroup aria-label="PriceType" name="priceType" value={values["priceType"]} onChange={handleInputChange} row>
-                    <FormControlLabel value="LIMIT" control={<Radio />} label="LIMIT" />
-                    <FormControlLabel value="MARKET" control={<Radio />} label="MARKET" />
-                  </RadioGroup>
+                    <InputLabel id="type">Price Type</InputLabel>
+                    <RadioGroup
+                      aria-label="PriceType"
+                      name="priceType"
+                      value={values["priceType"]}
+                      onChange={handleInputChange}
+                      row
+                    >
+                      <FormControlLabel
+                        value="MARKET"
+                        control={<Radio />}
+                        label="MARKET"
+                      />
+                      <FormControlLabel
+                        value="LIMIT"
+                        control={<Radio />}
+                        label="LIMIT"
+                      />
+                    </RadioGroup>
 
-                  <TextField
-                    required
-                    margin="dense"
-                    label="Quantity"
-                    name="quantity"
-                    fullWidth
-                    pattern="^[+]?([0-9]+([.][0-9]*)?|[.][0-9]+)$"
-                    helperText="Please enter a valid quantity"
-                    onChange={handleInputChange}
-                    value={values["quantity"]}
-                    error={errors["quantity"]}
-                  />
+                    <TextField
+                      required
+                      margin="dense"
+                      label="Quantity"
+                      name="quantity"
+                      fullWidth
+                      pattern="^[+]?([0-9]+([.][0-9]*)?|[.][0-9]+)$"
+                      helperText="Please enter a valid quantity"
+                      onChange={handleInputChange}
+                      value={values["quantity"]}
+                      error={errors["quantity"]}
+                    />
 
-                  <TextField
-                    required
-                    margin="dense"
-                    label="LimitPrice"
-                    name="limitPrice"
-                    disabled ={values["priceType"]=="MARKET"}
-                    fullWidth
-                    pattern="^[+]?([0-9]+([.][0-9]*)?|[.][0-9]+)$"
-                    helperText="Please enter a valid limit price"
-                    onChange={handleInputChange}
-                    value={values["limitPrice"]}
-                    error={errors["limitPrice"]}
-                  />
+                    <TextField
+                      required
+                      margin="dense"
+                      label="LimitPrice"
+                      name="limitPrice"
+                      disabled={values["priceType"] == "MARKET"}
+                      fullWidth
+                      pattern="^[+]?([0-9]+([.][0-9]*)?|[.][0-9]+)$"
+                      helperText="Please enter a valid limit price"
+                      onChange={handleInputChange}
+                      value={values["limitPrice"]}
+                      error={errors["limitPrice"]}
+                    />
 
-                <CurrencyDropdown
-                  isCrypto = {false}
-                  required
-                  margin="dense"
-                  label="Currency"
-                  name="currencyId"
-                  fullWidth
-                  helperText="Please select atleast one"
-                  onChange={handleInputChange}
-                  value = {values["currencyId"]}
-                  error={errors["currencyId"]}
-                />
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={handleClose} color="primary">
-                    Cancel
-                  </Button>
-                  <Button type="submit" disabled={!isFormValid} color="primary">
-                    Place Order
-                  </Button>
-                </DialogActions>
-              </form>
-            </Dialog>
+                    <CurrencyDropdown
+                      isCrypto={false}
+                      required
+                      margin="dense"
+                      label="Currency"
+                      name="currencyId"
+                      fullWidth
+                      helperText="Please select atleast one"
+                      onChange={handleInputChange}
+                      value={values["currencyId"]}
+                      error={errors["currencyId"]}
+                    />
+                  </DialogContent>
+                  <DialogActions>
+                    <Button onClick={handleClose} color="primary">
+                      Cancel
+                    </Button>
+                    <Button
+                      type="submit"
+                      disabled={!isFormValid}
+                      color="primary"
+                    >
+                      Place Order
+                    </Button>
+                  </DialogActions>
+                </form>
+              </Dialog>
+            )}
           </div>
           <br></br>
           <hr></hr>
@@ -244,23 +284,24 @@ function Content(props) {
                       <TableBody>
                         {orderInfo.data.map((ordern) => (
                           <TableRow>
-                            <TableCell key={ordern.type}>
-                              {ordern.type}
+                            <TableCell key={ordern?.type}>
+                              {ordern?.type}
                             </TableCell>
-                            <TableCell key={ordern.priceType}>
-                              {ordern.priceType}
+                            <TableCell key={ordern?.priceType}>
+                              {ordern?.priceType}
                             </TableCell>
-                            <TableCell key={ordern.quantity}>
-                              {ordern.quantity}
+                            <TableCell key={ordern?.quantity}>
+                              {ordern?.quantity}
                             </TableCell>
-                            <TableCell key={ordern.limitPrice}>
-                              {ordern.limitPrice}
+                            <TableCell key={ordern?.limitPrice}>
+                              {ordern?.limitPrice}
                             </TableCell>
-                            <TableCell key={ordern.currency.name}>
-                              {ordern.currency.name}
+                            {/*TODO : Currency object is not coming from backend*/}
+                            <TableCell key={ordern?.currency?.name}>
+                              {ordern?.currency?.name}
                             </TableCell>
-                            <TableCell key={ordern.status}>
-                              {ordern.status}
+                            <TableCell key={ordern?.status}>
+                              {ordern?.status}
                             </TableCell>
                             <TableCell>
                               <EditOrderModal order={ordern}></EditOrderModal>

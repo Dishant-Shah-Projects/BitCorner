@@ -25,17 +25,26 @@ export const requestUserInfo = () => (dispatch) => {
 };
 
 export const requestUserBalance = () => (dispatch) => {
-    dispatch({ type: "REQUEST_USER_BALANCE_PENDING" });
-    Axios.get("/balance")
-      .then((response) => response)
-      .then((data) =>
-        dispatch({ type: "REQUEST_USER_BALANCE_SUCCESS", payload: data })
-      )
-      .catch((error) =>
-        dispatch({ type: "REQUEST_USER_BALANCE_FAIL", payload: error })
-      );
-  };
-  
+  dispatch({ type: "REQUEST_USER_BALANCE_PENDING" });
+  Axios.get("/balance")
+    .then((response) => response)
+    .then((data) =>
+      dispatch({ type: "REQUEST_USER_BALANCE_SUCCESS", payload: data })
+    )
+    .catch((error) =>
+      dispatch({ type: "REQUEST_USER_BALANCE_FAIL", payload: error })
+    );
+};
+export const requestOnUpdate = () => (dispatch) => {
+  Axios.get("/balance")
+    .then((response) => response)
+    .then((data) =>
+      dispatch({ type: "REQUEST_USER_BALANCE_SUCCESS", payload: data })
+    )
+    .catch((error) =>
+      dispatch({ type: "REQUEST_USER_BALANCE_FAIL", payload: error })
+    );
+};
 export const requestOrderInfo = () => (dispatch) => {
   dispatch({ type: "REQUEST_ORDER_INFO" });
   Axios.get("/order")

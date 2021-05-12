@@ -7,7 +7,7 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@material-ui/core/TableBody";
 import TextField from "../../../../components/TextField";
-import { requestUserBalance } from "../../actions.js";
+import { requestOnUpdate } from "../../actions.js";
 import { connect } from "react-redux";
 import { useForm } from "../../../../hooks/useForm";
 import Axios from "axios";
@@ -27,88 +27,77 @@ function Grid(props) {
     values,
   } = useForm({ amount: 0 }, { amount: false });
 
-
   const handleDeposit = (event) => {
-    formSubmit(event, () => {
-      Axios.put(
-        "balance/" + balanceInfo.currencyId + "/deposit?amount=" + values.amount
-      ).then((response) => {
-        if (response.status === 200) {
-          console.log("Successfully Deposited Amount");
-          onRequestUserBalance();
-        }
-      });
-    });
+    saveData(event, "deposit");
   };
 
   const handleWithdraw = (event) => {
+    saveData(event, "withdraw");
+  };
+
+  const saveData = (event, url) => {
     formSubmit(event, () => {
       Axios.put(
-        "balance/" + balanceInfo.currencyId + "/withdraw?amount=" + values.amount
+        "balance/" +
+          balanceInfo.currencyId +
+          "/" +
+          url +
+          "?amount=" +
+          values.amount
       ).then((response) => {
         if (response.status === 200) {
-          console.log("Successfully Deposited Amount");
           onRequestUserBalance();
+          setValues({ ...values, amount: 0 });
         }
       });
     });
   };
-
-
   return (
-    <TableContainer component={Paper}>
-      <form noValidate>
-        <Table aria-label="simple table">
-          <TableBody>
-            <TableRow>
-              <TableCell align="center">{balanceInfo.currency.name}</TableCell>
-              <TableCell align="center">{balanceInfo.amount}</TableCell>
-              <TableCell align="center">
-                <TextField
-                  autoFocus
-                  required
-                  label="Amount to deposit or withdraw"
-                  name="amount"
-                  pattern="^[+]?([.]\d+|\d+([.]\d\d?)?)$"
-                  helperText="Please enter a valid amount greater than 0"
-                  fullWidth
-                  margin="normal"
-                  onChange={handleInputChange}
-                  value={values["amount"]}
-                  error={errors["amount"]}
-                />
-              </TableCell>
-              <TableCell align="center">
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  onClick={handleDeposit}
-                  disabled={!isFormValid}
-                >
-                  Deposit
-                </Button>
-              </TableCell>
-              <TableCell align="center">
-                <Button
-                  variant="outlined"
-                  color="secondary"
-                  onClick={handleWithdraw}
-                  disabled={!isFormValid}
-                >
-                  Withdraw
-                </Button>
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </form>
-    </TableContainer>
+    <TableRow>
+      <TableCell align="center">{balanceInfo.currency.name}</TableCell>
+      <TableCell align="center">{balanceInfo.amount}</TableCell>
+      <TableCell align="center">
+        <TextField
+          autoFocus
+          required
+          label="Amount to deposit or withdraw"
+          name="amount"
+          pattern="^[+]?([.]\d+|\d+([.]\d\d?)?)$"
+          helperText="Please enter a valid amount greater than 0"
+          fullWidth
+          margin="normal"
+          onChange={handleInputChange}
+          value={values["amount"]}
+          error={errors["amount"]}
+        />
+      </TableCell>
+      <TableCell align="center">
+        <Button
+          variant="outlined"
+          color="primary"
+          onClick={handleDeposit}
+          disabled={!isFormValid}
+        >
+          Deposit
+        </Button>
+      </TableCell>
+      <TableCell align="center">
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={handleWithdraw}
+          disabled={!isFormValid}
+        >
+          Withdraw
+        </Button>
+      </TableCell>
+    </TableRow>
   );
 }
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onRequestUserBalance: () => dispatch(requestUserBalance()),
+    onRequestUserBalance: () => dispatch(requestOnUpdate()),
   };
 };
 

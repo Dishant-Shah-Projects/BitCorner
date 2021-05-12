@@ -7,8 +7,10 @@ import firebase from "./containers/Firebase";
 import { Provider } from "react-redux";
 import store from "./reduxStrore/index";
 import axios from "axios";
+require("dotenv").config();
 
-axios.defaults.baseURL = "http://localhost:8080";
+axios.defaults.baseURL = process.env.REACT_APP_API_URL;
+
 let hasAppRendered = false;
 
 const Application = (

@@ -11,6 +11,7 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableHead from "@material-ui/core/TableHead";
 import TableRow from "@material-ui/core/TableRow";
+import TableBody from "@material-ui/core/TableBody";
 
 import { connect } from "react-redux";
 import { requestUserBalance, requestBankInfo } from "../actions.js";
@@ -56,26 +57,30 @@ function Content(props) {
       !isPending &&
       balanceInfo?.data &&
       bankInfo?.status === 200 ? (
-        <div>
-          <TableContainer component={Paper}>
-            <Table className={styling.table} aria-label="simple table">
-              <TableHead>
-                <TableRow>
-                  <TableCell align="center">Currency</TableCell>
-                  <TableCell align="center">Balance</TableCell>
-                  <TableCell align="center">
-                    Withdraw/Desposit Amount
-                  </TableCell>
-                  <TableCell align="center">Deposit</TableCell>
-                  <TableCell align="center">Withdraw</TableCell>
-                </TableRow>
-              </TableHead>
-            </Table>
-          </TableContainer>
-          {balanceInfo.data.map((balanceInfo) => {
-            return <BalanceGrid balanceInfo={balanceInfo} />;
-          })}
-        </div>
+        <Paper className={classes.paper}>
+          <div className={classes.contentWrapper}>
+            <TableContainer component={Paper}>
+              <Table className={styling.table} aria-label="simple table">
+                <TableHead>
+                  <TableRow>
+                    <TableCell align="center">Currency</TableCell>
+                    <TableCell align="center">Balance</TableCell>
+                    <TableCell align="center">
+                      Withdraw/Desposit Amount
+                    </TableCell>
+                    <TableCell align="center">Deposit</TableCell>
+                    <TableCell align="center">Withdraw</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {balanceInfo.data.map((balanceInfo) => {
+                    return <BalanceGrid balanceInfo={balanceInfo} />;
+                  })}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </div>
+        </Paper>
       ) : (
         <Paper className={classes.paper}>
           <div className={classes.contentWrapper}>

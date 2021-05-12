@@ -58,21 +58,19 @@ export const Content = (props) => {
   const onFormSubmit = (event) => {
     formSubmit(event, () => {
       console.log("values", values);
-      axios
-        .put(`user?nickname=${values["nickname"]}`, values)
-        .then((response) => {
-          onRequestUserInfo();
-          alert("Nickname updated successfully!");
-        })
-        .catch((error) => {
-          if (
-            error?.response?.data?.errorMessage.includes("USER_INFO.NICKNAME")
-          ) {
-            alert("Please try again with unique nick name.");
-          } else {
-            alert(error?.response?.data?.errorMessage);
-          }
-        });
+      axios.put(`user?nickname=${values["nickname"]}`).then((response) => {
+        onRequestUserInfo();
+        // alert("Nickname updated successfully!");
+      });
+      // .catch((error) => {
+      //   if (
+      //     error?.response?.data?.errorMessage.includes("constraint [USER_INFO.NICKNAME]")
+      //   ) {
+      //     alert("Please try again with unique nick name.");
+      //   } else {
+      //     alert(error?.response?.data?.errorMessage);
+      //   }
+      // });
     });
   };
 

@@ -3,34 +3,28 @@ import Select from "../../../components/Select";
 import { connect } from "react-redux";
 import { requestCurrencyInfo } from "../Bills/action";
 export const CurrencyDropdown = (props) => {
-const { onrequestCurrencyInfo, currencies, isCrypto } = props;
+  const { onrequestCurrencyInfo, currencies, isCrypto } = props;
 
   useEffect(() => {
-    onrequestCurrencyInfo();
-  }, []);
+    if (currencies?.length === 0) onrequestCurrencyInfo();
+  }, [currencies]);
 
-  if(!isCrypto)
-  {
+  if (!isCrypto) {
     delete currencies[5];
   }
 
   return (
-    <Select
-      options={currencies}
-      valueKey="id"
-      displayKey="name"
-      {...props}
-    />
+    <Select options={currencies} valueKey="id" displayKey="name" {...props} />
   );
 };
 
 const mapStateToProps = (state) => ({
-    currencies :state.currency.currencies,
+  currencies: state.currency.currencies,
 });
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onrequestCurrencyInfo: ()  => dispatch(requestCurrencyInfo()),
+    onrequestCurrencyInfo: () => dispatch(requestCurrencyInfo()),
   };
 };
 

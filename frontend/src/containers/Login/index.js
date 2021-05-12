@@ -65,22 +65,6 @@ function SignIn() {
           uiConfig={uiConfig}
           firebaseAuth={firebase.auth()}
         />
-        {/* <Grid container>
-          <Grid item xs>
-            <RouterLink href="#" variant="body2" style={{ color: "#3f51b5" }}>
-              Forgot password?
-            </RouterLink>
-          </Grid>
-          <Grid item>
-            <RouterLink
-              to="/register"
-              variant="body2"
-              style={{ color: "#3f51b5" }}
-            >
-              {"Don't have an account? Register"}
-            </RouterLink>
-          </Grid>
-        </Grid> */}
       </div>
       <Box mt={8}>
         <Copyright />
