@@ -45,24 +45,20 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Transactional
-    public void executeOrder(Order_Table order, Order_Table openOrder, float minExecutionPrice) throws BadAttributeValueExpException
+    public void executeOrder(Order_Table order, Order_Table openOrder, BigDecimal minExecutionPrice) throws BadAttributeValueExpException
     {
         Balance currencyBalance = balanceRepository.findByUserIdAndCurrencyId(order.getUserId(), order.getCurrencyId());
-
-        BigDecimal minMarketPriceBigDecimal = new BigDecimal(minExecutionPrice);
-        BigDecimal amountToSubtractFromBuyUser = minMarketPriceBigDecimal.multiply(order.getQuantity());
+        BigDecimal amountToSubtractFromBuyUser = minExecutionPrice.multiply(order.getQuantity());
         BigDecimal amountAfterSubtractingFromBuyUser = currencyBalance.getAmount().subtract(amountToSubtractFromBuyUser);
-        BigDecimal amountToAddToSellUser = minMarketPriceBigDecimal.multiply(openOrder.getQuantity());
-
+        BigDecimal amountToAddToSellUser = minExecutionPrice.multiply(openOrder.getQuantity());
         // Seller Bitcoin balance
         Balance bitcoinBalance = balanceRepository.findByUserIdAndCurrencyId(openOrder.getUserId(), 6);
         BigDecimal bitcoinAfterSubtractingSellAmount = bitcoinBalance.getAmount().subtract(openOrder.getQuantity());
 
         if (amountAfterSubtractingFromBuyUser.signum() > 0 && bitcoinAfterSubtractingSellAmount.signum() > 0)
         {
-
-            order.setExecutionPrice(minMarketPriceBigDecimal);
-            openOrder.setExecutionPrice(minMarketPriceBigDecimal);
+            order.setExecutionPrice(minExecutionPrice);
+            openOrder.setExecutionPrice(minExecutionPrice);
 
             BigDecimal serviceFee = amountToAddToSellUser.multiply(new BigDecimal(0.0001));
             Currency currency = currencyService.getById(openOrder.getCurrencyId());
@@ -95,7 +91,7 @@ public class OrderServiceImpl implements OrderService
         BigDecimal orderCurrencyMarketAskPrice = currencyService.convertAmount(1, order.getCurrencyId(), marketPrice.getAskPrice());
         BigDecimal orderCurrencyMarketBidPrice = currencyService.convertAmount(1, order.getCurrencyId(), marketPrice.getBidPrice());
         float minMarketPrice = Math.min(orderCurrencyMarketAskPrice.floatValue(), orderCurrencyMarketBidPrice.floatValue());
-
+        BigDecimal minMarketPriceBigDecimal = new BigDecimal(minMarketPrice);
         // One to One Matching
         for (Order_Table openOrder : openOrders)
         {
@@ -109,22 +105,37 @@ public class OrderServiceImpl implements OrderService
                     {
                         if (openOrder.getType().equals("SELL"))
                         {
-                            executeOrder(order, openOrder, minMarketPrice);
-                        }
-                        else {
-                            executeOrder(openOrder, order, minMarketPrice);
+                            executeOrder(order, openOrder, minMarketPriceBigDecimal);
+                        } else
+                        {
+                            executeOrder(openOrder, order, minMarketPriceBigDecimal);
                         }
                         return true;
                     }
-
-                    else if (openOrder.getPriceType().equals("LIMIT") && order.getPriceType().equals("LIMIT")) {
-                        // Add Logic
+                    else if (openOrder.getPriceType().equals("LIMIT") && order.getPriceType().equals("LIMIT"))
+                    {
+                        if (openOrder.getType().equals("SELL"))
+                        {
+                            if (openOrder.getLimitPrice().compareTo(order.getLimitPrice()) < 0)
+                            {
+                                BigDecimal minLimitPriceBigDecimal = openOrder.getLimitPrice().min(order.getLimitPrice());
+                                executeOrder(order, openOrder, minLimitPriceBigDecimal);
+                            }
+                        } else
+                        {
+                            if (order.getLimitPrice().compareTo(openOrder.getLimitPrice()) < 0)
+                            {
+                                BigDecimal minLimitPriceBigDecimal = openOrder.getLimitPrice().min(order.getLimitPrice());
+                                executeOrder(order, openOrder, minLimitPriceBigDecimal);
+                            }
+                        }
                     }
-
-                    else if (openOrder.getPriceType().equals("MARKET") && order.getPriceType().equals("LIMIT")) {
+                    else if (openOrder.getPriceType().equals("MARKET") && order.getPriceType().equals("LIMIT"))
+                    {
                         // Add logic
                     }
-                    else {
+                    else
+                    {
                         // Add logic
                     }
                 }
@@ -134,77 +145,91 @@ public class OrderServiceImpl implements OrderService
     }
 
 
-@Transactional
-public void isOrderValid(Order_Table order)throws BadAttributeValueExpException{
-        if(order.getType().equals("BUY")){
-        isBuyOrderValid(order);
-        return;
+    @Transactional
+    public void isOrderValid(Order_Table order) throws BadAttributeValueExpException
+    {
+        if (order.getType().equals("BUY"))
+        {
+            isBuyOrderValid(order);
+            return;
         }
 
-        if(order.getType().equals("SELL")){
-        isSellOrderValid(order);
-        return;
+        if (order.getType().equals("SELL"))
+        {
+            isSellOrderValid(order);
+            return;
         }
         throw new BadAttributeValueExpException("Invalid Order Type");
-        }
+    }
 
-@Transactional
-public void isBuyOrderValid(Order_Table order)throws BadAttributeValueExpException{
-        MarketPrice marketPrice=marketPriceRepository.getOne((long)1);
-        BigDecimal orderCurrencyMarketPrice=currencyService.convertAmount(1,order.getCurrencyId(),marketPrice.getAskPrice());
+    @Transactional
+    public void isBuyOrderValid(Order_Table order) throws BadAttributeValueExpException
+    {
+        MarketPrice marketPrice = marketPriceRepository.getOne((long) 1);
+        BigDecimal orderCurrencyMarketPrice = currencyService.convertAmount(1, order.getCurrencyId(), marketPrice.getAskPrice());
 
-        Balance currencyBalance=balanceRepository.findByUserIdAndCurrencyId(order.getUserId(),order.getCurrencyId());
-        List<Order_Table> orders=repository.findByUserIdAndCurrencyIdAndNotId(order.getUserId(),order.getId(),order.getCurrencyId());
+        Balance currencyBalance = balanceRepository.findByUserIdAndCurrencyId(order.getUserId(), order.getCurrencyId());
+        List<Order_Table> orders = repository.findByUserIdAndCurrencyIdAndNotId(order.getUserId(), order.getId(), order.getCurrencyId());
         orders.add(order);
 
-        float currentOrders=0;
+        float currentOrders = 0;
 
-        for(Order_Table o:orders){
-        if(o.getPriceType().equals("MARKET")){
+        for (Order_Table o : orders)
+        {
+            if (o.getPriceType().equals("MARKET"))
+            {
 
-        BigDecimal mul=o.getQuantity().multiply(orderCurrencyMarketPrice);
-        currentOrders+=mul.floatValue();
-        }else if(o.getPriceType().equals("LIMIT")){
-        BigDecimal mul=o.getQuantity().multiply(o.getLimitPrice());
-        currentOrders+=mul.floatValue();
+                BigDecimal mul = o.getQuantity().multiply(orderCurrencyMarketPrice);
+                currentOrders += mul.floatValue();
+            }
+            else if (o.getPriceType().equals("LIMIT"))
+            {
+                BigDecimal mul = o.getQuantity().multiply(o.getLimitPrice());
+                currentOrders += mul.floatValue();
+            }
         }
-        }
-        if(currencyBalance.getAmount().floatValue()<currentOrders){
-        throw new BadAttributeValueExpException("Insufficient Balance");
+        if (currencyBalance.getAmount().floatValue() < currentOrders)
+        {
+            throw new BadAttributeValueExpException("Insufficient Balance");
         }
         System.out.println("");
-        }
-@Transactional
-public void isSellOrderValid(Order_Table order)throws BadAttributeValueExpException{
+    }
 
-        BigDecimal pendingOrders=repository.getSumOfAllThePendingSellOrdersQuantity(order.getUserId(),order.getId());
-        if(pendingOrders==null){
-        pendingOrders=new BigDecimal(0);
+    @Transactional
+    public void isSellOrderValid(Order_Table order) throws BadAttributeValueExpException
+    {
+        BigDecimal pendingOrders = repository.getSumOfAllThePendingSellOrdersQuantity(order.getUserId(), order.getId());
+        if (pendingOrders == null)
+        {
+            pendingOrders = new BigDecimal(0);
         }
         // BitcoinId
-        Balance bitCoinBalance=balanceRepository.findByUserIdAndCurrencyId(order.getUserId(),6);
+        Balance bitCoinBalance = balanceRepository.findByUserIdAndCurrencyId(order.getUserId(), 6);
 
-        pendingOrders=pendingOrders.add(order.getQuantity());
-        if(bitCoinBalance.getAmount().floatValue()<pendingOrders.floatValue()){
-        throw new BadAttributeValueExpException("Quantity exceeds current balance and pending orders");
+        pendingOrders = pendingOrders.add(order.getQuantity());
+        if (bitCoinBalance.getAmount().floatValue() < pendingOrders.floatValue())
+        {
+            throw new BadAttributeValueExpException("Quantity exceeds current balance and pending orders");
         }
         System.out.println(pendingOrders);
-        }
+    }
 
-@Override
-public void update(Order_Table order){
+    @Override
+    public void update(Order_Table order)
+    {
         repository.save(order);
-        }
+    }
 
-@Transactional
-@Override
-public List<Order_Table> getAllOrders(){
+    @Transactional
+    @Override
+    public List<Order_Table> getAllOrders()
+    {
         return repository.findAll();
-        }
+    }
 
-@Override
-public List<Order_Table> getSpecificOrders(String userId){
+    @Override
+    public List<Order_Table> getSpecificOrders(String userId)
+    {
         return repository.getSpecificOrders(userId);
-        }
-
-        }
+    }
+}
