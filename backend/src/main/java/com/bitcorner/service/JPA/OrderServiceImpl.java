@@ -4,14 +4,11 @@ import com.bitcorner.entity.*;
 import com.bitcorner.repository.BalanceRepository;
 import com.bitcorner.repository.MarketPriceRepository;
 import com.bitcorner.repository.OrderRepository;
-import com.bitcorner.service.CurrencyService;
-import com.bitcorner.service.MarketPriceService;
 import com.bitcorner.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.management.BadAttributeValueExpException;
-import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.util.List;
@@ -42,7 +39,6 @@ public class OrderServiceImpl implements OrderService {
         if(!isDone){
             repository.save(order);
         }
-
     }
 
     @Transactional
@@ -55,7 +51,7 @@ public class OrderServiceImpl implements OrderService {
 
         // One to One Matching
         for(Order_Table openOrder:openOrders){
-            if(!openOrder.getType().equals(order.getType()) && openOrder.getUserId()!=order.getUserId()) {
+            if(!openOrder.getType().equals(order.getType()) && !openOrder.getUserId().equals(order.getUserId())) {
 
                 BigDecimal quantityDiff = order.getQuantity().subtract(openOrder.getQuantity()).abs();
                 float min_difference = Math.min(quantityDiff.divide(order.getQuantity()).floatValue(), quantityDiff.divide(openOrder.getQuantity()).floatValue()) * 100;
@@ -99,10 +95,12 @@ public class OrderServiceImpl implements OrderService {
                                 repository.save(order);
                                 repository.save(openOrder);
                                 return true;
-                            } else {
+                            }
+                            else {
                                 continue;
                             }
-                        } else {
+                        }
+                        else {
                             Balance currencyBalance = balanceRepository.findByUserIdAndCurrencyId(openOrder.getUserId(), openOrder.getCurrencyId());
 
                             BigDecimal minMarketPriceBigDecimal = new BigDecimal(minMarketPrice);
@@ -128,7 +126,12 @@ public class OrderServiceImpl implements OrderService {
                             }
                         }
                     }
-
+                    else if(openOrder.getPriceType().equals("LIMIT") && order.getPriceType().equals("LIMIT"))
+                    {}
+                    else if(openOrder.getPriceType().equals("MARKET") && order.getPriceType().equals("LIMIT"))
+                    {}
+                    else
+                    {}
                 }
             }
 
