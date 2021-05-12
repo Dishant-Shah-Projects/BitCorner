@@ -11,26 +11,26 @@ import { connect } from "react-redux";
 import LogoutIcon from "@material-ui/icons/ExitToApp";
 import firebase from "../../Firebase";
 
-const lightColor = "rgba(255, 255, 255, 0.7)";
+// const lightColor = "rgba(255, 255, 255, 0.7)";
 
-const styles = (theme) => ({
-  menuButton: {
-    marginLeft: -theme.spacing(1),
-  },
-  iconButtonAvatar: {
-    padding: 4,
-  },
-  link: {
-    textDecoration: "none",
-    color: lightColor,
-    "&:hover": {
-      color: theme.palette.common.white,
-    },
-  },
-  button: {
-    borderColor: lightColor,
-  },
-});
+// const styles = (theme) => ({
+//   menuButton: {
+//     marginLeft: -theme.spacing(1),
+//   },
+//   iconButtonAvatar: {
+//     padding: 4,
+//   },
+//   link: {
+//     textDecoration: "none",
+//     color: lightColor,
+//     "&:hover": {
+//       color: theme.palette.common.white,
+//     },
+//   },
+//   button: {
+//     borderColor: lightColor,
+//   },
+// });
 
 function CommonHeader(props) {
   const { classes, onDrawerToggle, user } = props;

@@ -31,7 +31,7 @@ export default function ButtonAppBar(props) {
           <RouterLink
             color="inherit"
             to="/"
-            class="MuiButton-root MuiButton-colorInherit"
+            className="MuiButton-root MuiButton-colorInherit"
             style={{ textDecoration: "none", flexGrow: 1 }}
           >
             <Typography variant="h6">Bit Corner</Typography>

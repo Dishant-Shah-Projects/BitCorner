@@ -21,7 +21,7 @@ export default function Home() {
         <RouterLink
           color="inherit"
           to="/login"
-          class="MuiButton-text MuiButton-root MuiButton-colorInherit"
+          className="MuiButton-text MuiButton-root MuiButton-colorInherit"
           style={{ textDecoration: "none" }}
         >
           Sign Up / Sign In
