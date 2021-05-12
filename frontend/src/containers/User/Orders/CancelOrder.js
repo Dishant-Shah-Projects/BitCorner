@@ -20,6 +20,8 @@ import EditIcon from '@material-ui/icons/Edit';
 import PaymentIcon from '@material-ui/icons/Payment';
 import TextField from "../../../components/TextField";
 import { useForm } from "../../../hooks/useForm";
+import CancelPresentationIcon from '@material-ui/icons/CancelPresentation';
+
 const styles = makeStyles((theme) => ({
   paper: {
     maxWidth: 936,
@@ -64,16 +66,14 @@ function CancelOrder(props) {
   );
 
   const FormSubmit = (event) => {
-      console.log("order id", order.id);
       Axios.put(`/order/cancel?&orderId=${order.id}`,values)
       .then((response) => {
         if (response.status === 200) {
           alert("Order cancelled successfully");
-          console.log("Successfully Cancelled the order");
           //setOpen(false);
           onrequestOrderInfo();
         } else {
-          console.log("Failed to update the order");
+          alert("Failed to update the order");
         }
       })
   };
@@ -81,6 +81,7 @@ function CancelOrder(props) {
   useEffect(() => {
     onrequestOrderInfo();
   }, []);
+
   let disabled = false
   if(order.status=="Fulfilled" || order.status=="Cancelled"){
     disabled = true
@@ -96,7 +97,7 @@ function CancelOrder(props) {
               onClick={FormSubmit}
               disabled={disabled}
             >
-              Cancel Order
+              <CancelPresentationIcon/>
             </Button>
           </div>
         </div>
@@ -108,7 +109,6 @@ function CancelOrder(props) {
 const mapStateToProps = (state) => {
   return {
     user: state.user,
-    currencies :state.currency.currencies
   };
 };
 

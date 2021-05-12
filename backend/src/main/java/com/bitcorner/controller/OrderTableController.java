@@ -113,8 +113,8 @@ public class OrderTableController {
 //            Currency currency=currencyService.getById(bankInfo.getPrimaryCurrencyId());
             order_table.setUserId(userId);
             order_table.setStatus("Open");
-            order_table.setExecutionPrice(0);
-            order_table.setServiceFee(0);
+            order_table.setExecutionPrice(null);
+            order_table.setServiceFee(null);
             order_table.setId(orderId);
             Date d = new Date();
 //            DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm:ss");
@@ -143,8 +143,8 @@ public class OrderTableController {
 //            Currency currency=currencyService.getById(bankInfo.getPrimaryCurrencyId());
             order_table.setUserId(userId);
             order_table.setStatus("Cancelled");
-            order_table.setExecutionPrice(0);
-            order_table.setServiceFee(0);
+            order_table.setExecutionPrice(null);
+            order_table.setServiceFee(null);
             order_table.setId(orderId);
             Date d = new Date();
 //            DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm:ss");

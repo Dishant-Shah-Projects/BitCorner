@@ -20,9 +20,10 @@ import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@material-ui/core/TableBody";
 import { requestOrderInfo, requestBankInfo } from "../actions.js";
 import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import CurrencyDropdown from "../CurrencyDropdown/index"
+import CurrencyDropdown from "../CurrencyDropdown/index";
+import Radio from '@material-ui/core/Radio';
+import RadioGroup from '@material-ui/core/RadioGroup';
+import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { useForm } from "../../../hooks/useForm";
 import EditOrderModal from "./EditOrder";
 import CancelOrder from "./CancelOrder";
@@ -68,11 +69,10 @@ function Content(props) {
     setValues,
     values,
   } = useForm(
-    { priceType: "", quantity: "", limitPrice: "",currencyId: 1 },
+    { priceType: "", quantity: "", limitPrice: 0,currencyId: "" },
     {
       priceType: false,
       quantity: false,
-      limitPrice: false,
     }
   );
   const [open, setOpen] = React.useState(false);
@@ -81,7 +81,7 @@ function Content(props) {
 
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
-
+  
   const onFormSubmit = (event) => {
     formSubmit(event, () => {
       event.preventDefault();
@@ -136,38 +136,20 @@ function Content(props) {
                 </DialogTitle>
                 <DialogContent>
                   <DialogContentText>
-                    Place your order to SELL/BUY here.
+                    Place your order to BUY/SELL here.
                   </DialogContentText>
 
                   <InputLabel id="type">Type</InputLabel>
-                  <Select
-                    required
-                    labelId="type"
-                    id="type"
-                    name="type"
-                    onChange={(e) => {
-                      values[e.target.name] = e.target.value;
-                    }}
-                    value={values["type"]}
-                    error={errors["type"]}
-                  >
-                    <MenuItem value={"SELL"}>SELL</MenuItem>
-                    <MenuItem value={"BUY"}>BUY</MenuItem>
-                  </Select>
+                  <RadioGroup aria-label="Type" name="type" value={values["type"]} onChange={handleInputChange} row>
+                    <FormControlLabel value="SELL" control={<Radio />} label="Sell" />
+                    <FormControlLabel value="BUY" control={<Radio />} label="Buy" />
+                  </RadioGroup>
 
-                  <TextField
-                    autoFocus
-                    required
-                    margin="dense"
-                    label="PriceType"
-                    name="priceType"
-                    pattern="^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$"
-                    helperText="Please enter a valid price Type"
-                    fullWidth
-                    onChange={handleInputChange}
-                    value={values["priceType"]}
-                    error={errors["priceType"]}
-                  />
+                  <InputLabel id="type">Price Type</InputLabel>
+                  <RadioGroup aria-label="PriceType" name="priceType" value={values["priceType"]} onChange={handleInputChange} row>
+                    <FormControlLabel value="LIMIT" control={<Radio />} label="LIMIT" />
+                    <FormControlLabel value="MARKET" control={<Radio />} label="MARKET" />
+                  </RadioGroup>
 
                   <TextField
                     required
@@ -175,49 +157,39 @@ function Content(props) {
                     label="Quantity"
                     name="quantity"
                     fullWidth
-                    pattern="^[0-9]{1,20}$"
+                    pattern="^[+]?([0-9]+([.][0-9]*)?|[.][0-9]+)$"
                     helperText="Please enter a valid quantity"
                     onChange={handleInputChange}
                     value={values["quantity"]}
                     error={errors["quantity"]}
                   />
 
-{/* 
-                <CurrencyDropdown
-                  isCrypto = {false}
-                  required
-                  margin="dense"
-                  label="Currency"
-                  name="primaryCurrencyId"
-                  fullWidth
-                  helperText="Please select atleast one"
-                  onChange={handleInputChange}
-                  value = {values["primaryCurrencyId"]}
-                  error={errors["primaryCurrencyId"]}
-                /> */}
                   <TextField
                     required
                     margin="dense"
                     label="LimitPrice"
                     name="limitPrice"
+                    disabled ={values["priceType"]=="MARKET"}
                     fullWidth
-                    pattern="^[0-9]{1,20}$"
+                    pattern="^[+]?([0-9]+([.][0-9]*)?|[.][0-9]+)$"
                     helperText="Please enter a valid limit price"
                     onChange={handleInputChange}
                     value={values["limitPrice"]}
                     error={errors["limitPrice"]}
                   />
 
-                  <TextField
-                    required
-                    margin="dense"
-                    label="Currency"
-                    name="currencyId"
-                    fullWidth
-                    onChange={handleInputChange}
-                    value={values["currencyId"]}
-                    error={errors["currencyId"]}
-                  />
+                <CurrencyDropdown
+                  isCrypto = {false}
+                  required
+                  margin="dense"
+                  label="Currency"
+                  name="currencyId"
+                  fullWidth
+                  helperText="Please select atleast one"
+                  onChange={handleInputChange}
+                  value = {values["currencyId"]}
+                  error={errors["currencyId"]}
+                />
                 </DialogContent>
                 <DialogActions>
                   <Button onClick={handleClose} color="primary">
@@ -262,10 +234,10 @@ function Content(props) {
                             <b>Status</b>
                           </TableCell>
                           <TableCell align="center">
-                            <b>Edit</b>
+                            <b>Edit Order</b>
                           </TableCell>
                           <TableCell align="center">
-                            <b>Cancel</b>
+                            <b>Cancel Order</b>
                           </TableCell>
                         </TableRow>
                       </TableHead>
@@ -284,8 +256,8 @@ function Content(props) {
                             <TableCell key={ordern.limitPrice}>
                               {ordern.limitPrice}
                             </TableCell>
-                            <TableCell key={ordern.currencyId}>
-                              {ordern.currencyId}
+                            <TableCell key={ordern.currency.name}>
+                              {ordern.currency.name}
                             </TableCell>
                             <TableCell key={ordern.status}>
                               {ordern.status}

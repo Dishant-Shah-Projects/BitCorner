@@ -162,7 +162,7 @@ public class Order_Table{
     public void setCurrencyId(long currencyId) {
         this.currencyId = currencyId;
     }
-    @JsonIgnore
+
     public Currency getCurrency() {
         return currency;
     }
@@ -182,7 +182,7 @@ public class Order_Table{
     public Order_Table(){}
 
     public Order_Table(String userId,String type,String priceType,BigDecimal quantity,BigDecimal limitPrice,
-                       BigDecimal executionPrice,String status,BigDecimal serviceFee)
+                       BigDecimal executionPrice,String status,BigDecimal serviceFee,long currencyId)
             throws BadAttributeValueExpException
     {
         this.setUserId(userId);
@@ -193,7 +193,7 @@ public class Order_Table{
         this.setExecutionPrice(executionPrice);
         this.setStatus(status);
         this.setServiceFee(serviceFee);
-        //this.setCurrencyId(currencyId);
+        this.setCurrencyId(currencyId);
     }
 
 }
