@@ -268,6 +268,9 @@ function Content(props) {
                             <b>LimitPrice</b>
                           </TableCell>
                           <TableCell align="left">
+                            <b>Execution Price</b>
+                          </TableCell>
+                          <TableCell align="left">
                             <b>Currency</b>
                           </TableCell>
                           <TableCell align="left">
@@ -295,6 +298,9 @@ function Content(props) {
                             </TableCell>
                             <TableCell key={ordern?.limitPrice}>
                               {ordern?.limitPrice}
+                            </TableCell>
+                            <TableCell key={ordern?.executionPrice}>
+                              {ordern?.executionPrice}
                             </TableCell>
                             {/*TODO : Currency object is not coming from backend*/}
                             <TableCell key={ordern?.currency?.name}>

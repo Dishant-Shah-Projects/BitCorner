@@ -45,7 +45,7 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Transactional
-    public void executeOrder(Order_Table order, Order_Table openOrder, BigDecimal minExecutionPrice) throws BadAttributeValueExpException
+    public boolean executeOrder(Order_Table order, Order_Table openOrder, BigDecimal minExecutionPrice) throws BadAttributeValueExpException
     {
         Balance currencyBalance = balanceRepository.findByUserIdAndCurrencyId(order.getUserId(), order.getCurrencyId());
         BigDecimal amountToSubtractFromBuyUser = minExecutionPrice.multiply(order.getQuantity());
@@ -55,7 +55,7 @@ public class OrderServiceImpl implements OrderService
         Balance bitcoinBalance = balanceRepository.findByUserIdAndCurrencyId(openOrder.getUserId(), 6);
         BigDecimal bitcoinAfterSubtractingSellAmount = bitcoinBalance.getAmount().subtract(openOrder.getQuantity());
 
-        if (amountAfterSubtractingFromBuyUser.signum() > 0 && bitcoinAfterSubtractingSellAmount.signum() > 0)
+        if (amountAfterSubtractingFromBuyUser.signum() >= 0 && bitcoinAfterSubtractingSellAmount.signum() >= 0)
         {
             order.setExecutionPrice(minExecutionPrice);
             openOrder.setExecutionPrice(minExecutionPrice);
@@ -79,7 +79,9 @@ public class OrderServiceImpl implements OrderService
 
             repository.save(order);
             repository.save(openOrder);
+            return true;
         }
+        return false;
     }
 
 
@@ -105,12 +107,15 @@ public class OrderServiceImpl implements OrderService
                     {
                         if (openOrder.getType().equals("SELL"))
                         {
-                            executeOrder(order, openOrder, minMarketPriceBigDecimal);
+                            if(executeOrder(order, openOrder, minMarketPriceBigDecimal)){
+                                return true;
+                            }
                         } else
                         {
-                            executeOrder(openOrder, order, minMarketPriceBigDecimal);
+                            if(executeOrder(openOrder, order, minMarketPriceBigDecimal)){
+                                return true;
+                            }
                         }
-                        return true;
                     }
                     else if (openOrder.getPriceType().equals("LIMIT") && order.getPriceType().equals("LIMIT"))
                     {
@@ -119,14 +124,18 @@ public class OrderServiceImpl implements OrderService
                             if (openOrder.getLimitPrice().compareTo(order.getLimitPrice()) < 0)
                             {
                                 BigDecimal minLimitPriceBigDecimal = openOrder.getLimitPrice().min(order.getLimitPrice());
-                                executeOrder(order, openOrder, minLimitPriceBigDecimal);
+                                if(executeOrder(order, openOrder, minLimitPriceBigDecimal)){
+                                    return true;
+                                }
                             }
                         } else
                         {
                             if (order.getLimitPrice().compareTo(openOrder.getLimitPrice()) < 0)
                             {
                                 BigDecimal minLimitPriceBigDecimal = openOrder.getLimitPrice().min(order.getLimitPrice());
-                                executeOrder(order, openOrder, minLimitPriceBigDecimal);
+                                if(executeOrder(openOrder, order, minLimitPriceBigDecimal)){
+                                    return true;
+                                }
                             }
                         }
 
@@ -136,42 +145,44 @@ public class OrderServiceImpl implements OrderService
                         // Add logic
                         if (openOrder.getType().equals("SELL"))
                         {
-                            // check if orger limit price is lower than market price
+                            // check if order limit price is lower than market price
                             if (openOrder.getLimitPrice().compareTo(minMarketPriceBigDecimal) < 0)
                             {
                                 // BigDecimal minLimitPriceBigDecimal = openOrder.getLimitPrice().min(minMarketPriceBigDecimal);
-                                executeOrder(order, openOrder, minMarketPriceBigDecimal);
-                                return true;
+                                if(executeOrder(order, openOrder, minMarketPriceBigDecimal)){
+                                    return true;
+                                }
                             }
                         }
                         else{
                             if (openOrder.getLimitPrice().compareTo(minMarketPriceBigDecimal) >= 0)
                             {
                                 // BigDecimal minLimitPriceBigDecimal = openOrder.getLimitPrice().min(order.getLimitPrice());
-                                executeOrder(openOrder, order, minMarketPriceBigDecimal);
-                                return true;
+                                if(executeOrder(openOrder, order, minMarketPriceBigDecimal)){
+                                    return true;
+                                }
                             }
 
                         }
                     }
-                    else
+                    else if(openOrder.getPriceType().equals("MARKET") && order.getPriceType().equals("LIMIT"))
                     {
                         // Add logic
                         if (order.getType().equals("SELL"))
                         {
                             if (order.getLimitPrice().compareTo(minMarketPriceBigDecimal) < 0)
                             {
-                                // BigDecimal minLimitPriceBigDecimal = order.getLimitPrice().min(minMarketPriceBigDecimal);
-                                executeOrder(openOrder, order, minMarketPriceBigDecimal);
-                                return true;
+                                if(executeOrder(openOrder, order, minMarketPriceBigDecimal)){
+                                    return true;
+                                }
                             }
                         }
                         else{
                             if (order.getLimitPrice().compareTo(minMarketPriceBigDecimal) >= 0)
                             {
-                                executeOrder(order, openOrder, minMarketPriceBigDecimal);
-                                return true;
-
+                                if(executeOrder(order, openOrder, minMarketPriceBigDecimal)){
+                                    return true;
+                                }
                             }
                         }
                     }
