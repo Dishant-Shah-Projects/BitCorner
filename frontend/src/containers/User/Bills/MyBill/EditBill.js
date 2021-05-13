@@ -103,9 +103,7 @@ function EditBillModal(props) {
     disabled = true
   }
   return (
-<div>
-        <div className={styling.contentWrapper}>
-          <div>
+<>
             <Button
               style={{ margin: "0 auto", display: "flex" }}
               variant="outlined"
@@ -115,7 +113,7 @@ function EditBillModal(props) {
             >
              <EditIcon/>
             </Button>
-          </div>
+          
           <Dialog
             open={open}
             onClose={handleClose}
@@ -188,7 +186,7 @@ function EditBillModal(props) {
                 <TextField
                   
                   required
-                  pattern="^(([1-9]*)|(([1-9]*)\.([0-9]*)))$"
+                  pattern="^[+]?([.]\d+|\d+([.]\d\d?)?)$"
                   helperText="Please enter a valid Amount"
                   margin="dense"
                   name="amount"
@@ -224,9 +222,7 @@ function EditBillModal(props) {
               </DialogActions>
             </form>
           </Dialog>
-        </div>
-      
-    </div>
+</>
   );
 }
 

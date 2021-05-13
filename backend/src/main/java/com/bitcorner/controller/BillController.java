@@ -127,7 +127,7 @@ public class BillController {
                 balanceService.withdrawBalance(bill.getToUserId(),currid2, payamount.multiply(new BigDecimal(1.0001)));
                 balanceService.depositBalance(bill.getFromUserId(),bill.getTargetCurrency().getId(),new BigDecimal(bill.getAmount()));
                 bill.setStatus("Paid");
-                bill.setServiceFee((float) (Integer.parseInt(payamount.toString())*0.0001));
+                bill.setServiceFee((float) (Float.parseFloat(payamount.toString())*0.0001));
 
             }
             billService.update(bill);

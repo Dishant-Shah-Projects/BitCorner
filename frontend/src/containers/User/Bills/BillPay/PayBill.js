@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core/styles";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import { connect } from "react-redux";
-import { requestBillInfo, requestCurrencyInfo } from "../action";
+import { requestBillPayInfo, requestCurrencyInfo } from "../action";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -45,7 +45,7 @@ function PayBillModal(props) {
     currencies,
     user,
     onrequestCurrencyInfo,
-    onrequestBillInfo,
+    onrequestBillPayInfo,
     bill,
     bankInfo,
   } = props;
@@ -79,33 +79,7 @@ function PayBillModal(props) {
     }
   );
 
-  const calculateamount = (target, pay) => {
-    if (target === pay) {
-      return bill.amount;
-    }
-    let amount = 0;
-    let curtar = null;
-    let curpay = null;
 
-    for (var i = 0; i < currencies.length; i++) {
-      // look for the entry with a matching `code` value
-      if (currencies[i].id == target) {
-        curtar = currencies[i];
-        // we found it
-        // obj[i].name is the matched result
-      }
-      if (currencies[i].id == pay) {
-        curpay = currencies[i];
-        // we found it
-        // obj[i].name is the matched result
-      }
-    }
-
-    amount =
-      (bill.amount / curtar.conversionRate) * curpay.conversionRate * 1.01;
-
-    return amount;
-  };
 
   const handleClickOpen = () => setOpen(true);
 
@@ -120,6 +94,8 @@ function PayBillModal(props) {
         if (response.status === 200) {
           console.log("Successfully UPDATED Bank Account");
           setOpen(false);
+          values["target_currency"]=bill?.targetCurrency?.id;
+          onrequestBillPayInfo();
         }
       });
     });
@@ -128,6 +104,10 @@ function PayBillModal(props) {
   useEffect(() => {
     onrequestCurrencyInfo();
   }, []);
+  let disabled = false
+  if(bill.status==="Paid"){
+    disabled = true
+  }
 
   return (
     <>
@@ -136,6 +116,7 @@ function PayBillModal(props) {
             variant="outlined"
             color="primary"
             onClick={handleClickOpen}
+            disabled={disabled}
           >
             <PaymentIcon />
           </Button>
@@ -153,7 +134,7 @@ function PayBillModal(props) {
             <DialogTitle id="form-dialog-title">Pay Bill</DialogTitle>
             <DialogContent>
               <DialogContentText>
-                Please Pay or Cancle the Bill
+                Please Pay the bill 
               </DialogContentText>
 
               <CurrencyDropdown
@@ -195,6 +176,7 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     onrequestCurrencyInfo: () => dispatch(requestCurrencyInfo()),
+    onrequestBillPayInfo: () => dispatch(requestBillPayInfo())
   };
 };
 

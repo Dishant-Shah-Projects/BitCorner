@@ -50,7 +50,7 @@ function BillModal(props) {
 
   const handleClickOpen = () => setOpen(true);
 
-  const handleClose = () => setOpen(false);
+
 
   const {
     errors,
@@ -66,6 +66,14 @@ function BillModal(props) {
     { toEmail: "", Description:"",target_currency:bankInfo?.data?.primaryCurrencyId,amount:"",duedate:""},
     {  toEmail:false, Description:false, target_currency:true,amount:false,duedate:false}
   );
+  const handleClose = () =>{ 
+    values["toEmail"]="";
+    values["Description"]="";
+    values["target_currency"]=bankInfo?.data?.primaryCurrencyId;
+    values["amount"]=0;
+    values["duedate"]=Date.now()
+    setOpen(false);
+  }
   const handleInput = (event) => {
     formSubmit(event, () => {
       console.log("values", values);
@@ -127,7 +135,7 @@ function BillModal(props) {
               onSubmit={handleInput}
             >
               <DialogTitle id="form-dialog-title">
-                Pay Bill
+                Add Bill
               </DialogTitle>
               <DialogContent>
                 <DialogContentText>
