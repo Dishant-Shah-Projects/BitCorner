@@ -53,16 +53,19 @@ function BilltoPay(props) {
   }, []);
   return (
     <React.Fragment>
+          <br></br>
+          <br></br>
           <Typography component="h2" variant="h6" color="primary" gutterBottom>
     Bills to Pay
       
     </Typography>
+
       <Table size="small">
         <TableHead>
           <TableRow>
             <TableCell>From</TableCell>
             <TableCell>Description</TableCell>
-            <TableCell>amount</TableCell>
+            <TableCell>Amount</TableCell>
             <TableCell>Currency</TableCell>
             <TableCell align="right">Due Date</TableCell>
             <TableCell align="right">Status</TableCell>

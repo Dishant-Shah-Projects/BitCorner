@@ -120,7 +120,6 @@ function PayBillModal(props) {
         if (response.status === 200) {
           console.log("Successfully UPDATED Bank Account");
           setOpen(false);
-          onrequestBillInfo();
         }
       });
     });
@@ -131,9 +130,7 @@ function PayBillModal(props) {
   }, []);
 
   return (
-    <div>
-      <div className={styling.contentWrapper}>
-        <div>
+    <>
           <Button
             style={{ margin: "0 auto", display: "flex" }}
             variant="outlined"
@@ -142,7 +139,6 @@ function PayBillModal(props) {
           >
             <PaymentIcon />
           </Button>
-        </div>
         <Dialog
           open={open}
           onClose={handleClose}
@@ -184,8 +180,7 @@ function PayBillModal(props) {
             </DialogActions>
           </form>
         </Dialog>
-      </div>
-    </div>
+        </>
   );
 }
 
