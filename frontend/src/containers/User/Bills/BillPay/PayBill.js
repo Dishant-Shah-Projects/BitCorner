@@ -103,7 +103,7 @@ function PayBillModal(props) {
   const handleInput = (event) => {
     event.preventDefault();
     console.log("FormData", formData);
-    Axios.put(`/bill/pay?&ID=${bill.id}&pay_currency=${formData["target_currency"]}&amount=${formData["amount"]}`,null).then((response) => {
+    Axios.put(`/bill/pay?&ID=${bill.id}&pay_currency=${formData["target_currency"]}`,null).then((response) => {
       if (response.status === 200) {
         console.log("Successfully UPDATED Bank Account");
         setOpen(false);
@@ -167,16 +167,16 @@ function PayBillModal(props) {
                   errors={errors["target_currency"]}
                   
                 />
-                <TextField
+                {/* <TextField
                   autoFocus
                   required
                   margin="dense"
                   name="amount"
                   label="amount"
                   fullWidth
-                  value={calculateamount(bill.targetCurrency.id,values["target_currency"])}
+                  value={calculateamount(bill?.targetCurrency?.id,values["target_currency"])}
                   
-                />
+                /> */}
                 {/* <TextField
                   autoFocus
                   required

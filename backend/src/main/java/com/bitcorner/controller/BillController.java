@@ -109,8 +109,7 @@ public class BillController {
     @ResponseBody
     public ResponseEntity<?> paybill(@RequestParam(name = "ID", required = true) Long id,
 
-                                    @RequestParam(name = "pay_currency", required = true) Long currid2,
-                                    @RequestParam(name = "amount", required = true) float amount
+                                    @RequestParam(name = "pay_currency", required = true) Long currid2
     )
     {
         try {
@@ -118,16 +117,17 @@ public class BillController {
 
             Bill bill = billService.getById(id);
             if(currid2==bill.getTargetCurrency().getId()){
-                balanceService.withdrawBalance(bill.getToUserId(),currid2,new BigDecimal(amount));
-                balanceService.depositBalance(bill.getFromUserId(),currid2,new BigDecimal(amount));
+                balanceService.withdrawBalance(bill.getToUserId(),currid2,new BigDecimal(bill.getAmount()));
+                balanceService.depositBalance(bill.getFromUserId(),currid2,new BigDecimal(bill.getAmount()));
                 bill.setStatus("Paid");
                 bill.setServiceFee(0);
             }
             else{
-                balanceService.withdrawBalance(bill.getToUserId(),currid2, new BigDecimal (amount*1.0001));
-                balanceService.depositBalance(bill.getFromUserId(),bill.getTargetCurrency().getId(),new BigDecimal(amount));
+                BigDecimal payamount = currencyService.convertAmount(bill.getTargetCurrency().getId(),currid2,new BigDecimal(bill.getAmount()));
+                balanceService.withdrawBalance(bill.getToUserId(),currid2, payamount.multiply(new BigDecimal(1.0001)));
+                balanceService.depositBalance(bill.getFromUserId(),bill.getTargetCurrency().getId(),new BigDecimal(bill.getAmount()));
                 bill.setStatus("Paid");
-                bill.setServiceFee((float) (amount*0.0001));
+                bill.setServiceFee((float) (Integer.parseInt(payamount.toString())*0.0001));
 
             }
             billService.update(bill);
