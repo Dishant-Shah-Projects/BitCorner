@@ -29,7 +29,6 @@ function App(props) {
 
     axios.interceptors.response.use(
       (response) => {
-        debugger;
         setToastData({
           severity: "success",
           message: response?.data?.successMessage
