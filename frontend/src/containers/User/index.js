@@ -231,13 +231,6 @@ function Admin(props) {
                 )}
                 exact
               />
-              <Route
-                path={`/contact-us`}
-                component={(props) => (
-                  <ContactUs classes={classes} {...props} />
-                )}
-                exact
-              />
             </Switch>
           )}
           {!user.emailVerified && <VerifyEmailMessage classes={classes} />}
