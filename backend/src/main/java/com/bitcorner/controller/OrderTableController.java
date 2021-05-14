@@ -35,19 +35,19 @@ public class OrderTableController {
     @Autowired
     SecurityService securityService;
 
-//    //Method to get all orders
-//    @RequestMapping(method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
-//    @ResponseBody
-//    public ResponseEntity<?> getAllOrders(){
-//        try {
-//            List<Order_Table> OrdersList=Orderservice.getAllOrders();
-//            return new ResponseEntity<>(OrdersList, HttpStatus.OK);
-//        }catch (EntityNotFoundException ex){
-//            return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
-//        }catch (Exception ex){
-//            return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
-//        }
-//    }
+    //Method to get all orders
+    @RequestMapping(method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE, value = "/all")
+    @ResponseBody
+    public ResponseEntity<?> getAllOrders(){
+        try {
+            List<Order_Table> OrdersList=Orderservice.getAllOrders();
+            return new ResponseEntity<>(OrdersList, HttpStatus.OK);
+        }catch (EntityNotFoundException ex){
+            return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+        }catch (Exception ex){
+            return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     //Method to get orders based on user_id
     @RequestMapping(method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)

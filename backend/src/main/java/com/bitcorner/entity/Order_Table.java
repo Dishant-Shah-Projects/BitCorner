@@ -71,7 +71,7 @@ public class Order_Table{
     public void setUserId(String userId) {
         this.userId = userId;
     }
-    @JsonIgnore
+
     public UserInfo getUser() {
         return user;
     }

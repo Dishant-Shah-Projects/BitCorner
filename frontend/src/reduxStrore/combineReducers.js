@@ -5,6 +5,7 @@ import bankReducer from "../containers/User/bankInfoReducer";
 import userInfoReducer from "../containers/User/userInfoReducer";
 import userBalanceReducer from "../containers/User/userBalanceReducer";
 import orderReducer from "../containers/User/orderReducer";
+import allOrderReducer from "../containers/User/allOrderReducer";
 import globalReducer from "./globalReducer";
 import {
   currencyReducer,
@@ -21,6 +22,7 @@ const data = {
   bill: billReducer,
   billPay: billPayReducer,
   global: globalReducer,
+  allOrder: allOrderReducer
 };
 
 const reducers = combineReducers(data);

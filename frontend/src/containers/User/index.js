@@ -11,11 +11,11 @@ import Navigator from "./Navigator";
 import Copyright from "../../components/Copyright";
 import Header from "./Header";
 import { Switch, Route } from "react-router-dom";
-import ContactUs from "./ContactUs";
 import Balance from "./Balance";
 import BankInfo from "./BankInfo";
 import Bills from "./Bills";
 import Orders from "./Orders";
+import AllOrders from "./Orders/AllOrders";
 import VerifyEmailMessage from "./VerifyEmailMessage";
 import { connect } from "react-redux";
 import { requestUserInfo } from "./actions";
@@ -217,6 +217,12 @@ function Admin(props) {
               <Route
                 path={`/orders`}
                 component={(props) => <Orders classes={classes} {...props} />}
+                exact
+              />
+
+              <Route
+                path={`/allOrders`}
+                component={(props) => <AllOrders classes={classes} {...props} />}
                 exact
               />
               <Route

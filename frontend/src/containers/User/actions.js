@@ -56,3 +56,15 @@ export const requestOrderInfo = () => (dispatch) => {
       dispatch({ type: "REQUEST_ORDER_INFO_FAIL", payload: error })
     );
 };
+
+export const requestAllOrderInfo = () => (dispatch) => {
+  dispatch({ type: "REQUEST_ALL_ORDER_INFO" });
+  Axios.get("/order/all")
+    .then((response) => response)
+    .then((data) =>
+      dispatch({ type: "REQUEST_ALL_ORDER_INFO_SUCCESS", payload: data })
+    )
+    .catch((error) =>
+      dispatch({ type: "REQUEST_ALL_ORDER_INFO_FAIL", payload: error })
+    );
+};

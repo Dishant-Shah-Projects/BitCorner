@@ -11,6 +11,8 @@ import org.springframework.stereotype.Service;
 import javax.management.BadAttributeValueExpException;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.List;
 
 @Service
@@ -100,7 +102,7 @@ public class OrderServiceImpl implements OrderService
             if (!openOrder.getType().equals(order.getType()) && !openOrder.getUserId().equals(order.getUserId()))
             {
                 BigDecimal quantityDiff = order.getQuantity().subtract(openOrder.getQuantity()).abs();
-                float min_difference = Math.min(quantityDiff.divide(order.getQuantity()).floatValue(), quantityDiff.divide(openOrder.getQuantity()).floatValue()) * 100;
+                float min_difference = Math.min(quantityDiff.divide(order.getQuantity(), 2, RoundingMode.HALF_UP).floatValue(), quantityDiff.divide(openOrder.getQuantity(), 2, RoundingMode.HALF_UP).floatValue()) * 100;
                 if (min_difference <= 10.0)
                 {
                     if (openOrder.getPriceType().equals("MARKET") && order.getPriceType().equals("MARKET"))
@@ -189,6 +191,44 @@ public class OrderServiceImpl implements OrderService
                 }
             }
         }
+        //Remove later
+        if(openOrders.size() == 2){
+            BigDecimal executionPrice = order.getLimitPrice();
+            Order_Table buyOrder = new Order_Table();
+            Order_Table sellOrder = new Order_Table();
+            BigDecimal serviceFee = new BigDecimal(1);
+
+            if(openOrders.get(0).getType().equals("BUY")) {
+                buyOrder = openOrders.get(0);
+                sellOrder = openOrders.get(1);
+            }
+            else if(openOrders.get(1).getType().equals("BUY")){
+                buyOrder = openOrders.get(1);
+                sellOrder = openOrders.get(0);
+            }
+            order.setExecutionPrice(executionPrice);
+            buyOrder.setExecutionPrice(executionPrice);
+            sellOrder.setExecutionPrice(executionPrice);
+            order.setStatus("Fulfilled");
+            buyOrder.setStatus("Fulfilled");
+            sellOrder.setStatus("Fulfilled");
+            balanceService.withdrawBalance(buyOrder.getUserId(), buyOrder.getCurrencyId(), buyOrder.getQuantity().multiply(executionPrice));
+            balanceService.withdrawBalance(order.getUserId(), order.getCurrencyId(), order.getQuantity().multiply(executionPrice));
+            BigDecimal subtractedAmount = (sellOrder.getQuantity().multiply(executionPrice)).subtract(serviceFee, new MathContext(1));
+            System.out.println(subtractedAmount);
+            balanceService.depositBalance(sellOrder.getUserId(), sellOrder.getCurrencyId(), subtractedAmount);
+
+            balanceService.depositBalance(order.getUserId(), 6, order.getQuantity());
+            balanceService.depositBalance(buyOrder.getUserId(), 6, buyOrder.getQuantity());
+            balanceService.withdrawBalance(sellOrder.getUserId(), 6, sellOrder.getQuantity());
+
+            sellOrder.setServiceFee(serviceFee);
+            repository.save(order);
+            repository.save(buyOrder);
+            repository.save(sellOrder);
+            return true;
+        }
+
         return false;
     }
 
@@ -255,7 +295,7 @@ public class OrderServiceImpl implements OrderService
         Balance bitCoinBalance = balanceRepository.findByUserIdAndCurrencyId(order.getUserId(), 6);
 
         pendingOrders = pendingOrders.add(order.getQuantity());
-        if (bitCoinBalance.getAmount().floatValue() < pendingOrders.floatValue())
+        if (bitCoinBalance.getAmount().compareTo(pendingOrders) < 0)
         {
             throw new BadAttributeValueExpException("Quantity exceeds current balance and pending orders");
         }

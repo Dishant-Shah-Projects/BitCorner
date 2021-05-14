@@ -42,6 +42,12 @@ const categories = [
     to: "/orders",
   },
   {
+    id: "All Orders",
+    icon: <MonetizationOnIcon />,
+    expandable: false,
+    to: "/allOrders",
+  },
+  {
     id: "Bills",
     icon: <ReceiptIcon />,
     expandable: false,
