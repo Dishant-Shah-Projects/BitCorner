@@ -62,16 +62,17 @@ public class OrderServiceImpl implements OrderService
             order.setExecutionPrice(minExecutionPrice);
             openOrder.setExecutionPrice(minExecutionPrice);
 
-            BigDecimal serviceFee = amountToAddToSellUser.multiply(new BigDecimal(0.0001));
+            BigDecimal serviceFee = amountToAddToSellUser.multiply(new BigDecimal("0.0001"));
             Currency currency = currencyService.getById(openOrder.getCurrencyId());
-            BigDecimal currencyConversionRate = new BigDecimal(currency.getConversionRate());
+            BigDecimal currencyConversionRate = BigDecimal.valueOf(currency.getConversionRate());
             if (serviceFee.subtract(currencyConversionRate).signum() > 0)
             {
                 serviceFee = currencyConversionRate;
             }
             openOrder.setServiceFee(serviceFee);
+            BigDecimal sellerAmount = amountToAddToSellUser.subtract(serviceFee);
             balanceService.withdrawBalance(order.getUserId(), order.getCurrencyId(), amountToSubtractFromBuyUser);
-            balanceService.depositBalance(openOrder.getUserId(), openOrder.getCurrencyId(), amountToAddToSellUser.subtract(serviceFee));
+            balanceService.depositBalance(openOrder.getUserId(), openOrder.getCurrencyId(), sellerAmount);
 
             balanceService.depositBalance(order.getUserId(), 6, order.getQuantity());
             balanceService.withdrawBalance(openOrder.getUserId(), 6, openOrder.getQuantity());

@@ -6,8 +6,6 @@ import com.bitcorner.repository.BalanceRepository;
 import com.bitcorner.service.BalanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-//import org.springframework.transaction.annotation.Transactional;
-
 import javax.management.BadAttributeValueExpException;
 import javax.persistence.EntityNotFoundException;
 import javax.transaction.Transactional;

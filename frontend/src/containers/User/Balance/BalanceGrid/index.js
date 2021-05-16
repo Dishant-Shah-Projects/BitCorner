@@ -62,8 +62,8 @@ function Grid(props) {
           required
           label="Amount to deposit or withdraw"
           name="amount"
-          pattern="^[+]?([.]\d+|\d+([.]\d\d?)?)$"
-          helperText="Please enter a valid amount greater than 0"
+          pattern="^(\d{1,9}|\d{0,5}\.\d{1,9})$"
+          helperText="Please enter a valid amount"
           fullWidth
           margin="normal"
           onChange={handleInputChange}

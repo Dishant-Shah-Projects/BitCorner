@@ -6,6 +6,7 @@ import com.sun.xml.bind.v2.TODO;
 import javax.management.BadAttributeValueExpException;
 import javax.persistence.*;
 import java.math.BigDecimal;
+import java.math.MathContext;
 
 @Entity
 @Table(name="USER_BALANCE")
@@ -38,10 +39,8 @@ public class Balance {
         this.currency = currency;
     }
 
-
-
     @JsonIgnore
-    public String  getUserId() {
+    public String getUserId() {
         return userId;
     }
 
@@ -79,14 +78,16 @@ public class Balance {
         if(this.amount==null){
             this.amount=new BigDecimal(0);
         }
-        this.setAmount(this.amount.add(amount));
+        BigDecimal addedAmount = new BigDecimal(String.valueOf(this.amount.add(amount)));
+        this.setAmount(addedAmount);
     }
 
     public void subtractAmount(BigDecimal amount)throws BadAttributeValueExpException{
         if(this.amount==null){
             this.amount=new BigDecimal(0);
         }
-        this.setAmount(this.amount.subtract(amount));
+        BigDecimal subtractedAmount = new BigDecimal(String.valueOf(this.amount.subtract(amount)));
+        this.setAmount(subtractedAmount);
     }
     public Balance(){
 
