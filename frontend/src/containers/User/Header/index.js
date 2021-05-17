@@ -10,6 +10,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import { connect } from "react-redux";
 import LogoutIcon from "@material-ui/icons/ExitToApp";
 import firebase from "../../Firebase";
+import MarketPrice from '../MarketPrice/MarketPrice';
 
 // const lightColor = "rgba(255, 255, 255, 0.7)";
 
@@ -50,6 +51,13 @@ function CommonHeader(props) {
               </IconButton>
             </Grid>
           </Hidden>
+          <Grid item>
+            <Tooltip title="Market price">
+              
+                  <MarketPrice/>
+                
+              </Tooltip>
+            </Grid>
           <Grid item xs />
           {/* <Grid item>
             <Tooltip title="Alerts • No alerts">
@@ -58,6 +66,7 @@ function CommonHeader(props) {
               </IconButton>
             </Tooltip>
           </Grid> */}
+        
           <Grid item>
             <Tooltip title="display name">
               <IconButton color="inherit" className={classes.iconButtonAvatar}>

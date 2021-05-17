@@ -68,3 +68,15 @@ export const requestAllOrderInfo = () => (dispatch) => {
       dispatch({ type: "REQUEST_ALL_ORDER_INFO_FAIL", payload: error })
     );
 };
+
+export const requestMarketPrice = (currencyId) => (dispatch) => {
+  dispatch({ type: "REQUEST_MARKET_PRICE" });
+    Axios.get(`/marketprice/cid?&currencyId=${currencyId}`)
+    .then((response) => response)
+    .then((data) =>
+      dispatch({ type: "REQUEST_MARKET_PRICE_SUCCESS", payload: data })
+    )
+    .catch((error) =>
+      dispatch({ type: "REQUEST_MARKET_PRICE_FAIL", payload: error })
+    );
+};

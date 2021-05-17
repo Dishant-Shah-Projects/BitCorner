@@ -19,6 +19,16 @@ public class MarketPrice {
     @Column(name="ASK_PRICE")
     private BigDecimal askPrice;
 
+    @Column(name="TRANSACTION_PRICE")
+    private BigDecimal transactionPrice;
+
+    @ManyToOne()
+    @JoinColumn(name="CURRENCY_ID",insertable = false,updatable = false)
+    private Currency currency;
+
+    @Column(name="CURRENCY_ID")
+    private long currencyId;
+
     public MarketPrice() {
     }
 
@@ -52,4 +62,27 @@ public class MarketPrice {
         this.askPrice = askPrice;
     }
 
+    public BigDecimal getTransactionPrice() {
+        return transactionPrice;
+    }
+
+    public void setTransactionPrice(BigDecimal transactionPrice) {
+        this.transactionPrice = transactionPrice;
+    }
+
+    public Currency getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(Currency currency) {
+        this.currency = currency;
+    }
+
+    public long getCurrencyId() {
+        return currencyId;
+    }
+
+    public void setCurrencyId(long currencyId) {
+        this.currencyId = currencyId;
+    }
 }
