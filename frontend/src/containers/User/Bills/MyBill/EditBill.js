@@ -108,8 +108,8 @@ function EditBillModal(props) {
     onrequestCurrencyInfo();
   }, []);
   let disabled = false;
-  if (bill.status === "Paid") {
-    disabled = true;
+  if(bill.status==="Paid" || bill.status==="Cancelled"||bill.status==="Rejected"){
+    disabled = true
   }
   return (
     <>

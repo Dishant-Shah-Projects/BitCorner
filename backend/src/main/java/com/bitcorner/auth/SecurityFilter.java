@@ -42,7 +42,7 @@ public class SecurityFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-//        verifyToken(request);
+        verifyToken(request);
         filterChain.doFilter(request, response);
     }
 
@@ -50,24 +50,15 @@ public class SecurityFilter extends OncePerRequestFilter {
         String session = null;
         FirebaseToken decodedToken = null;
         Credentials.CredentialType type = null;
-        boolean strictServerSessionEnabled = securityProps.getFirebaseProps().isEnableStrictServerSession();
 
-//        Cookie sessionCookie = cookieUtils.getCookie("session");
         String token = securityService.getBearerToken(request);
         logger.info(token);
         try {
-//            if (sessionCookie != null) {
-//                session = sessionCookie.getValue();
-//                decodedToken = FirebaseAuth.getInstance().verifySessionCookie(session,
-//                        securityProps.getFirebaseProps().isEnableCheckSessionRevoked());
-//                type = Credentials.CredentialType.SESSION;
-//            } else
-//         if (!strictServerSessionEnabled) {
+
                 if (token != null && !token.equalsIgnoreCase("undefined")) {
                     decodedToken = FirebaseAuth.getInstance().verifyIdToken(token);
                     type = Credentials.CredentialType.ID_TOKEN;
                 }
-            // }
 
         } catch (FirebaseAuthException e) {
             e.printStackTrace();
@@ -87,10 +78,6 @@ public class SecurityFilter extends OncePerRequestFilter {
         if (decodedToken != null) {
             user = new User();
             user.setUid(decodedToken.getUid());
-//            user.setName(decodedToken.getName());
-//            user.setEmail(decodedToken.getEmail());
-//            user.setPicture(decodedToken.getPicture());
-//            user.setIssuer(decodedToken.getIssuer());
             user.setEmailVerified(decodedToken.isEmailVerified());
         }
         return user;

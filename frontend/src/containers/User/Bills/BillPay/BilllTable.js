@@ -1,5 +1,4 @@
 import React,{ useEffect } from 'react';
-import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -10,9 +9,8 @@ import Typography from '@material-ui/core/Typography';
 import { requestBillPayInfo,requestCurrencyInfo } from "../action";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-// import EditBillModal from "./EditBill"
-// import Title from './Title';
-import PaymentIcon from '@material-ui/icons/Payment';
+
+import RejectBill from './RejectBill';
 import PayBillModal from './PayBill'
 // Generate Order Data
 function createData(id, userName, description, amount, paymentMethod,date, status) {
@@ -20,11 +18,6 @@ function createData(id, userName, description, amount, paymentMethod,date, statu
 }
 
 let rows = [
-  createData(0, 'Dshah9542@gmail.com', 'PIzza', '50', 'Dollar', 'Pending'),
-  // createData(1, '16 Mar, 2019', 'Paul McCartney', 'London, UK', 'VISA ⠀•••• 2574', 866.99),
-  // createData(2, '16 Mar, 2019', 'Tom Scholz', 'Boston, MA', 'MC ⠀•••• 1253', 100.81),
-  // createData(3, '16 Mar, 2019', 'Michael Jackson', 'Gary, IN', 'AMEX ⠀•••• 2000', 654.39),
-  // createData(4, '15 Mar, 2019', 'Bruce Springsteen', 'Long Branch, NJ', 'VISA ⠀•••• 5919', 212.79),
 ];
 
 function preventDefault(event) {
@@ -70,6 +63,7 @@ function BilltoPay(props) {
             <TableCell align="right">Due Date</TableCell>
             <TableCell align="right">Status</TableCell>
             <TableCell align="right">Pay</TableCell>
+            <TableCell align="right">Reject</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -82,15 +76,12 @@ function BilltoPay(props) {
               <TableCell align="right">{row.date}</TableCell>
               <TableCell align="right">{row.status}</TableCell>
               <TableCell align="right"><PayBillModal bill = {row.id}/></TableCell>
+              <TableCell align="right"><RejectBill bill = {row.id}/></TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      {/* <div className={classes.seeMore}>
-        <Link color="primary" href="#" onClick={preventDefault}>
-          See more orders
-        </Link>
-      </div> */}
+
     </React.Fragment>
   );
 }
@@ -116,17 +107,7 @@ BilltoPay.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-// export default (props) => (
-//   <ComponentWrapper
-//     name="Bank Account Details"
-//     helperText="View and update your bank account information"
-//     Component={connect(
-//       mapStateToProps,
-//       mapDispatchToProps
-//     )(withStyles(styles)(Content))}
-//     {...props}
-//   />
-// );
+
 export default connect(
   mapStateToProps,
   mapDispatchToProps

@@ -143,6 +143,48 @@ public class BillController {
             return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+    @RequestMapping(value = "/cancel",method = RequestMethod.PUT, produces =  MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<?> cancelBill(@RequestParam(name = "ID", required = true) Long id
+    )
+    {
+        try {
+
+
+            Bill bill = billService.getById(id);
+            bill.setStatus("Cancelled");
+
+            billService.update(bill);
+            return new ResponseEntity<>(new SuccessResponse("Bill Canceled Successfully"), HttpStatus.OK);
+        }
+        catch (EntityNotFoundException ex){
+            return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+        }
+        catch (Exception ex){
+            return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+    @RequestMapping(value = "/reject",method = RequestMethod.PUT, produces =  MediaType.APPLICATION_JSON_VALUE)
+    @ResponseBody
+    public ResponseEntity<?> rejectBill(@RequestParam(name = "ID", required = true) Long id
+    )
+    {
+        try {
+
+
+            Bill bill = billService.getById(id);
+            bill.setStatus("Rejected");
+
+            billService.update(bill);
+            return new ResponseEntity<>(new SuccessResponse("Bill Canceled Successfully"), HttpStatus.OK);
+        }
+        catch (EntityNotFoundException ex){
+            return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+        }
+        catch (Exception ex){
+            return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
     @RequestMapping(value = "/own",method = RequestMethod.GET, produces =  MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
     public ResponseEntity<?> getall()

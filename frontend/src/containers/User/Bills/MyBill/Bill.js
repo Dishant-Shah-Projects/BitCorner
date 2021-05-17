@@ -1,5 +1,4 @@
 import React,{ useEffect } from 'react';
-import Link from '@material-ui/core/Link';
 import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -11,24 +10,17 @@ import { requestBillInfo,requestCurrencyInfo } from "../action";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import EditBillModal from "./EditBill"
-// import Title from './Title';
-import EditIcon from '@material-ui/icons/Edit';
+
+import CancelBill from './CancelBill';
 // Generate Order Data
 function createData(id, userName, description, amount, paymentMethod,date, status) {
   return { id, userName, description, amount, paymentMethod, date,status };
 }
 
 let rows = [
-  createData(0, 'Dshah9542@gmail.com', 'PIzza', '50', 'Dollar', 'Pending'),
-  // createData(1, '16 Mar, 2019', 'Paul McCartney', 'London, UK', 'VISA ⠀•••• 2574', 866.99),
-  // createData(2, '16 Mar, 2019', 'Tom Scholz', 'Boston, MA', 'MC ⠀•••• 1253', 100.81),
-  // createData(3, '16 Mar, 2019', 'Michael Jackson', 'Gary, IN', 'AMEX ⠀•••• 2000', 654.39),
-  // createData(4, '15 Mar, 2019', 'Bruce Springsteen', 'Long Branch, NJ', 'VISA ⠀•••• 5919', 212.79),
+
 ];
 
-function preventDefault(event) {
-  event.preventDefault();
-}
 
 const useStyles = makeStyles((theme) => ({
   seeMore: {
@@ -66,6 +58,7 @@ function Bill(props) {
             <TableCell align="right">Due Date</TableCell>
             <TableCell align="right">Status</TableCell>
             <TableCell align="right">Edit</TableCell>
+            <TableCell align="right">Cancel</TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -78,15 +71,12 @@ function Bill(props) {
               <TableCell align="right">{row.date}</TableCell>
               <TableCell align="right">{row.status}</TableCell>
               <TableCell align="right"><EditBillModal bill = {row.id}></EditBillModal></TableCell>
+              <TableCell align="right"><CancelBill bill = {row.id}></CancelBill></TableCell>
             </TableRow>
           ))}
         </TableBody>
       </Table>
-      {/* <div className={classes.seeMore}>
-        <Link color="primary" href="#" onClick={preventDefault}>
-          See more orders
-        </Link>
-      </div> */}
+
     </React.Fragment>
   );
 }
@@ -112,17 +102,6 @@ Bill.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-// export default (props) => (
-//   <ComponentWrapper
-//     name="Bank Account Details"
-//     helperText="View and update your bank account information"
-//     Component={connect(
-//       mapStateToProps,
-//       mapDispatchToProps
-//     )(withStyles(styles)(Content))}
-//     {...props}
-//   />
-// );
 export default connect(
   mapStateToProps,
   mapDispatchToProps

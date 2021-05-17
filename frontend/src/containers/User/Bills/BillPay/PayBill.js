@@ -105,7 +105,7 @@ function PayBillModal(props) {
     onrequestCurrencyInfo();
   }, []);
   let disabled = false
-  if(bill.status==="Paid"){
+  if(bill.status==="Paid" || bill.status==="Cancelled"||bill.status==="Rejected"){
     disabled = true
   }
 
