@@ -11,9 +11,11 @@ import org.springframework.stereotype.Service;
 import javax.management.BadAttributeValueExpException;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
-import java.math.MathContext;
 import java.math.RoundingMode;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class OrderServiceImpl implements OrderService
@@ -47,56 +49,281 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Transactional
-    public boolean executeOrder(Order_Table order, Order_Table openOrder, BigDecimal minExecutionPrice) throws BadAttributeValueExpException
+    public boolean executeOrder(Order_Table buyOrder, Order_Table sellOrder, BigDecimal executionPrice) throws BadAttributeValueExpException
     {
-        Balance currencyBalance = balanceRepository.findByUserIdAndCurrencyId(order.getUserId(), order.getCurrencyId());
-        BigDecimal amountToSubtractFromBuyUser = minExecutionPrice.multiply(order.getQuantity());
+        Balance currencyBalance = balanceRepository.findByUserIdAndCurrencyId(buyOrder.getUserId(), buyOrder.getCurrencyId());
+        BigDecimal amountToSubtractFromBuyUser = executionPrice.multiply(buyOrder.getQuantity());
         BigDecimal amountAfterSubtractingFromBuyUser = currencyBalance.getAmount().subtract(amountToSubtractFromBuyUser);
-        BigDecimal amountToAddToSellUser = minExecutionPrice.multiply(openOrder.getQuantity());
+
         // Seller Bitcoin balance
-        Balance bitcoinBalance = balanceRepository.findByUserIdAndCurrencyId(openOrder.getUserId(), 6);
-        BigDecimal bitcoinAfterSubtractingSellAmount = bitcoinBalance.getAmount().subtract(openOrder.getQuantity());
+        Balance bitcoinBalance = balanceRepository.findByUserIdAndCurrencyId(sellOrder.getUserId(), 6);
+        BigDecimal bitcoinAfterSubtractingSellAmount = bitcoinBalance.getAmount().subtract(sellOrder.getQuantity());
+        BigDecimal amountToAddToSellUser = executionPrice.multiply(sellOrder.getQuantity());
 
         if (amountAfterSubtractingFromBuyUser.signum() >= 0 && bitcoinAfterSubtractingSellAmount.signum() >= 0)
         {
-            order.setExecutionPrice(minExecutionPrice);
-            openOrder.setExecutionPrice(minExecutionPrice);
-
             BigDecimal serviceFee = amountToAddToSellUser.multiply(new BigDecimal("0.0001"));
-            Currency currency = currencyService.getById(openOrder.getCurrencyId());
+            Currency currency = currencyService.getById(sellOrder.getCurrencyId());
             BigDecimal currencyConversionRate = BigDecimal.valueOf(currency.getConversionRate());
             if (serviceFee.subtract(currencyConversionRate).signum() > 0)
             {
                 serviceFee = currencyConversionRate;
             }
-            openOrder.setServiceFee(serviceFee);
+            sellOrder.setServiceFee(serviceFee);
             BigDecimal sellerAmount = amountToAddToSellUser.subtract(serviceFee);
-            balanceService.withdrawBalance(order.getUserId(), order.getCurrencyId(), amountToSubtractFromBuyUser);
-            balanceService.depositBalance(openOrder.getUserId(), openOrder.getCurrencyId(), sellerAmount);
+            balanceService.withdrawBalance(buyOrder.getUserId(), buyOrder.getCurrencyId(), amountToSubtractFromBuyUser);
+            balanceService.depositBalance(sellOrder.getUserId(), sellOrder.getCurrencyId(), sellerAmount);
 
-            balanceService.depositBalance(order.getUserId(), 6, order.getQuantity());
-            balanceService.withdrawBalance(openOrder.getUserId(), 6, openOrder.getQuantity());
+            balanceService.depositBalance(buyOrder.getUserId(), 6, buyOrder.getQuantity());
+            balanceService.withdrawBalance(sellOrder.getUserId(), 6, sellOrder.getQuantity());
 
-            order.setStatus("Fulfilled");
-            openOrder.setStatus("Fulfilled");
+            buyOrder.setStatus("Fulfilled");
+            sellOrder.setStatus("Fulfilled");
 
-            repository.save(order);
-            repository.save(openOrder);
+            buyOrder.setExecutionPrice(executionPrice);
+            sellOrder.setExecutionPrice(executionPrice);
+
+            repository.save(buyOrder);
+            repository.save(sellOrder);
+            // TODO: Update last transaction Price
+
+            MarketPrice marketPrice = marketPriceRepository.findByCurrencyId(buyOrder.getCurrencyId());
+            marketPrice.setTransactionPrice(executionPrice);
+            marketPriceRepository.save(marketPrice);
             return true;
         }
         return false;
     }
 
+    @Transactional
+    public boolean buyBuySellOrder(Order_Table o1, Order_Table o2, Order_Table o3, BigDecimal executionPrice){
 
+        MarketPrice marketPrice = marketPriceRepository.findByCurrencyId(o1.getCurrencyId());
+
+        BigDecimal minValue = new BigDecimal(0);
+        BigDecimal maxValue = new BigDecimal(0);
+
+        if(o1.getPriceType().equals("LIMIT")){
+            maxValue = o1.getLimitPrice();
+        }
+        else {
+            maxValue = new BigDecimal(Double.MAX_VALUE);
+        }
+        if(o2.getPriceType().equals("LIMIT")){
+            maxValue = maxValue.min(o2.getLimitPrice());
+        }
+        if(o3.getType().equals("LIMIT")){
+            minValue = minValue.max(o3.getLimitPrice());
+        }
+        else if(o3.getType().equals("MARKET")){
+            minValue = maxValue;
+        }
+
+        if(minValue.compareTo(maxValue) <= 0){
+            //Transaction will happen
+            executionPrice = minValue;
+            if(executionPrice.compareTo(new BigDecimal(Double.MAX_VALUE)) == 0){
+                executionPrice = marketPrice.getTransactionPrice();
+            }
+            return true;
+        }
+        return false;
+    }
+
+    @Transactional
+    public boolean buySellSellOrder(Order_Table o1, Order_Table o2, Order_Table o3, BigDecimal executionPrice){
+        MarketPrice marketPrice = marketPriceRepository.findByCurrencyId(o1.getCurrencyId());
+
+        BigDecimal minValue = new BigDecimal(0);
+        BigDecimal maxValue = new BigDecimal(0);
+
+        if(o1.getPriceType().equals("LIMIT")){
+            maxValue = o1.getLimitPrice();
+        }
+        else {
+            maxValue = new BigDecimal(Double.MAX_VALUE);
+        }
+        if(o2.getPriceType().equals("LIMIT")){
+            minValue = minValue.max(o2.getLimitPrice());
+        }
+        if(o3.getType().equals("LIMIT")){
+            minValue = minValue.max(o3.getLimitPrice());
+        }
+
+        if(minValue.compareTo(maxValue) <= 0){
+            //Transaction will happen
+            if(minValue.compareTo(new BigDecimal(0)) == 0 && maxValue.compareTo(new BigDecimal(Double.MAX_VALUE)) == 0){
+                executionPrice = marketPrice.getTransactionPrice();
+            }
+            else if(minValue.compareTo(new BigDecimal(0)) == 0){
+                executionPrice = maxValue.min(marketPrice.getTransactionPrice());
+            }
+            else {
+                executionPrice = minValue;
+            }
+            return true;
+        }
+
+        return false;
+    }
+
+    @Transactional
+    public void executeBuyOrder(Order_Table order, BigDecimal executionPrice) throws BadAttributeValueExpException {
+
+        BigDecimal amountToSubtractFromBuyUser = order.getQuantity().multiply(executionPrice);
+        balanceService.withdrawBalance(order.getUserId(), order.getCurrencyId(), amountToSubtractFromBuyUser);
+        balanceService.depositBalance(order.getUserId(), 6, order.getQuantity());
+
+        order.setStatus("Fulfilled");
+        order.setExecutionPrice(executionPrice);
+
+        repository.save(order);
+    }
+
+    @Transactional
+    public void executeSellOrder(Order_Table order, BigDecimal executionPrice) throws BadAttributeValueExpException{
+        BigDecimal amountToAddToSellUser = order.getQuantity().multiply(executionPrice);
+        BigDecimal serviceFee = amountToAddToSellUser.multiply(new BigDecimal("0.0001"));
+
+        Currency currency = currencyService.getById(order.getCurrencyId());
+        BigDecimal currencyConversionRate = BigDecimal.valueOf(currency.getConversionRate());
+        if (serviceFee.compareTo(currencyConversionRate) > 0)
+        {
+            serviceFee = currencyConversionRate;
+        }
+        order.setServiceFee(serviceFee);
+
+        BigDecimal sellerAmount = amountToAddToSellUser.subtract(serviceFee);
+        balanceService.depositBalance(order.getUserId(), order.getCurrencyId(), sellerAmount);
+        balanceService.withdrawBalance(order.getUserId(), 6, order.getQuantity());
+
+        order.setStatus("Fulfilled");
+
+        order.setExecutionPrice(executionPrice);
+
+        repository.save(order);
+    }
+
+
+    @Transactional
+    public boolean executeMultipleOrders(List<Order_Table> orders) throws BadAttributeValueExpException {
+
+        if(orders.get(0).getType().equals(orders.get(1).getType()) && orders.get(1).getType().equals(orders.get(2).getType()))
+        {
+            return false;
+        }
+        BigDecimal buyQuantity = new BigDecimal(0);
+        BigDecimal sellQuantity = new BigDecimal(0);
+        for(int i = 0; i< orders.size(); i++)
+        {
+            if(orders.get(i).getType().equals("BUY")){
+                buyQuantity = buyQuantity.add(orders.get(i).getQuantity());
+            }
+            else {
+                sellQuantity = sellQuantity.add(orders.get(i).getQuantity());
+            }
+            for(int j = i+1; j< orders.size(); j++){
+                if(!orders.get(i).getType().equals(orders.get(j).getType()) && orders.get(i).getUserId().equals(orders.get(j).getUserId()))
+                {
+                    return false;
+                }
+            }
+        }
+        BigDecimal quantityDiff = buyQuantity.subtract(sellQuantity).abs();
+        float min_difference = Math.min(quantityDiff.divide(buyQuantity, 2, RoundingMode.HALF_UP).floatValue(), quantityDiff.divide(sellQuantity, 2, RoundingMode.HALF_UP).floatValue()) * 100;
+        if (min_difference > 10.0){
+            return false;
+        }
+
+        // Deciding the execution price of the order and checking if the orders is feasible
+        Order_Table o1 = orders.get(0);
+        Order_Table o2 = orders.get(1);
+        Order_Table o3 = orders.get(2);
+        BigDecimal executionPrice = new BigDecimal(0);
+        MarketPrice marketPrice = marketPriceRepository.findByCurrencyId(o1.getCurrencyId());
+
+        if(o1.getType().equals("BUY") && o2.getType().equals("BUY") && o3.getType().equals("SELL")) {
+            if(!buyBuySellOrder(o1, o2, o3, executionPrice)){
+                return false;
+            }
+        }
+        else if(o1.getType().equals("BUY") && o2.getType().equals("SELL") && o3.getType().equals("SELL")) {
+            if(!buySellSellOrder(o1, o2, o3, executionPrice)){
+                return false;
+            }
+        }
+        else if(o1.getType().equals("BUY") && o2.getType().equals("SELL") && o3.getType().equals("BUY")) {
+            if(!buyBuySellOrder(o1, o3, o2, executionPrice)){
+                return false;
+            }
+        }
+        else if(o1.getType().equals("SELL") && o2.getType().equals("SELL") && o3.getType().equals("BUY")) {
+            if(!buySellSellOrder(o3, o2, o1, executionPrice)){
+                return false;
+            }
+        }
+        else if(o1.getType().equals("SELL") && o2.getType().equals("BUY") && o3.getType().equals("BUY")) {
+
+            if(!buyBuySellOrder(o2, o3, o1, executionPrice)){
+                return false;
+            }
+        }
+        else if(o1.getType().equals("SELL") && o2.getType().equals("BUY") && o3.getType().equals("SELL")) {
+            if(!buySellSellOrder(o2, o1, o3, executionPrice)){
+                return false;
+            }
+        }
+        else {
+            return false;
+        }
+
+        Map<String, List<Order_Table>> map = new HashMap<>();
+        for(Order_Table order: orders) {
+            List<Order_Table> l = map.getOrDefault(order.getUserId(), new ArrayList<Order_Table>());
+            l.add(order);
+            map.put(order.getUserId(), l);
+        }
+        // Balance Check Condition
+        for(Map.Entry<String, List<Order_Table>> entry: map.entrySet()){
+            List<Order_Table> l = entry.getValue();
+            BigDecimal amountToCheck = new BigDecimal(0);
+            BigDecimal execPrice = new BigDecimal(0);
+            for(Order_Table order: l) {
+                if(order.getType().equals("BUY")){
+                    amountToCheck = amountToCheck.add(executionPrice.multiply(order.getQuantity()));
+                }
+                else {
+                    amountToCheck = amountToCheck.add(order.getQuantity());
+                }
+            }
+            Balance currentBalance = balanceRepository.findByUserIdAndCurrencyId(entry.getKey(), l.get(0).getType().equals("BUY") ? l.get(0).getCurrencyId() : 6);
+            if(currentBalance.getAmount().compareTo(amountToCheck) <0 )
+            {
+                return false;
+            }
+        }
+
+        // Executing the orders
+        for(Order_Table order: orders){
+            if(order.getType().equals("BUY")){
+                executeBuyOrder(order, executionPrice);
+            }
+            else {
+                executeSellOrder(order, executionPrice);
+            }
+        }
+        marketPrice.setTransactionPrice(executionPrice);
+        marketPriceRepository.save(marketPrice);
+        return false;
+    }
+
+    // TODO: Fix the execution price
     @Transactional
     public boolean findMatch(Order_Table order) throws BadAttributeValueExpException
     {
         List<Order_Table> openOrders = repository.getOpenOrdersToMatch(order.getId(), order.getCurrencyId());
-        MarketPrice marketPrice = marketPriceRepository.getOne((long) 1);
-        BigDecimal orderCurrencyMarketAskPrice = currencyService.convertAmount(1, order.getCurrencyId(), marketPrice.getAskPrice());
-        BigDecimal orderCurrencyMarketBidPrice = currencyService.convertAmount(1, order.getCurrencyId(), marketPrice.getBidPrice());
-        float minMarketPrice = Math.min(orderCurrencyMarketAskPrice.floatValue(), orderCurrencyMarketBidPrice.floatValue());
-        BigDecimal minMarketPriceBigDecimal = new BigDecimal(minMarketPrice);
+        MarketPrice marketPrice = marketPriceRepository.findByCurrencyId(order.getCurrencyId());
+
         // One to One Matching
         for (Order_Table openOrder : openOrders)
         {
@@ -108,131 +335,93 @@ public class OrderServiceImpl implements OrderService
                 {
                     if (openOrder.getPriceType().equals("MARKET") && order.getPriceType().equals("MARKET"))
                     {
-                        if (openOrder.getType().equals("SELL"))
+                        Order_Table buyOrder = new Order_Table();
+                        Order_Table sellOrder = new Order_Table();
+
+                        if(openOrder.getType().equals("SELL")) {
+                            buyOrder = order;
+                            sellOrder = openOrder;
+                        }
+                        else {
+                            buyOrder = openOrder;
+                            sellOrder = order;
+                        }
+                        if(executeOrder(buyOrder, sellOrder, marketPrice.getTransactionPrice()))
                         {
-                            if(executeOrder(order, openOrder, minMarketPriceBigDecimal)){
-                                return true;
-                            }
-                        } else
-                        {
-                            if(executeOrder(openOrder, order, minMarketPriceBigDecimal)){
-                                return true;
-                            }
+                            return true;
                         }
                     }
                     else if (openOrder.getPriceType().equals("LIMIT") && order.getPriceType().equals("LIMIT"))
                     {
-                        if (openOrder.getType().equals("SELL"))
-                        {
-                            if (openOrder.getLimitPrice().compareTo(order.getLimitPrice()) < 0)
-                            {
-                                BigDecimal minLimitPriceBigDecimal = openOrder.getLimitPrice().min(order.getLimitPrice());
-                                if(executeOrder(order, openOrder, minLimitPriceBigDecimal)){
-                                    return true;
-                                }
-                            }
-                        } else
-                        {
-                            if (order.getLimitPrice().compareTo(openOrder.getLimitPrice()) < 0)
-                            {
-                                BigDecimal minLimitPriceBigDecimal = openOrder.getLimitPrice().min(order.getLimitPrice());
-                                if(executeOrder(openOrder, order, minLimitPriceBigDecimal)){
-                                    return true;
-                                }
+                        Order_Table buyOrder = new Order_Table();
+                        Order_Table sellOrder = new Order_Table();
+
+                        if(openOrder.getType().equals("SELL")) {
+                            buyOrder = order;
+                            sellOrder = openOrder;
+                        }
+                        else {
+                            buyOrder = openOrder;
+                            sellOrder = order;
+                        }
+                        if (sellOrder.getLimitPrice().compareTo(buyOrder.getLimitPrice()) <= 0) {
+                            BigDecimal minLimitPrice = openOrder.getLimitPrice().min(order.getLimitPrice());
+                            if(executeOrder(buyOrder, sellOrder, minLimitPrice)){
+                                return true;
                             }
                         }
-
                     }
+
                     else if (openOrder.getPriceType().equals("LIMIT") && order.getPriceType().equals("MARKET"))
                     {
                         // Add logic
-                        if (openOrder.getType().equals("SELL"))
-                        {
-                            // check if order limit price is lower than market price
-                            if (openOrder.getLimitPrice().compareTo(minMarketPriceBigDecimal) < 0)
-                            {
-                                // BigDecimal minLimitPriceBigDecimal = openOrder.getLimitPrice().min(minMarketPriceBigDecimal);
-                                if(executeOrder(order, openOrder, minMarketPriceBigDecimal)){
-                                    return true;
-                                }
-                            }
+                        if (openOrder.getType().equals("SELL")) {
+                            if(executeOrder(order, openOrder, openOrder.getLimitPrice())) {
+                                return true;
+                             }
                         }
-                        else{
-                            if (openOrder.getLimitPrice().compareTo(minMarketPriceBigDecimal) >= 0)
-                            {
-                                // BigDecimal minLimitPriceBigDecimal = openOrder.getLimitPrice().min(order.getLimitPrice());
-                                if(executeOrder(openOrder, order, minMarketPriceBigDecimal)){
-                                    return true;
-                                }
+                        else {
+                            BigDecimal executionPrice = openOrder.getLimitPrice().min(marketPrice.getTransactionPrice());
+                            if(executeOrder(openOrder, order, executionPrice)){
+                                return true;
                             }
-
                         }
                     }
+
                     else if(openOrder.getPriceType().equals("MARKET") && order.getPriceType().equals("LIMIT"))
                     {
-                        // Add logic
-                        if (order.getType().equals("SELL"))
-                        {
-                            if (order.getLimitPrice().compareTo(minMarketPriceBigDecimal) < 0)
-                            {
-                                if(executeOrder(openOrder, order, minMarketPriceBigDecimal)){
-                                    return true;
-                                }
+                        if (order.getType().equals("SELL")) {
+                            if(executeOrder(openOrder, order, order.getLimitPrice())) {
+                                return true;
                             }
                         }
-                        else{
-                            if (order.getLimitPrice().compareTo(minMarketPriceBigDecimal) >= 0)
-                            {
-                                if(executeOrder(order, openOrder, minMarketPriceBigDecimal)){
-                                    return true;
-                                }
+                        else {
+                            BigDecimal executionPrice = order.getLimitPrice().min(marketPrice.getTransactionPrice());
+                            if(executeOrder(order, openOrder, executionPrice)){
+                                return true;
                             }
                         }
                     }
                 }
             }
         }
-        //Remove later
-        if(openOrders.size() == 2){
-            BigDecimal executionPrice = order.getLimitPrice();
-            Order_Table buyOrder = new Order_Table();
-            Order_Table sellOrder = new Order_Table();
-            BigDecimal serviceFee = new BigDecimal(1);
 
-            if(openOrders.get(0).getType().equals("BUY")) {
-                buyOrder = openOrders.get(0);
-                sellOrder = openOrders.get(1);
+        for (int i = 0; i < openOrders.size() - 1; i++) {
+            for (int j = i+1; j < openOrders.size(); j++) {
+                List<Order_Table> orders = new ArrayList<>();
+                orders.add(openOrders.get(i));
+                orders.add(openOrders.get(j));
+                orders.add(order);
+                if(executeMultipleOrders(orders))
+                {
+                    return true;
+                }
             }
-            else if(openOrders.get(1).getType().equals("BUY")){
-                buyOrder = openOrders.get(1);
-                sellOrder = openOrders.get(0);
-            }
-            order.setExecutionPrice(executionPrice);
-            buyOrder.setExecutionPrice(executionPrice);
-            sellOrder.setExecutionPrice(executionPrice);
-            order.setStatus("Fulfilled");
-            buyOrder.setStatus("Fulfilled");
-            sellOrder.setStatus("Fulfilled");
-            balanceService.withdrawBalance(buyOrder.getUserId(), buyOrder.getCurrencyId(), buyOrder.getQuantity().multiply(executionPrice));
-            balanceService.withdrawBalance(order.getUserId(), order.getCurrencyId(), order.getQuantity().multiply(executionPrice));
-            BigDecimal subtractedAmount = (sellOrder.getQuantity().multiply(executionPrice)).subtract(serviceFee, new MathContext(1));
-            System.out.println(subtractedAmount);
-            balanceService.depositBalance(sellOrder.getUserId(), sellOrder.getCurrencyId(), subtractedAmount);
-
-            balanceService.depositBalance(order.getUserId(), 6, order.getQuantity());
-            balanceService.depositBalance(buyOrder.getUserId(), 6, buyOrder.getQuantity());
-            balanceService.withdrawBalance(sellOrder.getUserId(), 6, sellOrder.getQuantity());
-
-            sellOrder.setServiceFee(serviceFee);
-            repository.save(order);
-            repository.save(buyOrder);
-            repository.save(sellOrder);
-            return true;
         }
 
+        // TODO: Market Maker
         return false;
     }
-
 
     @Transactional
     public void isOrderValid(Order_Table order) throws BadAttributeValueExpException
@@ -254,39 +443,43 @@ public class OrderServiceImpl implements OrderService
     @Transactional
     public void isBuyOrderValid(Order_Table order) throws BadAttributeValueExpException
     {
-        MarketPrice marketPrice = marketPriceRepository.getOne((long) 1);
-        BigDecimal orderCurrencyMarketPrice = currencyService.convertAmount(1, order.getCurrencyId(), marketPrice.getAskPrice());
-
+        MarketPrice marketPrice = marketPriceRepository.findByCurrencyId(order.getCurrencyId());
         Balance currencyBalance = balanceRepository.findByUserIdAndCurrencyId(order.getUserId(), order.getCurrencyId());
         List<Order_Table> orders = repository.findByUserIdAndCurrencyIdAndNotId(order.getUserId(), order.getId(), order.getCurrencyId());
         orders.add(order);
 
-        float currentOrders = 0;
+        BigDecimal currentOrders = new BigDecimal(0);
 
         for (Order_Table o : orders)
         {
             if (o.getPriceType().equals("MARKET"))
             {
 
-                BigDecimal mul = o.getQuantity().multiply(orderCurrencyMarketPrice);
-                currentOrders += mul.floatValue();
+                BigDecimal mul = o.getQuantity().multiply(marketPrice.getAskPrice());
+                currentOrders = currentOrders.add(mul);
             }
             else if (o.getPriceType().equals("LIMIT"))
             {
                 BigDecimal mul = o.getQuantity().multiply(o.getLimitPrice());
-                currentOrders += mul.floatValue();
+                currentOrders = currentOrders.add(mul);
             }
         }
-        if (currencyBalance.getAmount().floatValue() < currentOrders)
+        if (currencyBalance.getAmount().compareTo(currentOrders) < 0)
         {
-            throw new BadAttributeValueExpException("Insufficient Balance");
+            throw new BadAttributeValueExpException("Insufficient Balance to buy Bitcoin");
         }
         System.out.println("");
+
+        if(order.getPriceType().equals("LIMIT")) {
+            marketPrice.setBidPrice(order.getLimitPrice());
+            marketPriceRepository.save(marketPrice);
+        }
     }
 
     @Transactional
     public void isSellOrderValid(Order_Table order) throws BadAttributeValueExpException
     {
+        MarketPrice marketPrice = marketPriceRepository.findByCurrencyId(order.getCurrencyId());
         BigDecimal pendingOrders = repository.getSumOfAllThePendingSellOrdersQuantity(order.getUserId(), order.getId());
         if (pendingOrders == null)
         {
@@ -298,9 +491,14 @@ public class OrderServiceImpl implements OrderService
         pendingOrders = pendingOrders.add(order.getQuantity());
         if (bitCoinBalance.getAmount().compareTo(pendingOrders) < 0)
         {
-            throw new BadAttributeValueExpException("Quantity exceeds current balance and pending orders");
+            throw new BadAttributeValueExpException("Insufficient Bitcoin Balance");
         }
         System.out.println(pendingOrders);
+
+        if(order.getPriceType().equals("LIMIT")) {
+            marketPrice.setAskPrice(order.getLimitPrice());
+            marketPriceRepository.save(marketPrice);
+        }
     }
 
     @Override

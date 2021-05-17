@@ -21,7 +21,7 @@ public class MarketPriceImpl implements MarketPriceService {
 
     @Override
     public MarketPrice getByCurrencyId(long currencyId) {
-        return repository.getByCurrencyId(currencyId);
+        return repository.findByCurrencyId(currencyId);
     }
 
     @Override
