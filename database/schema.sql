@@ -89,12 +89,10 @@ foreign key (CURRENCY_ID) references CURRENCY(ID)
    `BID_PRICE` float not null,
    `ASK_PRICE` float not null
  );
-
 -- DROP EVENT  `DateChange`;
 CREATE EVENT `DateChange` ON SCHEDULE
         EVERY 3 HOUR
-    ON COMPLETION NOT PRESERVE
-    ENABLE
-    COMMENT ''
+--     ENABLE
+--     COMMENT ''
     DO 
 UPDATE BILL SET BILL.STATUS ='Overdue' WHERE BILL.DUE_DATE<curdate() AND BILL.STATUS='Waiting';

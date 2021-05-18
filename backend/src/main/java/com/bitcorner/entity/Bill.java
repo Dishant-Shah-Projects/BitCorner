@@ -2,6 +2,7 @@ package com.bitcorner.entity;
 
 import javax.management.BadAttributeValueExpException;
 import javax.persistence.*;
+import java.math.BigDecimal;
 import java.util.Date;
 
 @Entity
@@ -34,7 +35,7 @@ public class Bill {
     private Currency targetCurrency;
 
     @Column(name = "AMOUNT")
-    private float amount;
+    private BigDecimal amount;
 
     @Column(name="DUE_DATE")
     private Date dueDate;
@@ -47,7 +48,7 @@ public class Bill {
     private Currency paidCurrency;
 
     @Column(name = "SERVICE_FEE")
-    private float serviceFee;
+    private BigDecimal serviceFee;
 
     public long getId() {
         return id;
@@ -107,12 +108,12 @@ public class Bill {
         this.targetCurrency = targetCurrency;
     }
 
-    public float getAmount() {
+    public BigDecimal getAmount() {
         return amount;
     }
 
-    public void setAmount(float amount) throws BadAttributeValueExpException{
-        if(amount<=0){
+    public void setAmount(BigDecimal amount) throws BadAttributeValueExpException{
+        if(amount.floatValue()<=0){
             throw new BadAttributeValueExpException("Amount should be greater than zero");
         }
         this.amount = amount;
@@ -152,18 +153,19 @@ public class Bill {
         this.paidCurrency = paidCurrency;
     }
 
-    public float getServiceFee() {
+    public BigDecimal getServiceFee() {
         return serviceFee;
     }
 
-    public void setServiceFee(float serviceFee) {
+    public void setServiceFee(BigDecimal serviceFee) {
         this.serviceFee = serviceFee;
     }
 
-    public Bill(String fromUserId, String toUserId, Currency targetCurrency, float amount, Date dueDate,String description) throws BadAttributeValueExpException{
+    public Bill(String fromUserId, String toUserId, Currency targetCurrency, BigDecimal amount, Date dueDate,String description) throws BadAttributeValueExpException{
         this.setFromUserId(fromUserId);
         this.setToUserId(toUserId);
         this.setTargetCurrency(targetCurrency);
+        this.setServiceFee(new BigDecimal(-1));
         this.setAmount(amount);
         this.setDueDate(dueDate);
         this.description=description;

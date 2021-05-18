@@ -3,11 +3,8 @@ package com.bitcorner.controller;
 import com.bitcorner.auth.SecurityService;
 import com.bitcorner.dataModel.ErrorResponse;
 import com.bitcorner.dataModel.SuccessResponse;
-import com.bitcorner.entity.Balance;
-import com.bitcorner.entity.Bill;
-import com.bitcorner.entity.Currency;
-import com.bitcorner.entity.UserInfo;
-import com.bitcorner.repository.BillRepository;
+import com.bitcorner.entity.*;
+import com.bitcorner.repository.MarketPriceRepository;
 import com.bitcorner.service.*;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseAuthException;
@@ -22,6 +19,7 @@ import javax.management.BadAttributeValueExpException;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Date;
 import java.util.List;
 
@@ -40,6 +38,8 @@ public class BillController {
     SecurityService securityService;
     @Autowired
     BillService billService;
+    @Autowired
+    private MarketPriceRepository marketPriceRepository;
 
     @Autowired
     private HttpServletRequest request;
@@ -50,7 +50,7 @@ public class BillController {
                                           @RequestParam(name = "ID", required = true) Long id,
                                           @RequestParam(name = "Description", required = true) String Description,
                                           @RequestParam(name = "target_currency", required = true) Long currid,
-                                          @RequestParam(name = "amount", required = true) float amount,
+                                          @RequestParam(name = "amount", required = true) BigDecimal amount,
                                           @RequestParam(name = "duedate", required = true) Date DueDate
                                           )
         {
@@ -82,7 +82,7 @@ public class BillController {
     public ResponseEntity<?> create(  @RequestParam(name = "toEmail", required = true) String toEmail,
                                       @RequestParam(name = "Description", required = true) String Description,
                                       @RequestParam(name = "target_currency", required = true) Long currid,
-                                      @RequestParam(name = "amount", required = true) float amount,
+                                      @RequestParam(name = "amount", required = true) BigDecimal amount,
                                       @RequestParam(name = "duedate", required = true) Date DueDate
     )
     {
@@ -117,17 +117,38 @@ public class BillController {
 
             Bill bill = billService.getById(id);
             if(currid2==bill.getTargetCurrency().getId()){
-                balanceService.withdrawBalance(bill.getToUserId(),currid2,new BigDecimal(bill.getAmount()));
-                balanceService.depositBalance(bill.getFromUserId(),currid2,new BigDecimal(bill.getAmount()));
+                balanceService.withdrawBalance(bill.getToUserId(),currid2,bill.getAmount());
+                balanceService.depositBalance(bill.getFromUserId(),currid2,bill.getAmount());
                 bill.setStatus("Paid");
-                bill.setServiceFee(0);
+                bill.setServiceFee(new BigDecimal(0));
+            }
+            else if (currid2==6 || bill.getTargetCurrency().getId()==6){
+                if (currid2==6){
+                    MarketPrice mp = marketPriceRepository.getOne(bill.getTargetCurrency().getId());
+                    BigDecimal payamount = bill.getAmount().divide(mp.getTransactionPrice(),RoundingMode.HALF_UP);
+                    payamount=payamount.multiply(new BigDecimal(1.05));
+                    balanceService.withdrawBalance(bill.getToUserId(),currid2, payamount.multiply(new BigDecimal( 1.0001)));
+                    balanceService.depositBalance(bill.getFromUserId(),bill.getTargetCurrency().getId(),bill.getAmount());
+                    bill.setStatus("Paid");
+                    bill.setServiceFee((payamount.multiply(new BigDecimal( 0.0001))));
+                }
+                else{
+                    MarketPrice mp = marketPriceRepository.getOne(currid2);
+                    BigDecimal payamount = bill.getAmount().multiply(mp.getTransactionPrice());
+                    payamount=payamount.multiply(new BigDecimal(1.05));
+                    balanceService.withdrawBalance(bill.getToUserId(),currid2, payamount.multiply(new BigDecimal( 1.0001)));
+                    balanceService.depositBalance(bill.getFromUserId(),bill.getTargetCurrency().getId(),bill.getAmount());
+                    bill.setStatus("Paid");
+                    bill.setServiceFee((payamount.multiply(new BigDecimal( 0.0001))));
+                }
+
             }
             else{
-                BigDecimal payamount = currencyService.convertAmount(bill.getTargetCurrency().getId(),currid2,new BigDecimal(bill.getAmount()));
+                BigDecimal payamount = currencyService.convertAmount(bill.getTargetCurrency().getId(),currid2,bill.getAmount());
                 balanceService.withdrawBalance(bill.getToUserId(),currid2, payamount.multiply(new BigDecimal(1.0001)));
-                balanceService.depositBalance(bill.getFromUserId(),bill.getTargetCurrency().getId(),new BigDecimal(bill.getAmount()));
+                balanceService.depositBalance(bill.getFromUserId(),bill.getTargetCurrency().getId(),bill.getAmount());
                 bill.setStatus("Paid");
-                bill.setServiceFee((float) (Float.parseFloat(payamount.toString())*0.0001));
+                bill.setServiceFee(payamount.multiply(new BigDecimal(0.0001)));
 
             }
             billService.update(bill);
@@ -225,7 +246,7 @@ public class BillController {
         }
     }
 
-    public String getUserId() throws FirebaseAuthException {
+    public String getUserId() throws FirebaseAuthException, NullPointerException {
         String token = securityService.getBearerToken(request);
         FirebaseToken decodedToken =null;
         try {
