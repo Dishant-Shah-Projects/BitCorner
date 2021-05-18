@@ -35,6 +35,7 @@ import MarketPrice from '../MarketPrice/MarketPrice';
 
 function CommonHeader(props) {
   const { classes, onDrawerToggle, user } = props;
+
   return (
     <AppBar color="primary" position="sticky" elevation={0}>
       <Toolbar>
@@ -53,9 +54,7 @@ function CommonHeader(props) {
           </Hidden>
           <Grid item>
             <Tooltip title="Market price">
-              
                   <MarketPrice/>
-                
               </Tooltip>
             </Grid>
           <Grid item xs />
@@ -102,7 +101,8 @@ function CommonHeader(props) {
 }
 const mapStateToProps = (state) => {
   return {
-    user: state.auth.user,
+    user: state.auth.user
   };
 };
+
 export default connect(mapStateToProps, null)(CommonHeader);

@@ -1,25 +1,18 @@
 import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
-import Typography from "@material-ui/core/Typography";
-import Paper from "@material-ui/core/Paper";
 import { withStyles } from "@material-ui/core/styles";
 import ComponentWrapper from "../ComponentWrapper";
 import CurrencyDropdown from "../CurrencyDropdown/index"
-import Select from "../../../components/Select";
-import MenuItem from '@material-ui/core/MenuItem';
-import TextField from "../../../components/TextField";
 import Table from "@material-ui/core/Table";
 import TableHead from "@material-ui/core/TableHead";
 import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@material-ui/core/TableBody";
+import Axios from "axios";
 
 import { requestBankInfo, requestMarketPrice } from "../actions.js";
-//import { TextField } from "@material-ui/core";
-import { requestCurrencyInfo } from "../Bills/action";
-
 
 const styles = (theme) => ({
   paper: {
@@ -38,50 +31,74 @@ const styles = (theme) => ({
   contentWrapper: {
     margin: "40px 16px",
   },
+  table: {
+    minWidth: 500,
+  },
+  tableRow: {
+    height: 30,
+  },
+  
 });
 
-const id = 1;
 function MarketPrice(props) {
         const {
           classes,
           onRequestMarketPrice,
           onRequestBankInfo,
           marketPriceInfo,
-          currency,
           bankInfo
         } = props;
-        
+    
         const styling = styles();
-        const id = bankInfo?.data?.primaryCurrencyId;
-        const [option,setOption] = React.useState(1);
-        const onChange = (e) => {setOption(e.target.value); console.log("option value",option);}
-        
+        // const id = bankInfo?.data?.primaryCurrencyId;
+        const id=1;
+        const [option,setOption] = React.useState(id);
+        const onChange = (e) => {setOption(e.target.value);}
+        const mp = marketPriceInfo?.data;
+
         useEffect(() => {
           onRequestMarketPrice(option);
           onRequestBankInfo();
         }, [option]);
+
+        // const api = () => {Axios.get(`/marketprice/cid?&currencyId=${option}`)
+        // .then(res => this.setState({ marketPriceInfo: res.data }))
+        // .catch(error => console.log(error));}
+
         return(
             <>
-               {/* <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={option}
-                onChange={onChange}
-                options= {currency}>
-
-                <MenuItem value="USD">USD</MenuItem>
-                <MenuItem value="INR">INR</MenuItem>
-                <MenuItem value="EUR">EUR</MenuItem>
-              </Select>  */}
-              
-              <Table >
-                <TableRow>
-              <TableCell style = {{backgroundColor: 'teal'}}><b>Ask Price: {marketPriceInfo?.data?.askPrice}</b> </TableCell>
-              <TableCell style = {{backgroundColor: 'teal'}}><b>Bid Price: {marketPriceInfo?.data?.bidPrice}</b> </TableCell>
-              <TableCell style = {{backgroundColor: 'teal'}}><b>Transaction Price: {marketPriceInfo?.data?.transactionPrice}</b> </TableCell>
-              <TableCell style = {{backgroundColor: 'white',width: 50}}><TextField style = {{width: 50}} onInput={onChange} name="cid" ></TextField></TableCell>
-              </TableRow>
+             <TableContainer>
+               <Table className={classes.table} size="small">
+                <TableHead>
+                  <TableRow>
+                  <TableCell><b>Ask Price</b> </TableCell>
+                  <TableCell><b>Bid Price</b></TableCell>
+                  <TableCell><b>Transaction Price</b></TableCell>
+                  <TableCell><b>Currency</b></TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody >
+                <TableRow className={classes.tableRow} >
+                  <TableCell><b>{marketPriceInfo?.data?.askPrice}</b> </TableCell>
+                  <TableCell><b>{marketPriceInfo?.data?.bidPrice}</b> </TableCell>
+                  <TableCell><b>{marketPriceInfo?.data?.transactionPrice}</b> </TableCell>
+                  <TableCell>
+                    <CurrencyDropdown
+                        isCrypto={false}
+                        required
+                        margin="dense"
+                        //label="Currency"
+                        name="currencyId"
+                        fullWidth
+                        helperText="Please select atleast one"
+                        onChange={onChange}
+                        value={option}
+                      />
+                  </TableCell>
+               </TableRow>
+               </TableBody>
               </Table> 
+              </TableContainer>
           </>
         );
     }
@@ -93,16 +110,14 @@ function MarketPrice(props) {
       const mapStateToProps = (state) => {
         return {
           marketPriceInfo: state.marketPrice.marketPriceInfo,
-          bankInfo: state.bank.bankInfo,
-          currency: state.currency.currencies
+          bankInfo: state.bank.bankInfo
         };
       };
       
       const mapDispatchToProps = (dispatch) => {
         return {
           onRequestMarketPrice: (option) => dispatch(requestMarketPrice(option)),
-          onRequestBankInfo: () => dispatch(requestBankInfo()),
-          onRequestCurrencyInfo: () => dispatch(requestCurrencyInfo())
+          onRequestBankInfo: () => dispatch(requestBankInfo())
         };
       };
       
