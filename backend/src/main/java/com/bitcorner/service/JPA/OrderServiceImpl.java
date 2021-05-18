@@ -96,9 +96,9 @@ public class OrderServiceImpl implements OrderService
     }
 
     @Transactional
-    public boolean buyBuySellOrder(Order_Table o1, Order_Table o2, Order_Table o3, BigDecimal executionPrice){
-
+    public BigDecimal buyBuySellOrder(Order_Table o1, Order_Table o2, Order_Table o3){
         MarketPrice marketPrice = marketPriceRepository.findByCurrencyId(o1.getCurrencyId());
+        BigDecimal executionPrice = new BigDecimal(-1);
 
         BigDecimal minValue = new BigDecimal(0);
         BigDecimal maxValue = new BigDecimal(0);
@@ -112,10 +112,10 @@ public class OrderServiceImpl implements OrderService
         if(o2.getPriceType().equals("LIMIT")){
             maxValue = maxValue.min(o2.getLimitPrice());
         }
-        if(o3.getType().equals("LIMIT")){
+        if(o3.getPriceType().equals("LIMIT")){
             minValue = minValue.max(o3.getLimitPrice());
         }
-        else if(o3.getType().equals("MARKET")){
+        else if(o3.getPriceType().equals("MARKET")){
             minValue = maxValue;
         }
 
@@ -125,14 +125,14 @@ public class OrderServiceImpl implements OrderService
             if(executionPrice.compareTo(new BigDecimal(Double.MAX_VALUE)) == 0){
                 executionPrice = marketPrice.getTransactionPrice();
             }
-            return true;
         }
-        return false;
+        return executionPrice;
     }
 
     @Transactional
-    public boolean buySellSellOrder(Order_Table o1, Order_Table o2, Order_Table o3, BigDecimal executionPrice){
+    public BigDecimal buySellSellOrder(Order_Table o1, Order_Table o2, Order_Table o3){
         MarketPrice marketPrice = marketPriceRepository.findByCurrencyId(o1.getCurrencyId());
+        BigDecimal executionPrice = new BigDecimal(-1);
 
         BigDecimal minValue = new BigDecimal(0);
         BigDecimal maxValue = new BigDecimal(0);
@@ -161,10 +161,8 @@ public class OrderServiceImpl implements OrderService
             else {
                 executionPrice = minValue;
             }
-            return true;
         }
-
-        return false;
+        return executionPrice;
     }
 
     @Transactional
@@ -243,37 +241,27 @@ public class OrderServiceImpl implements OrderService
         MarketPrice marketPrice = marketPriceRepository.findByCurrencyId(o1.getCurrencyId());
 
         if(o1.getType().equals("BUY") && o2.getType().equals("BUY") && o3.getType().equals("SELL")) {
-            if(!buyBuySellOrder(o1, o2, o3, executionPrice)){
-                return false;
-            }
+            executionPrice = buyBuySellOrder(o1, o2, o3);
         }
         else if(o1.getType().equals("BUY") && o2.getType().equals("SELL") && o3.getType().equals("SELL")) {
-            if(!buySellSellOrder(o1, o2, o3, executionPrice)){
-                return false;
-            }
+            executionPrice = buySellSellOrder(o1, o2, o3);
         }
         else if(o1.getType().equals("BUY") && o2.getType().equals("SELL") && o3.getType().equals("BUY")) {
-            if(!buyBuySellOrder(o1, o3, o2, executionPrice)){
-                return false;
-            }
+            executionPrice = buyBuySellOrder(o1, o3, o2);
         }
         else if(o1.getType().equals("SELL") && o2.getType().equals("SELL") && o3.getType().equals("BUY")) {
-            if(!buySellSellOrder(o3, o2, o1, executionPrice)){
-                return false;
-            }
+            executionPrice = buySellSellOrder(o3, o2, o1);
         }
         else if(o1.getType().equals("SELL") && o2.getType().equals("BUY") && o3.getType().equals("BUY")) {
-
-            if(!buyBuySellOrder(o2, o3, o1, executionPrice)){
-                return false;
-            }
+            executionPrice = buyBuySellOrder(o2, o3, o1);
         }
         else if(o1.getType().equals("SELL") && o2.getType().equals("BUY") && o3.getType().equals("SELL")) {
-            if(!buySellSellOrder(o2, o1, o3, executionPrice)){
-                return false;
-            }
+            executionPrice = buySellSellOrder(o2, o1, o3);
         }
         else {
+            return false;
+        }
+        if(executionPrice.compareTo(new BigDecimal (-1)) == 0){
             return false;
         }
 
