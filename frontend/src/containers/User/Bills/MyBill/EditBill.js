@@ -168,7 +168,7 @@ function EditBillModal(props) {
             />
             <TextField
               required
-              pattern="^[+]?([.]\d+|\d+([.]\d\d?)?)$"
+              pattern="^(\d{1,9}|\d{0,5}\.\d{1,9})$"
               helperText="Please enter a valid Amount"
               margin="dense"
               name="amount"
