@@ -171,6 +171,29 @@ public class Bill {
         this.description=description;
 
     }
+    public String getmessage(){
+
+        String bill = "Details \n   Bill from: "+ this.fromUser.getUserName()+
+                "\n   Bill to: "+ this.toUser.getUserName()+
+                "\n   Description: "+this.description+
+                "\n   Amount: "+this.amount+
+                "\n   Currency: "+this.targetCurrency.getName() +
+                "\n   Due Date: "+this.dueDate+
+                "\n   Status: "+this.status;;
+        return bill;
+    }
+//    public String getfrommessage(){
+//
+//        String bill = "Bill from: "+ this.fromUser.getUserName()+
+//                "\nBill to: "+ this.toUser.getUserName()+
+//                "\nDescription: "+this.description+
+//                "\nAmount: "+this.amount+
+//                "\nCurrency: "+this.targetCurrency.getName() +
+//                "\nDue Date: "+this.dueDate+
+//                "\nStatus: "+this.status;;
+//        return bill;
+//    }
+
 
     public Bill() {
     }

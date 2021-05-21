@@ -1,5 +1,6 @@
 package com.bitcorner.service.JPA;
 
+import com.bitcorner.entity.Bill;
 import com.bitcorner.entity.Message;
 import com.bitcorner.entity.UserInfo;
 import com.bitcorner.repository.MessageRepository;
@@ -55,4 +56,29 @@ public class MessageServiceImpl implements MessageService {
         javaMailSender.send(mail);
 
     }
+
+    public void sendBill(Bill bill,String subject){
+        UserInfo toUser=bill.getToUser();
+        UserInfo fromUser=bill.getFromUser();
+        String msg = bill.getmessage();
+
+        // code to Send Email
+        SimpleMailMessage mail = new SimpleMailMessage();
+        mail.setFrom("bitcorner321@gmail.com");
+        mail.setTo(toUser.getUserName());
+        mail.setSubject(subject);
+        mail.setText(msg);
+        javaMailSender.send(mail);
+        SimpleMailMessage mail2 = new SimpleMailMessage();
+        mail2.setFrom("bitcorner321@gmail.com");
+        mail2.setTo(fromUser.getUserName());
+        mail2.setSubject(subject);
+        mail2.setText(msg);
+        javaMailSender.send(mail2);
+
+    }
+
+
+
+
 }

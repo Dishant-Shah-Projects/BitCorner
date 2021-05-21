@@ -14,7 +14,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import com.bitcorner.service.MessageService;
+import com.bitcorner.service.CurrencyService;
+import com.bitcorner.service.UserInfoService;
+import com.bitcorner.service.BalanceService;
 import javax.management.BadAttributeValueExpException;
 import javax.persistence.EntityNotFoundException;
 import javax.servlet.http.HttpServletRequest;
@@ -31,6 +34,9 @@ public class BillController {
 
     @Autowired
     UserInfoService userInfoService;
+
+    @Autowired
+    MessageService messageService;
 
     @Autowired
     CurrencyService currencyService;
@@ -65,6 +71,8 @@ public class BillController {
                 bill.setTargetCurrency(currency);
     
                 billService.update(bill);
+                messageService.sendBill(bill, "Notification from Bitcorner: Updated Bill");
+
                 return new ResponseEntity<>(new SuccessResponse("UPdated"), HttpStatus.OK);
             }
             catch (EntityNotFoundException ex){
@@ -88,11 +96,15 @@ public class BillController {
     {
         try {
             String fromID = getUserId();
+            UserInfo fromuser =userInfoService.getById(fromID);
             UserInfo userto=userInfoService.getByUserName(toEmail);
             Currency currency =currencyService.getById(currid);
             Bill bill = new Bill(fromID,userto.getId(),currency,amount,DueDate,Description);
+            bill.setToUser(userto);
+            bill.setFromUser(fromuser);
             bill.setStatus("Waiting");
             billService.create(bill);
+            messageService.sendBill(bill, "Notification from Bitcorner: New Bill");
             return new ResponseEntity<>(bill, HttpStatus.OK);
         }
         catch (EntityNotFoundException ex){
@@ -152,6 +164,7 @@ public class BillController {
 
             }
             billService.update(bill);
+            messageService.sendBill(bill, "Notification from Bitcorner: Payed Bill");
             return new ResponseEntity<>(new SuccessResponse("Bill Payed Successfully"), HttpStatus.OK);
         }
         catch (EntityNotFoundException ex){
@@ -176,6 +189,7 @@ public class BillController {
             bill.setStatus("Cancelled");
 
             billService.update(bill);
+            messageService.sendBill(bill, "Notification from Bitcorner: Cancelled Bill");
             return new ResponseEntity<>(new SuccessResponse("Bill Canceled Successfully"), HttpStatus.OK);
         }
         catch (EntityNotFoundException ex){
@@ -197,6 +211,7 @@ public class BillController {
             bill.setStatus("Rejected");
 
             billService.update(bill);
+            messageService.sendBill(bill, "Notification from Bitcorner: Rejected Bill");
             return new ResponseEntity<>(new SuccessResponse("Bill Canceled Successfully"), HttpStatus.OK);
         }
         catch (EntityNotFoundException ex){
