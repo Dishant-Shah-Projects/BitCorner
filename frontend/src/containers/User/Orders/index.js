@@ -295,36 +295,35 @@ function Content(props) {
                       </TableHead>
                       <TableBody>
                         {orderInfo.data.map((ordern) => (
-                          <TableRow>
-                            <TableCell key={ordern?.type}>
+                          <TableRow key={ordern.id}>
+                            <TableCell>
                               {ordern?.type}
                             </TableCell>
-                            <TableCell key={ordern?.priceType}>
+                            <TableCell>
                               {ordern?.priceType}
                             </TableCell>
-                            <TableCell key={ordern?.quantity}>
+                            <TableCell>
                               {ordern?.quantity}
                             </TableCell>
-                            <TableCell key={ordern?.limitPrice}>
+                            <TableCell>
                               {ordern?.limitPrice}
                             </TableCell>
-                            <TableCell key={ordern?.executionPrice}>
+                            <TableCell>
                               {ordern?.executionPrice}
                             </TableCell>
-                            <TableCell key={ordern?.serviceFee}>
+                            <TableCell>
                               {ordern?.serviceFee}
                             </TableCell>
-                            {/*TODO : Currency object is not coming from backend*/}
-                            <TableCell key={ordern?.currency?.name}>
+                            <TableCell>
                               {ordern?.currency?.name}
                             </TableCell>
-                            <TableCell key={ordern?.status}>
+                            <TableCell>
                               {ordern?.status}
                             </TableCell>
-                            <TableCell key={ordern?.runningBitcoinBalance}>
+                            <TableCell>
                               {ordern?.runningBitcoinBalance}
                             </TableCell>
-                            <TableCell key={ordern?.runningCurrencyBalance}>
+                            <TableCell>
                               {ordern?.runningCurrencyBalance}
                             </TableCell>
                             <TableCell>
