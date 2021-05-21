@@ -52,6 +52,12 @@ public class Order_Table{
     @Column(name="TIME")
     private Date time;
 
+    @Column(name="RUNNING_BITCOIN_BALANCE")
+    private BigDecimal runningBitcoinBalance;
+
+    @Column(name="RUNNING_CURRENCY_BALANCE")
+    private BigDecimal runningCurrencyBalance;
+
     @ManyToOne()
     @JoinColumn(name="CURRENCY_ID",insertable = false,updatable = false)
     private Currency currency;
@@ -196,4 +202,23 @@ public class Order_Table{
         this.setCurrencyId(currencyId);
     }
 
+    public BigDecimal getRunningCurrencyBalance()
+    {
+        return runningCurrencyBalance;
+    }
+
+    public void setRunningCurrencyBalance(BigDecimal runningCurrencyBalance)
+    {
+        this.runningCurrencyBalance = runningCurrencyBalance;
+    }
+
+    public BigDecimal getRunningBitcoinBalance()
+    {
+        return runningBitcoinBalance;
+    }
+
+    public void setRunningBitcoinBalance(BigDecimal runningBitcoinBalance)
+    {
+        this.runningBitcoinBalance = runningBitcoinBalance;
+    }
 }

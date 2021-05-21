@@ -60,17 +60,7 @@ export const Content = (props) => {
       console.log("values", values);
       axios.put(`user?nickname=${values["nickname"]}`).then((response) => {
         onRequestUserInfo();
-        // alert("Nickname updated successfully!");
       });
-      // .catch((error) => {
-      //   if (
-      //     error?.response?.data?.errorMessage.includes("constraint [USER_INFO.NICKNAME]")
-      //   ) {
-      //     alert("Please try again with unique nick name.");
-      //   } else {
-      //     alert(error?.response?.data?.errorMessage);
-      //   }
-      // });
     });
   };
 
@@ -130,7 +120,7 @@ export default connect(
 )((props) => (
   <ComponentWrapper
     name="Update Nick Name"
-    helperText="verify email to continue using Bit Corner"
+    helperText="Please update your nickname"
     Component={Content}
     {...props}
   />

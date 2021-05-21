@@ -91,9 +91,9 @@ function EditOrderModal(props) {
     });
   };
 
-  useEffect(() => {
-    onrequestOrderInfo();
-  }, []);
+  // useEffect(() => {
+  //   onrequestOrderInfo();
+  // }, []);
   let disabled = false;
   if (order.status == "Fulfilled" || order.status == "Cancelled") {
     disabled = true;

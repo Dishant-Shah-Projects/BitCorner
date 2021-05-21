@@ -12,29 +12,9 @@ import LogoutIcon from "@material-ui/icons/ExitToApp";
 import firebase from "../../Firebase";
 import MarketPrice from '../MarketPrice/MarketPrice';
 
-// const lightColor = "rgba(255, 255, 255, 0.7)";
-
-// const styles = (theme) => ({
-//   menuButton: {
-//     marginLeft: -theme.spacing(1),
-//   },
-//   iconButtonAvatar: {
-//     padding: 4,
-//   },
-//   link: {
-//     textDecoration: "none",
-//     color: lightColor,
-//     "&:hover": {
-//       color: theme.palette.common.white,
-//     },
-//   },
-//   button: {
-//     borderColor: lightColor,
-//   },
-// });
 
 function CommonHeader(props) {
-  const { classes, onDrawerToggle, user } = props;
+  const { classes, onDrawerToggle, user, userInfo } = props;
 
   return (
     <AppBar color="primary" position="sticky" elevation={0}>
@@ -58,18 +38,11 @@ function CommonHeader(props) {
               </Tooltip>
             </Grid>
           <Grid item xs />
-          {/* <Grid item>
-            <Tooltip title="Alerts • No alerts">
-              <IconButton color="inherit">
-                <NotificationsIcon />
-              </IconButton>
-            </Tooltip>
-          </Grid> */}
         
           <Grid item>
             <Tooltip title="display name">
               <IconButton color="inherit" className={classes.iconButtonAvatar}>
-                {user.displayName}
+                {user.displayName} ({userInfo?.nickName})
               </IconButton>
             </Tooltip>
           </Grid>
@@ -101,7 +74,8 @@ function CommonHeader(props) {
 }
 const mapStateToProps = (state) => {
   return {
-    user: state.auth.user
+    user: state.auth.user,
+    userInfo: state.userInfo?.userInfo
   };
 };
 

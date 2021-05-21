@@ -44,6 +44,8 @@ public class OrderServiceImpl implements OrderService
         boolean isDone = findMatch(order);
         if (!isDone)
         {
+            order.setRunningBitcoinBalance(balanceRepository.findByUserIdAndCurrencyId(order.getUserId(), 6).getAmount());
+            order.setRunningCurrencyBalance(balanceRepository.findByUserIdAndCurrencyId(order.getUserId(), order.getCurrencyId()).getAmount());
             repository.save(order);
         }
     }
@@ -78,7 +80,12 @@ public class OrderServiceImpl implements OrderService
             balanceService.withdrawBalance(sellOrder.getUserId(), 6, sellOrder.getQuantity());
 
             buyOrder.setStatus("Fulfilled");
+            buyOrder.setRunningBitcoinBalance(balanceRepository.findByUserIdAndCurrencyId(buyOrder.getUserId(), 6).getAmount());
+            buyOrder.setRunningCurrencyBalance(balanceRepository.findByUserIdAndCurrencyId(buyOrder.getUserId(), buyOrder.getCurrencyId()).getAmount());
+
             sellOrder.setStatus("Fulfilled");
+            sellOrder.setRunningBitcoinBalance(balanceRepository.findByUserIdAndCurrencyId(sellOrder.getUserId(), 6).getAmount());
+            sellOrder.setRunningCurrencyBalance(balanceRepository.findByUserIdAndCurrencyId(sellOrder.getUserId(), sellOrder.getCurrencyId()).getAmount());
 
             buyOrder.setExecutionPrice(executionPrice);
             sellOrder.setExecutionPrice(executionPrice);
@@ -173,6 +180,9 @@ public class OrderServiceImpl implements OrderService
         balanceService.depositBalance(order.getUserId(), 6, order.getQuantity());
 
         order.setStatus("Fulfilled");
+        order.setRunningBitcoinBalance(balanceRepository.findByUserIdAndCurrencyId(order.getUserId(), 6).getAmount());
+        order.setRunningCurrencyBalance(balanceRepository.findByUserIdAndCurrencyId(order.getUserId(), order.getCurrencyId()).getAmount());
+
         order.setExecutionPrice(executionPrice);
 
         repository.save(order);
@@ -196,6 +206,8 @@ public class OrderServiceImpl implements OrderService
         balanceService.withdrawBalance(order.getUserId(), 6, order.getQuantity());
 
         order.setStatus("Fulfilled");
+        order.setRunningBitcoinBalance(balanceRepository.findByUserIdAndCurrencyId(order.getUserId(), 6).getAmount());
+        order.setRunningCurrencyBalance(balanceRepository.findByUserIdAndCurrencyId(order.getUserId(), order.getCurrencyId()).getAmount());
 
         order.setExecutionPrice(executionPrice);
 
@@ -302,7 +314,7 @@ public class OrderServiceImpl implements OrderService
         }
         marketPrice.setTransactionPrice(executionPrice);
         marketPriceRepository.save(marketPrice);
-        return false;
+        return true;
     }
 
     // TODO: Fix the execution price

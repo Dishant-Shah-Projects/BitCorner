@@ -117,17 +117,16 @@ public class OrderTableController {
             order_table.setServiceFee(null);
             order_table.setId(orderId);
             Date d = new Date();
-//            DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm:ss");
             order_table.setTime(d);
-            Orderservice.update(order_table);
+            Orderservice.save(order_table);
             return new ResponseEntity<>(order_table, HttpStatus.OK);
         }
         catch (EntityNotFoundException ex){
             return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
         }
-//        catch (BadAttributeValueExpException ex){
-//            return new ResponseEntity<>(new ErrorResponse(ex.toString()), HttpStatus.BAD_REQUEST);
-//        }
+        catch (BadAttributeValueExpException ex){
+            return new ResponseEntity<>(new ErrorResponse(ex.toString()), HttpStatus.BAD_REQUEST);
+        }
         catch (Exception ex){
             return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }
@@ -140,14 +139,12 @@ public class OrderTableController {
     public ResponseEntity<?> cancelOrder(@RequestParam(name="orderId", required=true) long orderId,@RequestBody Order_Table order_table){
         try {
             String userId=getUserId();
-//            Currency currency=currencyService.getById(bankInfo.getPrimaryCurrencyId());
             order_table.setUserId(userId);
             order_table.setStatus("Cancelled");
             order_table.setExecutionPrice(null);
             order_table.setServiceFee(null);
             order_table.setId(orderId);
             Date d = new Date();
-//            DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm:ss");
             order_table.setTime(d);
             Orderservice.update(order_table);
             return new ResponseEntity<>(order_table, HttpStatus.OK);
@@ -155,9 +152,6 @@ public class OrderTableController {
         catch (EntityNotFoundException ex){
             return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
         }
-//        catch (BadAttributeValueExpException ex){
-//            return new ResponseEntity<>(new ErrorResponse(ex.toString()), HttpStatus.BAD_REQUEST);
-//        }
         catch (Exception ex){
             return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
         }

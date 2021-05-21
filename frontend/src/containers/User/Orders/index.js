@@ -279,6 +279,12 @@ function Content(props) {
                           <TableCell align="left">
                             <b>Status</b>
                           </TableCell>
+                          <TableCell align="left">
+                            <b>Running BTC Balance</b>
+                          </TableCell>
+                          <TableCell align="left">
+                            <b>Running Currency Balance</b>
+                          </TableCell>
                           <TableCell align="center">
                             <b>Edit Order</b>
                           </TableCell>
@@ -314,6 +320,12 @@ function Content(props) {
                             </TableCell>
                             <TableCell key={ordern?.status}>
                               {ordern?.status}
+                            </TableCell>
+                            <TableCell key={ordern?.runningBitcoinBalance}>
+                              {ordern?.runningBitcoinBalance}
+                            </TableCell>
+                            <TableCell key={ordern?.runningCurrencyBalance}>
+                              {ordern?.runningCurrencyBalance}
                             </TableCell>
                             <TableCell>
                               <EditOrderModal order={ordern}></EditOrderModal>
