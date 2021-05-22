@@ -14,7 +14,7 @@ import Axios from "axios";
 import EditIcon from "@material-ui/icons/Edit";
 import TextField from "../../../../components/TextField";
 import { useForm } from "../../../../hooks/useForm";
-import Select from "../../../../components/Select";
+import CurrencyDropdown from "../../CurrencyDropdown/index";
 import InputLabel from "@material-ui/core/InputLabel";
 const styles = makeStyles((theme) => ({
   paper: {
@@ -42,19 +42,12 @@ const styles = makeStyles((theme) => ({
 function EditBillModal(props) {
   const {
     classes,
-    onRequestBankInfo,
-    currencies,
-    user,
-    onrequestCurrencyInfo,
     onrequestBillInfo,
     bill,
   } = props;
 
   const [open, setOpen] = React.useState(false);
   const styling = styles();
-  const formData = {
-    ID: bill.id,
-  };
   const {
     errors,
     setErrors,
@@ -104,9 +97,6 @@ function EditBillModal(props) {
     });
   };
 
-  useEffect(() => {
-    onrequestCurrencyInfo();
-  }, []);
   let disabled = false;
   if(bill.status==="Paid" || bill.status==="Cancelled"||bill.status==="Rejected"){
     disabled = true
@@ -151,21 +141,20 @@ function EditBillModal(props) {
               value={values["Description"]}
               error={errors["Description"]}
             />
-            <Select
-              required
-              margin="dense"
-              id="country"
-              label="Currency"
-              name="target_currency"
-              fullWidth
-              options={currencies}
-              valueKey="id"
-              displayKey="name"
-              helperText="Please select atleast one"
-              onChange={handleInputChange}
-              value={values["target_currency"]}
-              error={errors["target_currency"]}
-            />
+
+             <CurrencyDropdown
+                isCrypto={true}
+                required
+                margin="dense"
+                id="country"
+                label="Currency"
+                name="target_currency"
+                fullWidth
+                helperText="Please select atleast one"
+                onChange={handleInputChange}
+                value={values["target_currency"]}
+                error={errors["target_currency"]}
+              />
             <TextField
               required
               pattern="^(\d{1,9}|\d{0,5}\.\d{1,9})$"
@@ -204,16 +193,9 @@ function EditBillModal(props) {
   );
 }
 
-const mapStateToProps = (state) => {
-  return {
-    user: state.user,
-    currencies: state.currency.currencies,
-  };
-};
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onrequestCurrencyInfo: () => dispatch(requestCurrencyInfo()),
     onrequestBillInfo: () => dispatch(requestBillInfo()),
   };
 };
@@ -223,6 +205,6 @@ EditBillModal.propTypes = {
 };
 
 export default connect(
-  mapStateToProps,
+  null,
   mapDispatchToProps
 )(withStyles(styles)(EditBillModal));

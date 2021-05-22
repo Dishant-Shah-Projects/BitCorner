@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core/styles";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import { connect } from "react-redux";
-import { requestBillInfo,requestCurrencyInfo } from "../action";
+import { requestBillInfo } from "../action";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -42,8 +42,7 @@ const styles = makeStyles((theme) => ({
 }));
 
 function BillModal(props) {
-  const { classes, onRequestBankInfo, currencies, user, onrequestCurrencyInfo,onrequestBillInfo,bankInfo} = props;
-  console.log(currencies);
+  const { classes, onRequestBankInfo, onrequestBillInfo,bankInfo} = props;
   const [open, setOpen] = React.useState(false);
   const styling = styles();
 
@@ -100,7 +99,6 @@ function BillModal(props) {
   };
 
   useEffect(() => {
-    onrequestCurrencyInfo();
     onRequestBankInfo();
     
   }, []);
@@ -171,7 +169,7 @@ function BillModal(props) {
                   
                 />
                   <CurrencyDropdown
-                  isCrypto = {TrendingUpRounded}
+                  isCrypto = {true}
                   required
                   margin="dense"
                   id="currency"
@@ -228,16 +226,12 @@ function BillModal(props) {
 
 const mapStateToProps = (state) => {
   return {
-    user: state.user,
-    currencies :state.currency.currencies,
     bankInfo:state.bank.bankInfo
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    
-    onrequestCurrencyInfo: ()  => dispatch(requestCurrencyInfo()),
     onrequestBillInfo: () => dispatch(requestBillInfo()),
     onRequestBankInfo: () => dispatch(requestBankInfo())
   };
@@ -247,17 +241,6 @@ BillModal.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-// export default (props) => (
-//   <ComponentWrapper
-//     name="Bank Account Details"
-//     helperText="View and update your bank account information"
-//     Component={connect(
-//       mapStateToProps,
-//       mapDispatchToProps
-//     )(withStyles(styles)(Content))}
-//     {...props}
-//   />
-// );
 export default connect(
   mapStateToProps,
   mapDispatchToProps

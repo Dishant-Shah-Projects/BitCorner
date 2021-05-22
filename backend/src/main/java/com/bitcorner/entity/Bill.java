@@ -182,17 +182,7 @@ public class Bill {
                 "\n   Status: "+this.status;;
         return bill;
     }
-//    public String getfrommessage(){
-//
-//        String bill = "Bill from: "+ this.fromUser.getUserName()+
-//                "\nBill to: "+ this.toUser.getUserName()+
-//                "\nDescription: "+this.description+
-//                "\nAmount: "+this.amount+
-//                "\nCurrency: "+this.targetCurrency.getName() +
-//                "\nDue Date: "+this.dueDate+
-//                "\nStatus: "+this.status;;
-//        return bill;
-//    }
+
 
 
     public Bill() {

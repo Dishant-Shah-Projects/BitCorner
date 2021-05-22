@@ -4,7 +4,7 @@ import { withStyles } from "@material-ui/core/styles";
 import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import { connect } from "react-redux";
-import { requestBillPayInfo, requestCurrencyInfo } from "../action";
+import { requestBillPayInfo } from "../action";
 import Dialog from "@material-ui/core/Dialog";
 import DialogActions from "@material-ui/core/DialogActions";
 import DialogContent from "@material-ui/core/DialogContent";
@@ -42,24 +42,14 @@ const styles = makeStyles((theme) => ({
 function PayBillModal(props) {
   const {
     classes,
-    currencies,
-    user,
-    onrequestCurrencyInfo,
+
     onrequestBillPayInfo,
     bill,
     bankInfo,
   } = props;
-  console.log(currencies);
   const [open, setOpen] = React.useState(false);
   const styling = styles();
-  let id = bankInfo?.data?.primaryCurrencyId;
 
-  console.log("#######");
-  console.log(bill);
-
-  const formData = {
-    ID: bill.id,
-  };
   const {
     errors,
     setErrors,
@@ -97,12 +87,14 @@ function PayBillModal(props) {
           values["target_currency"]=bill?.targetCurrency?.id;
           onrequestBillPayInfo();
         }
+        else{
+          setOpen(false);
+        }
       });
     });
   };
 
   useEffect(() => {
-    onrequestCurrencyInfo();
   }, []);
   let disabled = false
   if(bill.status==="Paid" || bill.status==="Cancelled"||bill.status==="Rejected"){
@@ -156,7 +148,7 @@ function PayBillModal(props) {
                 Cancel
               </Button>
               <Button type="submit" color="primary">
-                Add Bill
+                Pay Bill
               </Button>
             </DialogActions>
           </form>
@@ -167,15 +159,12 @@ function PayBillModal(props) {
 
 const mapStateToProps = (state) => {
   return {
-    user: state.user,
-    currencies: state.currency.currencies,
     bankInfo: state.bank.bankInfo,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onrequestCurrencyInfo: () => dispatch(requestCurrencyInfo()),
     onrequestBillPayInfo: () => dispatch(requestBillPayInfo())
   };
 };

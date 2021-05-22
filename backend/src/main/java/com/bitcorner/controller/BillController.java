@@ -96,6 +96,9 @@ public class BillController {
     {
         try {
             String fromID = getUserId();
+            if(fromID==null || fromID.isEmpty()){
+                throw new BadAttributeValueExpException("Invalid UserId");
+            }
             UserInfo fromuser =userInfoService.getById(fromID);
             UserInfo userto=userInfoService.getByUserName(toEmail);
             Currency currency =currencyService.getById(currid);

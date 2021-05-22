@@ -6,7 +6,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import { requestBillInfo,requestCurrencyInfo } from "../action";
+import { requestBillInfo } from "../action";
 import PropTypes from "prop-types";
 import { connect } from "react-redux";
 import EditBillModal from "./EditBill"
@@ -29,15 +29,12 @@ const useStyles = makeStyles((theme) => ({
 }));
 function Bill(props) {
   const classes = useStyles();
-  const {  onrequestCurrencyInfo, currency, bills, onrequestBillInfo} = props;
+  const {  bills, onrequestBillInfo} = props;
   rows=[]
   bills.bills.map((bill)=>rows.push(createData(bill, bill.toUser.userName, bill.description, bill.amount, bill.targetCurrency.name, bill.dueDate,bill.status)))
-  console.log(currency);
-  console.log(bills);
   useEffect(() => {
     
     onrequestBillInfo();
-    onrequestCurrencyInfo();
 
     
 
@@ -91,7 +88,6 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     
-    onrequestCurrencyInfo: ()  => dispatch(requestCurrencyInfo()),
     onrequestBillInfo: () => dispatch(requestBillInfo())
   };
 };

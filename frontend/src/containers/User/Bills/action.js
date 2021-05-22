@@ -4,7 +4,7 @@ import Axios from "axios";
 export const requestCurrencyInfo = () => (dispatch) => {
     dispatch({type: "REQUEST_CURRENCY_INFO_PENDING"})
     Axios.get(("/currency"))
-    .then((response) => response)
+    .then((response) =>response)
     .then((data) => dispatch ({type:"REQUEST_CURRENCY_INFO_SUCCESS", payload: data.data}))
     .catch((error) => dispatch({type: "REQUEST_CURRENCY_INFO_FAIL", payload: error}))
 }
