@@ -9,12 +9,18 @@ export const CurrencyDropdown = (props) => {
     if (currencies?.length === 0) onrequestCurrencyInfo();
   }, [currencies]);
 
+  let cur;
   if (!isCrypto) {
-    delete currencies[5];
+    cur = currencies.slice(0,5);
   }
-
+  else{
+    cur = currencies;
+  }
+  console.log('******');
+  console.log(isCrypto,currencies);
+  console.log('******');
   return (
-    <Select options={currencies} valueKey="id" displayKey="name" {...props} />
+    <Select options={cur} valueKey="id" displayKey="name" {...props} />
   );
 };
 
