@@ -16,7 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import com.bitcorner.service.MessageService;
 @Service
 public class OrderServiceImpl implements OrderService
 {
@@ -35,19 +35,30 @@ public class OrderServiceImpl implements OrderService
 
     @Autowired
     private BalanceServiceImpl balanceService;
-
+    @Autowired
+    MessageService messageService;
     @Transactional
     @Override
     public void save(Order_Table order) throws BadAttributeValueExpException
     {
         isOrderValid(order);
         boolean isDone = findMatch(order);
+        System.out.println("ORdder 1");
+        System.out.println(order.getId());
+        if(order.getId()==0){
+            messageService.sendOrder(order,"Notification from bitcorner: New Order");
+        }
+        else{
+            messageService.sendOrder(order,"Notification from bitcorner: Updated Order");
+        }
         if (!isDone)
         {
             order.setRunningBitcoinBalance(balanceRepository.findByUserIdAndCurrencyId(order.getUserId(), 6).getAmount());
             order.setRunningCurrencyBalance(balanceRepository.findByUserIdAndCurrencyId(order.getUserId(), order.getCurrencyId()).getAmount());
             repository.save(order);
         }
+
+
     }
 
     @Transactional
@@ -92,6 +103,8 @@ public class OrderServiceImpl implements OrderService
 
             repository.save(buyOrder);
             repository.save(sellOrder);
+            messageService.sendOrder(buyOrder,"Notification from bitcorner: Fulfilled Order");
+            messageService.sendOrder(sellOrder,"Notification from bitcorner: Fulfilled Order");
             // TODO: Update last transaction Price
 
             MarketPrice marketPrice = marketPriceRepository.findByCurrencyId(buyOrder.getCurrencyId());
@@ -186,6 +199,7 @@ public class OrderServiceImpl implements OrderService
         order.setExecutionPrice(executionPrice);
 
         repository.save(order);
+        messageService.sendOrder(order,"Notification from bitcorner: Fulfilled Order");
     }
 
     @Transactional

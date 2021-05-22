@@ -1,7 +1,9 @@
 package com.bitcorner.controller;
 
+import com.bitcorner.auth.model.User;
 import com.bitcorner.dataModel.ErrorResponse;
 import com.bitcorner.entity.*;
+import com.bitcorner.service.CurrencyService;
 import com.bitcorner.service.OrderService;
 import com.bitcorner.service.UserInfoService;
 import com.google.firebase.auth.FirebaseAuth;
@@ -35,6 +37,10 @@ public class OrderTableController {
     @Autowired
     SecurityService securityService;
 
+    @Autowired
+    CurrencyService currencyService;
+    @Autowired
+    UserInfoService userInfoService;
     //Method to get all orders
     @RequestMapping(method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE, value = "/all")
     @ResponseBody
@@ -79,8 +85,12 @@ public class OrderTableController {
     public ResponseEntity<?> saveOrder(@RequestBody Order_Table order_table){
         try {
             String userId=getUserId();
+            UserInfo user = userInfoService.getById(userId);
 //            Currency currency=currencyService.getById(bankInfo.getPrimaryCurrencyId());
             order_table.setUserId(userId);
+            Currency currency=currencyService.getById(order_table.getCurrencyId());
+            order_table.setCurrency(currency);
+            order_table.setUser(user);
             order_table.setStatus("Open");
             order_table.setExecutionPrice(null);
             order_table.setServiceFee(null);
@@ -112,6 +122,12 @@ public class OrderTableController {
             String userId=getUserId();
 //            Currency currency=currencyService.getById(bankInfo.getPrimaryCurrencyId());
             order_table.setUserId(userId);
+            UserInfo user = userInfoService.getById(userId);
+//            Currency currency=currencyService.getById(bankInfo.getPrimaryCurrencyId());
+            order_table.setUserId(userId);
+            Currency currency=currencyService.getById(order_table.getCurrencyId());
+            order_table.setCurrency(currency);
+            order_table.setUser(user);
             order_table.setStatus("Open");
             order_table.setExecutionPrice(null);
             order_table.setServiceFee(null);

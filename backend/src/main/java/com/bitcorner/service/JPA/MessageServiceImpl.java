@@ -2,6 +2,7 @@ package com.bitcorner.service.JPA;
 
 import com.bitcorner.entity.Bill;
 import com.bitcorner.entity.Message;
+import com.bitcorner.entity.Order_Table;
 import com.bitcorner.entity.UserInfo;
 import com.bitcorner.repository.MessageRepository;
 import com.bitcorner.service.MessageService;
@@ -75,6 +76,18 @@ public class MessageServiceImpl implements MessageService {
         mail2.setSubject(subject);
         mail2.setText(msg);
         javaMailSender.send(mail2);
+
+    }
+    public void sendOrder(Order_Table order, String subject){
+        UserInfo User=order.getUser();
+        String msg = order.getmessage();
+        // code to Send Email
+        SimpleMailMessage mail = new SimpleMailMessage();
+        mail.setFrom("bitcorner321@gmail.com");
+        mail.setTo(User.getUserName());
+        mail.setSubject(subject);
+        mail.setText(msg);
+        javaMailSender.send(mail);
 
     }
 

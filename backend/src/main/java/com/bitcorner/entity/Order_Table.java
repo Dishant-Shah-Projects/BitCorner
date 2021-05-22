@@ -187,6 +187,23 @@ public class Order_Table{
 
     public Order_Table(){}
 
+    public String getmessage(){
+
+
+
+        String order = "Details \n   Order from: "+ this.getUser().getUserName()+
+                "\n   Order Type: "+this.type+
+                "\n   Order Time: "+this.time+
+                "\n   Price: "+this.limitPrice+
+                "\n   Currency: "+this.currency.getName() +
+                "\n   Quantity: "+this.quantity+
+                "\n   Execution Price: "+this.executionPrice+
+                "\n   Status: "+this.status;
+        System.out.println(order);
+        return order;
+    }
+
+
     public Order_Table(String userId,String type,String priceType,BigDecimal quantity,BigDecimal limitPrice,
                        BigDecimal executionPrice,String status,BigDecimal serviceFee,long currencyId)
             throws BadAttributeValueExpException

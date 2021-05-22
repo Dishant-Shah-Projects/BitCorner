@@ -3,6 +3,7 @@ package com.bitcorner.service;
 
 import com.bitcorner.entity.Bill;
 import com.bitcorner.entity.Message;
+import com.bitcorner.entity.Order_Table;
 import com.bitcorner.entity.UserInfo;
 
 import java.util.List;
@@ -23,6 +24,6 @@ void save(Message message);
 
     List<String> getConnectedUsers(String userId);
     public void sendBill(Bill bill,String subject);
-    // public void sendupdatedBill(Bill bill);
-    // public void sendfinishedBill(Bill bill);
+    public void sendOrder(Order_Table order, String subject);
+
 }
