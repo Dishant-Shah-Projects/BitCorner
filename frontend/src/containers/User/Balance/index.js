@@ -42,10 +42,6 @@ function Content(props) {
   } = props;
   const styling = styles();
 
-  console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-  console.log(bankInfo.status);
-  console.log("^^^^^^^^^^^^^^^^^^^^^^^^^^^");
-
   useEffect(() => {
     onRequestUserBalance();
     onRequestBankInfo();
@@ -63,13 +59,13 @@ function Content(props) {
               <Table className={styling.table} aria-label="simple table">
                 <TableHead>
                   <TableRow>
-                    <TableCell align="center">Currency</TableCell>
-                    <TableCell align="center">Balance</TableCell>
+                    <TableCell align="center"><b>Currency</b></TableCell>
+                    <TableCell align="center"><b>Balance</b></TableCell>
                     <TableCell align="center">
-                      Withdraw/Desposit Amount
+                      <b>Withdraw/Desposit Amount</b>
                     </TableCell>
-                    <TableCell align="center">Deposit</TableCell>
-                    <TableCell align="center">Withdraw</TableCell>
+                    <TableCell align="center"><b>Deposit</b></TableCell>
+                    <TableCell align="center"><b>Withdraw</b></TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>

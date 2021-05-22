@@ -55,7 +55,7 @@ function Grid(props) {
   return (
     <TableRow>
       <TableCell align="center">{balanceInfo.currency.name}</TableCell>
-      <TableCell align="center">{balanceInfo.amount}</TableCell>
+      <TableCell align="center">{(balanceInfo.amount > 0 && balanceInfo.amount < 1)  ? Number.parseFloat(balanceInfo.amount).toFixed(7): balanceInfo.amount}</TableCell>
       <TableCell align="center">
         <TextField
           autoFocus
