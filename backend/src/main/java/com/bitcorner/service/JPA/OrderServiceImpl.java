@@ -64,7 +64,7 @@ public class OrderServiceImpl implements OrderService
 
         if (amountAfterSubtractingFromBuyUser.signum() >= 0 && bitcoinAfterSubtractingSellAmount.signum() >= 0)
         {
-            BigDecimal serviceFee = amountToAddToSellUser.multiply(new BigDecimal("0.0001"));
+            BigDecimal serviceFee = amountToAddToSellUser.multiply(BigDecimal.valueOf(0.0001));
             Currency currency = currencyService.getById(sellOrder.getCurrencyId());
             BigDecimal currencyConversionRate = BigDecimal.valueOf(currency.getConversionRate());
             if (serviceFee.subtract(currencyConversionRate).signum() > 0)
@@ -191,7 +191,7 @@ public class OrderServiceImpl implements OrderService
     @Transactional
     public void executeSellOrder(Order_Table order, BigDecimal executionPrice) throws BadAttributeValueExpException{
         BigDecimal amountToAddToSellUser = order.getQuantity().multiply(executionPrice);
-        BigDecimal serviceFee = amountToAddToSellUser.multiply(new BigDecimal("0.0001"));
+        BigDecimal serviceFee = amountToAddToSellUser.multiply(BigDecimal.valueOf(0.0001));
 
         Currency currency = currencyService.getById(order.getCurrencyId());
         BigDecimal currencyConversionRate = BigDecimal.valueOf(currency.getConversionRate());

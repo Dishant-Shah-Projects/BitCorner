@@ -67,10 +67,10 @@ public class BalanceController {
     }
     @RequestMapping(value = "{currencyId}/deposit",method = RequestMethod.PUT,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<?> depositBalance(@PathVariable("currencyId") long currencyId,@RequestParam(name = "amount", required = true) float depositAmount){
+    public ResponseEntity<?> depositBalance(@PathVariable("currencyId") long currencyId,@RequestParam(name = "amount", required = true) BigDecimal depositAmount){
         try {
             String userId=getUserId();
-            balanceService.depositBalance(userId,currencyId,new BigDecimal(depositAmount));
+            balanceService.depositBalance(userId,currencyId,depositAmount);
             return new ResponseEntity<>(new SuccessResponse("Amount deposited to account"), HttpStatus.OK);
         }catch (EntityNotFoundException ex){
             return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
@@ -81,10 +81,10 @@ public class BalanceController {
 
     @RequestMapping(value = "{currencyId}/withdraw",method = RequestMethod.PUT,produces = MediaType.APPLICATION_JSON_VALUE)
     @ResponseBody
-    public ResponseEntity<?> withdrawBalance(@PathVariable("currencyId") long currencyId,@RequestParam(name = "amount", required = true) float withdrawAmount){
+    public ResponseEntity<?> withdrawBalance(@PathVariable("currencyId") long currencyId,@RequestParam(name = "amount", required = true) BigDecimal withdrawAmount){
         try {
             String userId=getUserId();
-            balanceService.withdrawBalance(userId,currencyId,new BigDecimal(withdrawAmount));
+            balanceService.withdrawBalance(userId,currencyId,withdrawAmount);
             return new ResponseEntity<>(new SuccessResponse("Amount withdrawn from account"), HttpStatus.OK);
         }catch (EntityNotFoundException ex){
             return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
