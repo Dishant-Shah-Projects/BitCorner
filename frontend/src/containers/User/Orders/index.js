@@ -28,6 +28,8 @@ import { useForm } from "../../../hooks/useForm";
 import EditOrderModal from "./EditOrder";
 import CancelOrder from "./CancelOrder";
 import Axios from "axios";
+import DateFilter from '../DateFilter';
+import moment from 'moment';
 
 const styles = (theme) => ({
   paper: {
@@ -85,12 +87,26 @@ function Content(props) {
     }
   );
   const [open, setOpen] = React.useState(false);
+  const [filteredOrders, setFilteredOrders] = React.useState(orderInfo?.data);
   const styling = styles();
-  //const formData = {};
 
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
 
+  const filter = ({startDate, endDate}) => {
+    let filteredOrder = orderInfo?.data?.filter(item => {
+      var startDateObj = new moment(startDate);
+      var endDateObj = new moment(endDate);
+      var itemDateObj = new moment(item.time.split('T')[0]);
+      debugger;
+      if((startDateObj > itemDateObj) || (endDateObj < itemDateObj)){
+        return false;
+      }
+      return true;
+    })
+    setFilteredOrders(filteredOrder);
+  }
+ 
   const onFormSubmit = (event) => {
     formSubmit(event, () => {
       event.preventDefault();
@@ -110,7 +126,11 @@ function Content(props) {
     onRequestOrderInfo();
     onRequestBankInfo();
   }, []);
-  console.log(values);
+
+  useEffect(() => {
+    setFilteredOrders(orderInfo?.data);
+  }, [orderInfo]);
+
   return (
     <div>
       {bankInfo?.status === 200 ? (
@@ -246,6 +266,7 @@ function Content(props) {
           <hr></hr>
           <div className={styling.contentWrapper}>
             <h2>Your Orders</h2>
+            <DateFilter filter = {filter}/>
             {orderInfo.data &&
             typeof orderInfo.data !== undefined &&
             orderInfo.data.length != 0 ? (
@@ -294,32 +315,16 @@ function Content(props) {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {orderInfo.data.map((ordern) => (
+                        {filteredOrders?.map((ordern) => (
                           <TableRow key={ordern.id}>
-                            <TableCell>
-                              {ordern?.type}
-                            </TableCell>
-                            <TableCell>
-                              {ordern?.priceType}
-                            </TableCell>
-                            <TableCell>
-                              {ordern?.quantity}
-                            </TableCell>
-                            <TableCell>
-                              {ordern?.limitPrice}
-                            </TableCell>
-                            <TableCell>
-                              {ordern?.executionPrice}
-                            </TableCell>
-                            <TableCell>
-                              {ordern?.serviceFee}
-                            </TableCell>
-                            <TableCell>
-                              {ordern?.currency?.name}
-                            </TableCell>
-                            <TableCell>
-                              {ordern?.status}
-                            </TableCell>
+                            <TableCell>{ordern?.type}</TableCell>
+                            <TableCell>{ordern?.priceType}</TableCell>
+                            <TableCell>{ordern?.quantity}</TableCell>
+                            <TableCell>{ordern?.limitPrice}</TableCell>
+                            <TableCell>{ordern?.executionPrice}</TableCell>
+                            <TableCell>{ordern?.serviceFee}</TableCell>
+                            <TableCell>{ordern?.currency?.name}</TableCell>
+                            <TableCell>{ordern?.status}</TableCell>
                             <TableCell>
                               {ordern?.runningBitcoinBalance}
                             </TableCell>
