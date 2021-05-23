@@ -1,3 +1,4 @@
+import { ContactSupportOutlined } from "@material-ui/icons";
 import Axios from "axios";
 
 export const requestBankInfo = () => (dispatch) => {
@@ -69,14 +70,21 @@ export const requestAllOrderInfo = () => (dispatch) => {
     );
 };
 
-export const requestMarketPrice = (currencyId) => (dispatch) => {
+export const requestMarketPrice = () => (dispatch,getState) => {
   dispatch({ type: "REQUEST_MARKET_PRICE" });
-    Axios.get(`/marketprice/cid?&currencyId=${currencyId}`)
-    .then((response) => response)
-    .then((data) =>
-      dispatch({ type: "REQUEST_MARKET_PRICE_SUCCESS", payload: data })
-    )
+  getState().auth.user.getIdToken(true).then((idToken) => {
+    let headers = {'Authorization':`Bearer ${idToken}`};
+    let url = process.env.REACT_APP_API_URL+'marketprice';
+    fetch(url,{method:'GET',headers:headers})
+    .then((response) => response.json()
+    .then(data => {
+        let marketPrice = {};
+        data.forEach((item) => {
+        marketPrice[item.id] = item;
+    })
+    dispatch({ type: "REQUEST_MARKET_PRICE_SUCCESS", payload: marketPrice })})) 
     .catch((error) =>
       dispatch({ type: "REQUEST_MARKET_PRICE_FAIL", payload: error })
     );
+  });
 };

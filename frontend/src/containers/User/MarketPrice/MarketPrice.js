@@ -9,7 +9,7 @@ import TableHead from "@material-ui/core/TableHead";
 import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
-import TableBody from "@material-ui/core/TableBody";
+import TableBody from "@material-ui/core/TableBody"; 
 import Axios from "axios";
 
 import { requestBankInfo, requestMarketPrice } from "../actions.js";
@@ -50,21 +50,30 @@ function MarketPrice(props) {
         } = props;
     
         const styling = styles();
-        // const id = bankInfo?.data?.primaryCurrencyId;
         const id=1;
         const [option,setOption] = React.useState(id);
         const onChange = (e) => {setOption(e.target.value);}
-        const mp = marketPriceInfo?.data;
-
+        const [interval,setinterval] = React.useState(null);
         useEffect(() => {
-          onRequestMarketPrice(option);
+          onRequestMarketPrice();
           onRequestBankInfo();
-        }, [option]);
+          setinterval((previnterval) => {
+            if(previnterval){
+              clearInterval(previnterval);
+            }
+            return setInterval(onRequestMarketPrice,30000);
+          })
+          return () => {
+            setinterval((previnterval) => {
+              if(previnterval){
+                clearInterval(previnterval);
+              }
+              return null;
+            })
+          }
+        }, []);
 
-        // const api = () => {Axios.get(`/marketprice/cid?&currencyId=${option}`)
-        // .then(res => this.setState({ marketPriceInfo: res.data }))
-        // .catch(error => console.log(error));}
-
+        console.log("Data",marketPriceInfo)
         return(
             <>
              <TableContainer>
@@ -79,9 +88,9 @@ function MarketPrice(props) {
                 </TableHead>
                 <TableBody >
                 <TableRow className={classes.tableRow} >
-                  <TableCell><b>{marketPriceInfo?.data?.askPrice}</b> </TableCell>
-                  <TableCell><b>{marketPriceInfo?.data?.bidPrice}</b> </TableCell>
-                  <TableCell><b>{marketPriceInfo?.data?.transactionPrice}</b> </TableCell>
+                  <TableCell><b>{marketPriceInfo[option]?.askPrice}</b> </TableCell>
+                  <TableCell><b>{marketPriceInfo[option]?.bidPrice}</b> </TableCell>
+                  <TableCell><b>{marketPriceInfo[option]?.transactionPrice}</b> </TableCell>
                   <TableCell>
                     <CurrencyDropdown
                         isCrypto={false}
@@ -95,7 +104,7 @@ function MarketPrice(props) {
                         value={option}
                       />
                   </TableCell>
-               </TableRow>
+                  </TableRow>
                </TableBody>
               </Table> 
               </TableContainer>
@@ -116,7 +125,7 @@ function MarketPrice(props) {
       
       const mapDispatchToProps = (dispatch) => {
         return {
-          onRequestMarketPrice: (option) => dispatch(requestMarketPrice(option)),
+          onRequestMarketPrice: () => dispatch(requestMarketPrice()),
           onRequestBankInfo: () => dispatch(requestBankInfo())
         };
       };
