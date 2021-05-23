@@ -12,6 +12,8 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@material-ui/core/TableBody";
 import { requestBankInfo, requestAllOrderInfo } from "../actions.js";
+import DateFilter from '../DateFilter';
+import moment from 'moment';
 
 
 const styles = (theme) => ({
@@ -44,17 +46,37 @@ function Content(props) {
   } = props;
 
   const styling = styles();
+  const [filteredOrders, setFilteredOrders] = React.useState(orderInfo?.data);
+  const filter = ({startDate, endDate}) => {
+    let filteredOrder = orderInfo?.data?.filter(item => {
+      var startDateObj = new moment(startDate);
+      var endDateObj = new moment(endDate);
+      var itemDateObj = new moment(item.time.split('T')[0]);
+      debugger;
+      if((startDateObj > itemDateObj) || (endDateObj < itemDateObj)){
+        return false;
+      }
+      return true;
+    })
+    setFilteredOrders(filteredOrder);
+  }
 
   useEffect(() => {
     onRequestOrderInfo();
     onRequestBankInfo();
   }, []);
+
+  useEffect(() => {
+    setFilteredOrders(orderInfo?.data);
+  }, [orderInfo]);
+
   return (
     <div>
       {bankInfo?.status === 200 ? (
         <div>
           <div className={styling.contentWrapper}>
             <h2>All Orders</h2>
+            <DateFilter filter = {filter}/>
             {orderInfo.data &&
             typeof orderInfo.data !== undefined &&
             orderInfo.data.length != 0 ? (
@@ -94,7 +116,7 @@ function Content(props) {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {orderInfo.data.map((ordern) => (
+                        {filteredOrders?.map((ordern) => (
                           <TableRow key={ordern.id}>
                             <TableCell>
                               <b>{ordern?.user?.nickName}</b>
