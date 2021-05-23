@@ -69,7 +69,7 @@ public class BillController {
                 bill.setAmount(amount);
                 bill.setDueDate(DueDate);
                 bill.setTargetCurrency(currency);
-    
+
                 billService.update(bill);
                 messageService.sendBill(bill, "Notification from Bitcorner: Updated Bill");
 
@@ -106,6 +106,9 @@ public class BillController {
             bill.setToUser(userto);
             bill.setFromUser(fromuser);
             bill.setStatus("Waiting");
+            Date d = new Date();
+//            DateFormat df = new SimpleDateFormat("MM/dd/yy HH:mm:ss");
+            bill.setTime(d);
             billService.create(bill);
             messageService.sendBill(bill, "Notification from Bitcorner: New Bill");
             return new ResponseEntity<>(bill, HttpStatus.OK);

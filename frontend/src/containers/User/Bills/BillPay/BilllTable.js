@@ -11,10 +11,12 @@ import PropTypes from "prop-types";
 import { connect } from "react-redux";
 
 import RejectBill from './RejectBill';
-import PayBillModal from './PayBill'
+import PayBillModal from './PayBill';
+import DateFilter from '../../DateFilter';
+import moment from 'moment';
 // Generate Order Data
-function createData(id, userName, description, amount, paymentMethod,date, status) {
-  return { id, userName, description, amount, paymentMethod, date,status };
+function createData(id, userName,time, description, amount, paymentMethod,date, status) {
+  return { id, userName,time, description, amount, paymentMethod, date,status };
 }
 
 let rows = [
@@ -32,8 +34,24 @@ const useStyles = makeStyles((theme) => ({
 function BilltoPay(props) {
   const classes = useStyles();
   const {  bills, onrequestBillPayInfo} = props;
+  const [filteredOrders, setFilteredOrders] = React.useState(bills.bills);
   rows=[]
-  bills.bills.map((bill)=>rows.push(createData(bill, bill.fromUser.userName, bill.description, bill.amount, bill.targetCurrency.name, bill.dueDate,bill.status)))
+  filteredOrders.map((bill)=>rows.push(createData(bill, bill.fromUser.userName,bill.time, bill.description, bill.amount, bill.targetCurrency.name, bill.dueDate,bill.status)))
+  const filter = ({startDate, endDate}) => {
+    let filteredOrder = bills?.bills?.filter(item => {
+      console.log("ITEMS");
+      console.log(item);
+      var startDateObj = new moment(startDate);
+      var endDateObj = new moment(endDate);
+      var itemDateObj = new moment(item.time.split('T')[0]);
+      
+      if((startDateObj > itemDateObj) || (endDateObj < itemDateObj)){
+        return false;
+      }
+      return true;
+    })
+    setFilteredOrders(filteredOrder);
+  }
   useEffect(() => {
     
     onrequestBillPayInfo();
@@ -41,6 +59,9 @@ function BilltoPay(props) {
     
 
   }, []);
+  useEffect(() => {
+    setFilteredOrders(bills.bills);
+  }, [bills]);
   return (
     <React.Fragment>
           <br></br>
@@ -49,11 +70,13 @@ function BilltoPay(props) {
     Bills to Pay
       
     </Typography>
+    <DateFilter filter = {filter}/>
 
       <Table size="small">
         <TableHead>
           <TableRow>
             <TableCell>From</TableCell>
+            <TableCell>Date Posted</TableCell>
             <TableCell>Description</TableCell>
             <TableCell>Amount</TableCell>
             <TableCell>Currency</TableCell>
@@ -67,10 +90,11 @@ function BilltoPay(props) {
           {rows.map((row) => (
             <TableRow key={row.id}>
               <TableCell>{row.userName}</TableCell>
+              <TableCell>{row.time.split('T')[0]}</TableCell>
               <TableCell>{row.description}</TableCell>
-              <TableCell>{row.amount}</TableCell>
+              <TableCell>{(row.amount > 0 && row.amount < 1)  ? Number.parseFloat(row.amount).toFixed(7): row.amount}</TableCell>
               <TableCell>{row.paymentMethod}</TableCell>
-              <TableCell align="right">{row.date}</TableCell>
+              <TableCell align="right">{row.date.split('T')[0]}</TableCell>
               <TableCell align="right">{row.status}</TableCell>
               <TableCell align="right"><PayBillModal bill = {row.id}/></TableCell>
               <TableCell align="right"><RejectBill bill = {row.id}/></TableCell>

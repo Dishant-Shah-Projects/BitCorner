@@ -50,6 +50,18 @@ public class Bill {
     @Column(name = "SERVICE_FEE")
     private BigDecimal serviceFee;
 
+    @Column(name="TIME")
+    private Date time;
+
+    public Date getTime() {
+        return time;
+    }
+
+    public void setTime(Date time) {
+        this.time = time;
+    }
+
+
     public long getId() {
         return id;
     }
