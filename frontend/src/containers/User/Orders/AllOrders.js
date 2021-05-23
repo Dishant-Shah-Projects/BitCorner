@@ -128,7 +128,7 @@ function Content(props) {
                               {ordern?.priceType}
                             </TableCell>
                             <TableCell>
-                              {ordern?.quantity}
+                            {(ordern?.quantity > 0 && ordern?.quantity < 1)  ? Number.parseFloat(ordern?.quantity).toFixed(7): ordern?.quantity}
                             </TableCell>
                             <TableCell>
                               {ordern?.limitPrice}
@@ -137,7 +137,7 @@ function Content(props) {
                               {ordern?.executionPrice}
                             </TableCell>
                             <TableCell>
-                              {ordern?.serviceFee}
+                            {(ordern?.serviceFee > 0 && ordern?.serviceFee < 1)  ? Number.parseFloat(ordern?.serviceFee).toFixed(7): ordern?.serviceFee}
                             </TableCell>
                             <TableCell>
                               {ordern?.currency?.name}

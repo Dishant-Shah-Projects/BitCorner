@@ -319,14 +319,14 @@ function Content(props) {
                           <TableRow key={ordern.id}>
                             <TableCell>{ordern?.type}</TableCell>
                             <TableCell>{ordern?.priceType}</TableCell>
-                            <TableCell>{ordern?.quantity}</TableCell>
+                            <TableCell>{(ordern?.quantity > 0 && ordern?.quantity < 1)  ? Number.parseFloat(ordern?.quantity).toFixed(7): ordern?.quantity}</TableCell>
                             <TableCell>{ordern?.limitPrice}</TableCell>
                             <TableCell>{ordern?.executionPrice}</TableCell>
-                            <TableCell>{ordern?.serviceFee}</TableCell>
+                            <TableCell>{(ordern?.serviceFee > 0 && ordern?.serviceFee < 1)  ? Number.parseFloat(ordern?.serviceFee).toFixed(7): ordern?.serviceFee}</TableCell>
                             <TableCell>{ordern?.currency?.name}</TableCell>
                             <TableCell>{ordern?.status}</TableCell>
                             <TableCell>
-                              {ordern?.runningBitcoinBalance}
+                              {(ordern?.runningBitcoinBalance > 0 && ordern?.runningBitcoinBalance < 1)  ? Number.parseFloat(ordern?.runningBitcoinBalance).toFixed(7): ordern?.runningBitcoinBalance}
                             </TableCell>
                             <TableCell>
                               {ordern?.runningCurrencyBalance}
