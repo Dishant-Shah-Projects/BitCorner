@@ -7,6 +7,7 @@ import com.bitcorner.entity.UserInfo;
 import com.bitcorner.repository.MessageRepository;
 import com.bitcorner.service.MessageService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -43,55 +44,63 @@ public class MessageServiceImpl implements MessageService {
     }
 
     public void sendEmail(Message message){
-        UserInfo toUser=message.getToUser();
-        UserInfo fromUser=message.getFromUser();
-        String msg = message.getMessage();
-        System.out.println(toUser.getUserName()); //this fetches the email_id of toUser
-        System.out.println(fromUser.getNickName());
-        // code to Send Email
-        SimpleMailMessage mail = new SimpleMailMessage();
-        mail.setFrom("bitcorner321@gmail.com");
-        mail.setTo(toUser.getUserName()); 
-        mail.setSubject("Notification from Bitcorner"); 
-        mail.setText(msg);
-        javaMailSender.send(mail);
-
+        Thread t = new Thread(){
+            public void run() {
+                UserInfo toUser=message.getToUser();
+                UserInfo fromUser=message.getFromUser();
+                String msg = message.getMessage();
+                System.out.println(toUser.getUserName()); //this fetches the email_id of toUser
+                System.out.println(fromUser.getNickName());
+                // code to Send Email
+                SimpleMailMessage mail = new SimpleMailMessage();
+                mail.setFrom("bitcorner321@gmail.com");
+                mail.setTo(toUser.getUserName());
+                mail.setSubject("Notification from Bitcorner");
+                mail.setText(msg);
+                javaMailSender.send(mail);
+            }
+        };
+        t.start();
     }
 
     public void sendBill(Bill bill,String subject){
-        UserInfo toUser=bill.getToUser();
-        UserInfo fromUser=bill.getFromUser();
-        String msg = bill.getmessage();
-
-        // code to Send Email
-        SimpleMailMessage mail = new SimpleMailMessage();
-        mail.setFrom("bitcorner321@gmail.com");
-        mail.setTo(toUser.getUserName());
-        mail.setSubject(subject);
-        mail.setText(msg);
-        javaMailSender.send(mail);
-        SimpleMailMessage mail2 = new SimpleMailMessage();
-        mail2.setFrom("bitcorner321@gmail.com");
-        mail2.setTo(fromUser.getUserName());
-        mail2.setSubject(subject);
-        mail2.setText(msg);
-        javaMailSender.send(mail2);
-
+        Thread t = new Thread(){
+            public void run() {
+                UserInfo toUser=bill.getToUser();
+                UserInfo fromUser=bill.getFromUser();
+                String msg = bill.getmessage();
+                // code to Send Email
+                SimpleMailMessage mail = new SimpleMailMessage();
+                mail.setFrom("bitcorner321@gmail.com");
+                mail.setTo(toUser.getUserName());
+                mail.setSubject(subject);
+                mail.setText(msg);
+                javaMailSender.send(mail);
+                SimpleMailMessage mail2 = new SimpleMailMessage();
+                mail2.setFrom("bitcorner321@gmail.com");
+                mail2.setTo(fromUser.getUserName());
+                mail2.setSubject(subject);
+                mail2.setText(msg);
+                javaMailSender.send(mail2);
+            }
+        };
+        t.start();
     }
+
     public void sendOrder(Order_Table order, String subject){
-        UserInfo User=order.getUser();
-        String msg = order.getmessage();
-        // code to Send Email
-        SimpleMailMessage mail = new SimpleMailMessage();
-        mail.setFrom("bitcorner321@gmail.com");
-        mail.setTo(User.getUserName());
-        mail.setSubject(subject);
-        mail.setText(msg);
-        javaMailSender.send(mail);
-
+        Thread t = new Thread(){
+            public void run() {
+                UserInfo User=order.getUser();
+                String msg = order.getmessage();
+                // code to Send Email
+                SimpleMailMessage mail = new SimpleMailMessage();
+                mail.setFrom("bitcorner321@gmail.com");
+                mail.setTo(User.getUserName());
+                mail.setSubject(subject);
+                mail.setText(msg);
+                javaMailSender.send(mail);
+            }
+        };
+        t.start();
     }
-
-
-
-
 }
