@@ -11,6 +11,7 @@ import { connect } from "react-redux";
 import { useForm } from "../../../hooks/useForm";
 import Axios from "axios";
 import Grid from "@material-ui/core/Grid";
+import InputLabel from '@material-ui/core/InputLabel';
 
 function DateFilter(props) {
   const {filter} = props;
@@ -35,6 +36,7 @@ function DateFilter(props) {
   return (
     <Grid container spacing={3}>
     <Grid item xs={3}>
+    <InputLabel id="Data">From Date</InputLabel>
       <TextField
         required
         type="date"
@@ -47,6 +49,7 @@ function DateFilter(props) {
       />
     </Grid>
     <Grid item xs={3}>
+    <InputLabel id="Data">To Date</InputLabel>
       <TextField
         required
         type="date"
@@ -59,6 +62,7 @@ function DateFilter(props) {
       />
     </Grid>
     <Grid item xs={3}>
+        <br/>
       <Button
         variant="outlined"
         color="primary"

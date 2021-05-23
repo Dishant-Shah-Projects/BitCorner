@@ -98,7 +98,6 @@ function Content(props) {
       var startDateObj = new moment(startDate);
       var endDateObj = new moment(endDate);
       var itemDateObj = new moment(item.time.split('T')[0]);
-      debugger;
       if((startDateObj > itemDateObj) || (endDateObj < itemDateObj)){
         return false;
       }

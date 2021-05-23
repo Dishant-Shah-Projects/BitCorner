@@ -47,18 +47,25 @@ function Content(props) {
 
   const styling = styles();
   const [filteredOrders, setFilteredOrders] = React.useState(orderInfo?.data);
+  const [totalServiceFee, setTotalServiceFee] = React.useState({});
+
   const filter = ({startDate, endDate}) => {
+    let totalServiceFees = {};
     let filteredOrder = orderInfo?.data?.filter(item => {
       var startDateObj = new moment(startDate);
       var endDateObj = new moment(endDate);
       var itemDateObj = new moment(item.time.split('T')[0]);
-      debugger;
       if((startDateObj > itemDateObj) || (endDateObj < itemDateObj)){
         return false;
       }
+      if(!totalServiceFees[item?.currency?.name]){
+        totalServiceFees[item?.currency?.name] = 0;
+      }
+      totalServiceFees[item?.currency?.name] += item.serviceFee;
       return true;
     })
     setFilteredOrders(filteredOrder);
+    setTotalServiceFee(totalServiceFees);
   }
 
   useEffect(() => {
@@ -68,6 +75,15 @@ function Content(props) {
 
   useEffect(() => {
     setFilteredOrders(orderInfo?.data);
+    let sum = {};
+    if(orderInfo?.data){
+    orderInfo.data.forEach(item => {
+      if(!sum[item?.currency?.name]){
+        sum[item?.currency?.name] = 0;
+      }
+      sum[item?.currency?.name] += Number.parseFloat(Number.parseFloat(item.serviceFee).toFixed(7));
+    })}
+    setTotalServiceFee(sum);
   }, [orderInfo]);
 
   return (
@@ -77,6 +93,13 @@ function Content(props) {
           <div className={styling.contentWrapper}>
             <h2>All Orders</h2>
             <DateFilter filter = {filter}/>
+            <h3>Total Service Fee for the given time frame</h3>
+            {Object.keys(totalServiceFee).map (
+              key => {
+                return (<div>{key} : {totalServiceFee[key].toFixed(7)}</div>)
+              }
+            ) 
+            }
             {orderInfo.data &&
             typeof orderInfo.data !== undefined &&
             orderInfo.data.length != 0 ? (
