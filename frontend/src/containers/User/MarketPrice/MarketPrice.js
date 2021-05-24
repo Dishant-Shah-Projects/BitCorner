@@ -11,6 +11,9 @@ import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@material-ui/core/TableBody";
 import Axios from "axios";
+import RefreshIcon from "@material-ui/icons/Refresh";
+import Tooltip from "@material-ui/core/Tooltip";
+import IconButton from "@material-ui/core/IconButton";
 
 import { requestBankInfo, requestMarketPrice } from "../actions.js";
 function MarketPrice(props) {
@@ -22,8 +25,9 @@ function MarketPrice(props) {
     bankInfo,
   } = props;
 
-
-  const [option, setOption] = React.useState(bankInfo?.data?.primaryCurrencyId || 1);
+  const [option, setOption] = React.useState(
+    bankInfo?.data?.primaryCurrencyId || 1
+  );
   const onChange = (e) => {
     setOption(e.target.value);
   };
@@ -35,7 +39,7 @@ function MarketPrice(props) {
       if (previnterval) {
         clearInterval(previnterval);
       }
-      return setInterval(onRequestMarketPrice, 30000);
+      return setInterval(onRequestMarketPrice, 15000);
     });
     return () => {
       setinterval((previnterval) => {
@@ -48,7 +52,7 @@ function MarketPrice(props) {
   }, []);
 
   useEffect(() => {
-    setOption(bankInfo?.data?.primaryCurrencyId || 1)
+    setOption(bankInfo?.data?.primaryCurrencyId || 1);
   }, [bankInfo]);
 
   return (
@@ -56,7 +60,7 @@ function MarketPrice(props) {
       <Table size="small">
         <TableBody>
           <TableRow>
-          <TableCell style = {{borderBottom:"None"}}>
+            <TableCell style={{ borderBottom: "None" }}>
               <CurrencyDropdown
                 isCrypto={false}
                 required
@@ -68,20 +72,27 @@ function MarketPrice(props) {
                 value={option}
               />
             </TableCell>
-            <TableCell style = {{borderBottom:"None"}}>
+            <TableCell style={{ borderBottom: "None" }}>
               Ask Price
               <br />
               <b>{marketPriceInfo[option]?.askPrice}</b>{" "}
             </TableCell>
-            <TableCell style = {{borderBottom:"None"}}>
+            <TableCell style={{ borderBottom: "None" }}>
               Bid Price
               <br />
               <b>{marketPriceInfo[option]?.bidPrice}</b>{" "}
             </TableCell>
-            <TableCell style = {{borderBottom:"None"}}>
+            <TableCell style={{ borderBottom: "None" }}>
               Transaction Price
               <br />
               <b>{marketPriceInfo[option]?.transactionPrice}</b>{" "}
+            </TableCell>
+            <TableCell style={{ borderBottom: "None" }}>
+              <Tooltip title="Refresh manually or it refreshes automatically every 15 seconds">
+                <IconButton onClick={onRequestMarketPrice}>
+                  <RefreshIcon color="inherit" />
+                </IconButton>
+              </Tooltip>
             </TableCell>
           </TableRow>
         </TableBody>

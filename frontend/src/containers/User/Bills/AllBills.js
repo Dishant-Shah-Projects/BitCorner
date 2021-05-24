@@ -199,7 +199,7 @@ function Content(props) {
         <Paper className={classes.paper}>
           <div className={classes.contentWrapper}>
             <Typography color="textSecondary" align="center">
-              Please set up your bank account to place orders
+              Please set up your bank account to view all bills
             </Typography>
           </div>
         </Paper>
