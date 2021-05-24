@@ -40,12 +40,7 @@ const styles = makeStyles((theme) => ({
 }));
 
 function EditBillModal(props) {
-  const {
-    classes,
-    onrequestBillInfo,
-    bill,
-  } = props;
-
+  const { classes, onrequestBillInfo, bill } = props;
   const [open, setOpen] = React.useState(false);
   const styling = styles();
   const {
@@ -61,45 +56,42 @@ function EditBillModal(props) {
   } = useForm(
     {
       Description: bill.description,
-      target_currency: bill.target_currency,
+      target_currency: bill?.targetCurrency?.id,
       amount: bill.amount,
-      duedate: bill.dueDate,
+      duedate: bill.dueDate.split("T")[0],
     },
     {
-      Description: false,
-      target_currency: false,
-      amount: false,
-      duedate: false,
+      Description: true,
+      target_currency: true,
+      amount: true,
+      duedate: true,
     }
   );
   const handleClickOpen = () => setOpen(true);
 
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const handleInput = (event) => {
     formSubmit(event, () => {
-      console.log("values", values);
-      var date = new Date(values["duedate"]);
-      let val =
-        date.getMonth() + 1 + "/" + date.getDate() + "/" + date.getFullYear();
       Axios.post(
-        `/bill?&ID=${bill.id}&Description=${values["Description"]}&target_currency=${values["target_currency"]}&amount=${values["amount"]}&duedate=${val}`,
+        `/bill?ID=${bill.id}&Description=${values["Description"]}&target_currency=${values["target_currency"]}&amount=${values["amount"]}&duedate=${values["duedate"]}`,
         values
       ).then((response) => {
-        if (response.status === 200) {
-          console.log("Successfully UPDATED Bank Account");
-          setOpen(false);
-          onrequestBillInfo();
-        } else {
-          console.log("Failed");
-        }
+        onrequestBillInfo();
+        handleClose();
       });
     });
   };
 
   let disabled = false;
-  if(bill.status==="Paid" || bill.status==="Cancelled"||bill.status==="Rejected"){
-    disabled = true
+  if (
+    bill.status === "Paid" ||
+    bill.status === "Cancelled" ||
+    bill.status === "Rejected"
+  ) {
+    disabled = true;
   }
   return (
     <>
@@ -142,22 +134,22 @@ function EditBillModal(props) {
               error={errors["Description"]}
             />
 
-             <CurrencyDropdown
-                isCrypto={true}
-                required
-                margin="dense"
-                id="country"
-                label="Currency"
-                name="target_currency"
-                fullWidth
-                helperText="Please select atleast one"
-                onChange={handleInputChange}
-                value={values["target_currency"]}
-                error={errors["target_currency"]}
-              />
+            <CurrencyDropdown
+              isCrypto={true}
+              required
+              margin="dense"
+              id="country"
+              label="Currency"
+              name="target_currency"
+              fullWidth
+              helperText="Please select atleast one"
+              onChange={handleInputChange}
+              value={values["target_currency"]}
+              error={errors["target_currency"]}
+            />
             <TextField
               required
-              pattern="^(\d{1,9}|\d{0,5}\.\d{1,9})$"
+              pattern="^(\d{1,9}|\d{0,9}\.\d{1,9})$"
               helperText="Please enter a valid Amount"
               margin="dense"
               name="amount"
@@ -184,7 +176,7 @@ function EditBillModal(props) {
               Cancel
             </Button>
             <Button type="submit" color="primary" disabled={!isFormValid}>
-              Add Bill
+              Update Bill
             </Button>
           </DialogActions>
         </form>
@@ -192,7 +184,6 @@ function EditBillModal(props) {
     </>
   );
 }
-
 
 const mapDispatchToProps = (dispatch) => {
   return {

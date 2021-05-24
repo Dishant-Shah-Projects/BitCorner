@@ -258,7 +258,7 @@ function Content(props) {
                     name="initialBalance"
                     label="Initial Bank Balance"
                     fullWidth
-                    pattern="^[+]?([.]\d+|\d+([.]\d\d?)?)$"
+                    pattern="^(\d{1,9}|\d{0,9}\.\d{1,9})$"
                     helperText="Please enter a valid intital balance"
                     onChange={handleInputChange}
                     value={values["initialBalance"]}

@@ -42,12 +42,13 @@ const styles = makeStyles((theme) => ({
 function PayBillModal(props) {
   const {
     classes,
-
+    currency,
     onrequestBillPayInfo,
     bill,
     bankInfo,
   } = props;
   const [open, setOpen] = React.useState(false);
+  const [targetCurrency, setTargetCurrency] = React.useState({});
   const styling = styles();
 
   const {
@@ -95,7 +96,10 @@ function PayBillModal(props) {
   };
 
   useEffect(() => {
-  }, []);
+    let targetCurrencyObj = currency?.currencies?.find(item => item.id === bill?.targetCurrency?.id);
+    setTargetCurrency(targetCurrencyObj);
+  }, [bill]);
+
   let disabled = false
   if(bill.status==="Paid" || bill.status==="Cancelled"||bill.status==="Rejected"){
     disabled = true
@@ -126,9 +130,12 @@ function PayBillModal(props) {
             <DialogTitle id="form-dialog-title">Pay Bill</DialogTitle>
             <DialogContent>
               <DialogContentText>
-                Please Pay the bill 
+                Please Pay the bill!
               </DialogContentText>
-
+              <h4>Target Currency: {targetCurrency?.name}</h4>
+              {
+                values["target_currency"] != 6 && targetCurrency?.id !== values["target_currency"] && <h4>Exchange Rate: {currency?.currencies?.find(item => item.id == values["target_currency"]).conversionRate / targetCurrency?.conversionRate}</h4>
+              }    
               <CurrencyDropdown
                 isCrypto={true}
                 required
@@ -143,6 +150,7 @@ function PayBillModal(props) {
                 error={errors["target_currency"]}
               />
             </DialogContent>
+            
             <DialogActions>
               <Button onClick={handleClose} color="primary">
                 Cancel
@@ -160,6 +168,7 @@ function PayBillModal(props) {
 const mapStateToProps = (state) => {
   return {
     bankInfo: state.bank.bankInfo,
+    currency: state.currency
   };
 };
 

@@ -14,9 +14,8 @@ import Axios from "axios";
 import TextField from "../../../../components/TextField";
 import { useForm } from "../../../../hooks/useForm";
 import { requestBankInfo } from "../../actions";
-import CurrencyDropdown from "../../CurrencyDropdown/index"
-import InputLabel from '@material-ui/core/InputLabel';
-import { TrendingUpRounded } from "@material-ui/icons";
+import CurrencyDropdown from "../../CurrencyDropdown/index";
+import InputLabel from "@material-ui/core/InputLabel";
 
 const styles = makeStyles((theme) => ({
   paper: {
@@ -42,14 +41,11 @@ const styles = makeStyles((theme) => ({
 }));
 
 function BillModal(props) {
-  const { classes, onRequestBankInfo, onrequestBillInfo,bankInfo} = props;
+  const { classes, onRequestBankInfo, onrequestBillInfo, bankInfo } = props;
   const [open, setOpen] = React.useState(false);
   const styling = styles();
 
-
   const handleClickOpen = () => setOpen(true);
-
-
 
   const {
     errors,
@@ -60,180 +56,175 @@ function BillModal(props) {
     isValid,
     setFieldValid,
     setValues,
+    setIsFormValid,
     values,
   } = useForm(
-    { toEmail: "", Description:"",target_currency:bankInfo?.data?.primaryCurrencyId,amount:"",duedate:""},
-    {  toEmail:false, Description:false, target_currency:true,amount:false,duedate:false}
+    {
+      toEmail: "",
+      Description: "",
+      target_currency: bankInfo?.data?.primaryCurrencyId,
+      amount: "",
+      duedate: "",
+    },
+    {
+      toEmail: false,
+      Description: false,
+      target_currency: true,
+      amount: false,
+      duedate: false,
+    }
   );
-  const handleClose = () =>{ 
-    values["toEmail"]="";
-    values["Description"]="";
-    values["target_currency"]=bankInfo?.data?.primaryCurrencyId;
-    values["amount"]=0;
-    values["duedate"]=Date.now()
+
+  const handleClose = () => {
+    setValues({
+      toEmail: "",
+      Description: "",
+      target_currency: bankInfo?.data?.primaryCurrencyId,
+      amount: "",
+      duedate: "",
+    });
+    setFieldValid({
+      toEmail: false,
+      Description: false,
+      target_currency: true,
+      amount: false,
+      duedate: false,
+    });
+    setIsFormValid(false);
     setOpen(false);
-  }
+  };
+
   const handleInput = (event) => {
     formSubmit(event, () => {
-      console.log("values", values);
-      
-      var date = new Date(values["duedate"]); 
-      let val =(date.getMonth() + 1) + '/' + date.getDate() + '/' + date.getFullYear()
-      Axios.put(`/bill?&toEmail=${values["toEmail"]}&Description=${values["Description"]}&target_currency=${values["target_currency"]}&amount=${values["amount"]}&duedate=${val}`,values)
-        .then((response) => {
-          if (response.status === 200) {
-            console.log("Successfully Added Bank Account");
-            setOpen(false);
-            values["toEmail"]="";
-            values["Description"]="";
-            values["target_currency"]=bankInfo?.data?.primaryCurrencyId;
-            values["amount"]=0;
-            values["duedate"]=Date.now()
-            onrequestBillInfo();
-          } else {
-            console.log("Failed");
-          }
-        });
-        })
-
+      Axios.put(
+        `/bill?toEmail=${values["toEmail"]}&Description=${values["Description"]}&target_currency=${values["target_currency"]}&amount=${values["amount"]}&duedate=${values["duedate"]}`,
+        values
+      ).then((response) => {
+        onrequestBillInfo();
+        handleClose();
+      });
+    });
   };
 
   useEffect(() => {
     onRequestBankInfo();
-    
   }, []);
 
-
   return (
-
     <div>
-      
-        <div className={styling.contentWrapper}>
-          
-          <div>
-            <Button
-              style={{ margin: "0 auto", display: "flex" }}
-              variant="outlined"
-              color="primary"
-              onClick={handleClickOpen}
-              
-            >
-              Add Bill
-            </Button>
-          </div>
-          <Dialog
-            open={open}
-            onClose={handleClose}
-            aria-labelledby="form-dialog-title"
+      <div className={styling.contentWrapper}>
+        <div>
+          <Button
+            style={{ margin: "0 auto", display: "flex" }}
+            variant="outlined"
+            color="primary"
+            onClick={handleClickOpen}
           >
-            <form
-              className={styling.root}
-              noValidate
-              autoComplete="off"
-              onSubmit={handleInput}
-            >
-              <DialogTitle id="form-dialog-title">
-                Add Bill
-              </DialogTitle>
-              <DialogContent>
-                <DialogContentText>
-                  Please Fill out the details 
-                </DialogContentText>
-                <TextField
-                  autoFocus
-                  required
-                  pattern="^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$"
-                  helperText="Please enter a valid Email"
-                  margin="dense"
-                  label="Pay Email"
-                  name="toEmail"
-                  fullWidth
-                  onChange={handleInputChange}
-                  value = {values["toEmail"]}
-                  error={errors["toEmail"]}
-                  
-                />
-                <TextField
-                  
-                  required
-                  margin="dense"
-                  id="country"
-                  pattern="^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$"
-                  helperText="Please enter a valid Description"
-                  label="Description"
-                  name="Description"
-                  fullWidth
-                  onChange={handleInputChange}
-                  value = {values["Description"]}
-                  error={errors["Description"]}
-                  
-                />
-                  <CurrencyDropdown
-                  isCrypto = {true}
-                  required
-                  margin="dense"
-                  id="currency"
-                  label="Currency"
-                  name="target_currency"
-                  fullWidth
-                  helperText="Please select atleast one"
-                  onChange={handleInputChange}
-                  value = {values["target_currency"]}
-                  error={errors["target_currency"]}
-                  
-                />
-                <TextField
-                  required
-                  pattern="^(\d{1,9}|\d{0,5}\.\d{1,9})$"
-                  helperText="Please enter a valid Amount"
-                  margin="dense"
-                  name="amount"
-                  label="Amount"
-                  fullWidth
-                  onChange={handleInputChange}
-                  value = {values["amount"]}
-                  error={errors["amount"]}
-                  
-                />
-                <InputLabel id="Data">Due Date</InputLabel>
-                <TextField
-                  required
-                  type="date"
-                  margin="dense"
-                  name="duedate"
-                  fullWidth
-                  onChange={handleInputChange}
-                  value = {values["duedate"]}
-                  error={errors["duedate"]}
-                  
-                />
-              </DialogContent>
-              <DialogActions>
-                <Button onClick={handleClose} color="primary" > 
-                  Cancel
-                </Button>
-                <Button type="submit" color="primary" disabled={!isFormValid}>
-                  Add Bill
-                </Button>
-              </DialogActions>
-            </form>
-          </Dialog>
-          
+            Add Bill
+          </Button>
         </div>
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="form-dialog-title"
+        >
+          <form
+            className={styling.root}
+            noValidate
+            autoComplete="off"
+            onSubmit={handleInput}
+          >
+            <DialogTitle id="form-dialog-title">Add Bill</DialogTitle>
+            <DialogContent>
+              <DialogContentText>Please Fill out the details</DialogContentText>
+              <TextField
+                autoFocus
+                required
+                pattern="^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$"
+                helperText="Please enter a valid Email"
+                margin="dense"
+                label="Pay Email"
+                name="toEmail"
+                fullWidth
+                onChange={handleInputChange}
+                value={values["toEmail"]}
+                error={errors["toEmail"]}
+              />
+              <TextField
+                required
+                margin="dense"
+                id="country"
+                pattern="^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$"
+                helperText="Please enter a valid Description"
+                label="Description"
+                name="Description"
+                fullWidth
+                onChange={handleInputChange}
+                value={values["Description"]}
+                error={errors["Description"]}
+              />
+              <CurrencyDropdown
+                isCrypto={true}
+                required
+                margin="dense"
+                id="currency"
+                label="Currency"
+                name="target_currency"
+                fullWidth
+                helperText="Please select atleast one"
+                onChange={handleInputChange}
+                value={values["target_currency"]}
+                error={errors["target_currency"]}
+              />
+              <TextField
+                required
+                pattern="^(\d{1,9}|\d{0,9}\.\d{1,9})$"
+                helperText="Please enter a valid Amount"
+                margin="dense"
+                name="amount"
+                label="Amount"
+                fullWidth
+                onChange={handleInputChange}
+                value={values["amount"]}
+                error={errors["amount"]}
+              />
+              <InputLabel id="Data">Due Date</InputLabel>
+              <TextField
+                required
+                type="date"
+                margin="dense"
+                name="duedate"
+                fullWidth
+                onChange={handleInputChange}
+                value={values["duedate"]}
+                error={errors["duedate"]}
+              />
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={handleClose} color="primary">
+                Cancel
+              </Button>
+              <Button type="submit" color="primary" disabled={!isFormValid}>
+                Add Bill
+              </Button>
+            </DialogActions>
+          </form>
+        </Dialog>
+      </div>
     </div>
   );
 }
 
 const mapStateToProps = (state) => {
   return {
-    bankInfo:state.bank.bankInfo
+    bankInfo: state.bank.bankInfo,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
     onrequestBillInfo: () => dispatch(requestBillInfo()),
-    onRequestBankInfo: () => dispatch(requestBankInfo())
+    onRequestBankInfo: () => dispatch(requestBankInfo()),
   };
 };
 

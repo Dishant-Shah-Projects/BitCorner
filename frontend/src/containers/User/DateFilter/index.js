@@ -36,7 +36,7 @@ function DateFilter(props) {
   return (
     <Grid container spacing={3}>
     <Grid item xs={3}>
-    <InputLabel id="Data">From Date</InputLabel>
+    <InputLabel id="Data"><b>From Date</b></InputLabel>
       <TextField
         required
         type="date"
@@ -49,7 +49,7 @@ function DateFilter(props) {
       />
     </Grid>
     <Grid item xs={3}>
-    <InputLabel id="Data">To Date</InputLabel>
+    <InputLabel id="Data"><b>To Date</b></InputLabel>
       <TextField
         required
         type="date"

@@ -70,15 +70,15 @@ function Bill(props) {
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell>To</TableCell>
-            <TableCell>Date Posted</TableCell>
-            <TableCell>Description</TableCell>
-            <TableCell>amount</TableCell>
-            <TableCell>Currency</TableCell>
-            <TableCell align="right">Due Date</TableCell>
-            <TableCell align="right">Status</TableCell>
-            <TableCell align="right">Edit</TableCell>
-            <TableCell align="right">Cancel</TableCell>
+            <TableCell><b>To</b></TableCell>
+            <TableCell><b>Date Posted</b></TableCell>
+            <TableCell><b>Description</b></TableCell>
+            <TableCell><b>Amount</b></TableCell>
+            <TableCell><b>Currency</b></TableCell>
+            <TableCell align="right"><b>Due Date</b></TableCell>
+            <TableCell align="right"><b>Status</b></TableCell>
+            <TableCell align="right"><b>Edit</b></TableCell>
+            <TableCell align="right"><b>Cancel</b></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -102,7 +102,6 @@ function Bill(props) {
   );
 }
 const mapStateToProps = (state) => {
-  console.log(state);
   return {
     bills: state.bill,
     currency :state.currency

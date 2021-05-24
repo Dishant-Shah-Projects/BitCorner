@@ -15,8 +15,8 @@ import PayBillModal from './PayBill';
 import DateFilter from '../../DateFilter';
 import moment from 'moment';
 // Generate Order Data
-function createData(id, userName,time, description, amount, paymentMethod,date, status) {
-  return { id, userName,time, description, amount, paymentMethod, date,status };
+function createData(id, userName,time, description, amount, paymentMethod,date, status, paidCurrency, serviceFee, targetCurrencyObj, paidCurrencyObj) {
+  return { id, userName,time, description, amount, paymentMethod, date,status, paidCurrency, serviceFee, targetCurrencyObj, paidCurrencyObj };
 }
 
 let rows = [
@@ -36,7 +36,7 @@ function BilltoPay(props) {
   const {  bills, onrequestBillPayInfo} = props;
   const [filteredOrders, setFilteredOrders] = React.useState(bills.bills);
   rows=[]
-  filteredOrders.map((bill)=>rows.push(createData(bill, bill.fromUser.userName,bill.time, bill.description, bill.amount, bill.targetCurrency.name, bill.dueDate,bill.status)))
+  filteredOrders.map((bill)=>rows.push(createData(bill, bill.fromUser.userName,bill.time, bill.description, bill.amount, bill.targetCurrency.name, bill.dueDate,bill.status, bill?.paidCurrency?.name, bill?.serviceFee, bill?.targetCurrency, bill?.paidCurrency)))
   const filter = ({startDate, endDate}) => {
     let filteredOrder = bills?.bills?.filter(item => {
       console.log("ITEMS");
@@ -75,15 +75,18 @@ function BilltoPay(props) {
       <Table size="small">
         <TableHead>
           <TableRow>
-            <TableCell>From</TableCell>
-            <TableCell>Date Posted</TableCell>
-            <TableCell>Description</TableCell>
-            <TableCell>Amount</TableCell>
-            <TableCell>Currency</TableCell>
-            <TableCell align="right">Due Date</TableCell>
-            <TableCell align="right">Status</TableCell>
-            <TableCell align="right">Pay</TableCell>
-            <TableCell align="right">Reject</TableCell>
+            <TableCell><b>From</b></TableCell>
+            <TableCell><b>Date Posted</b></TableCell>
+            <TableCell><b>Description</b></TableCell>
+            <TableCell><b>Amount</b></TableCell>
+            <TableCell><b>Target Currency</b></TableCell>
+            <TableCell><b>Bill Pay Currency</b></TableCell>
+            <TableCell><b>Service Fee</b></TableCell>
+            <TableCell><b>Exchange Rate</b></TableCell>
+            <TableCell align="right"><b>Due Date</b></TableCell>
+            <TableCell align="right"><b>Status</b></TableCell>
+            <TableCell align="right"><b>Pay</b></TableCell>
+            <TableCell align="right"><b>Reject</b></TableCell>
           </TableRow>
         </TableHead>
         <TableBody>
@@ -94,6 +97,9 @@ function BilltoPay(props) {
               <TableCell>{row.description}</TableCell>
               <TableCell>{(row.amount > 0 && row.amount < 1)  ? Number.parseFloat(row.amount).toFixed(7): row.amount}</TableCell>
               <TableCell>{row.paymentMethod}</TableCell>
+              <TableCell>{row.paidCurrency}</TableCell>
+              <TableCell>{(row.serviceFee > 0 && row.serviceFee < 1)  ? Number.parseFloat(row.serviceFee).toFixed(10): row.serviceFee}</TableCell>
+              <TableCell>{row.paidCurrencyObj && row.paidCurrencyObj.conversionRate / row.targetCurrencyObj.conversionRate}</TableCell>
               <TableCell align="right">{row.date.split('T')[0]}</TableCell>
               <TableCell align="right">{row.status}</TableCell>
               <TableCell align="right"><PayBillModal bill = {row.id}/></TableCell>

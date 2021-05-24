@@ -36,6 +36,7 @@ function CommonHeader(props) {
             <Tooltip title="Market price">
                   <MarketPrice/>
               </Tooltip>
+              <br/>
             </Grid>
           <Grid item xs />
         

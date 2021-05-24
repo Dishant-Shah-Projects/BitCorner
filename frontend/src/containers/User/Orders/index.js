@@ -28,8 +28,8 @@ import { useForm } from "../../../hooks/useForm";
 import EditOrderModal from "./EditOrder";
 import CancelOrder from "./CancelOrder";
 import Axios from "axios";
-import DateFilter from '../DateFilter';
-import moment from 'moment';
+import DateFilter from "../DateFilter";
+import moment from "moment";
 
 const styles = (theme) => ({
   paper: {
@@ -68,6 +68,7 @@ function Content(props) {
     isFormValid,
     isValid,
     setFieldValid,
+    setIsFormValid,
     setValues,
     values,
   } = useForm(
@@ -91,31 +92,46 @@ function Content(props) {
   const styling = styles();
 
   const handleClickOpen = () => setOpen(true);
-  const handleClose = () => setOpen(false);
+  const handleClose = () => {
+    setValues({
+      priceType: "MARKET",
+      quantity: "",
+      type: "SELL",
+      limitPrice: 0,
+      currencyId: bankInfo?.data?.primaryCurrencyId,
+    });
+    setFieldValid({
+      priceType: true,
+      quantity: false,
+      type: true,
+      limitPrice: true,
+      currencyId: true,
+    });
+    setIsFormValid(false);
+    setOpen(false);
+  }
 
-  const filter = ({startDate, endDate}) => {
-    let filteredOrder = orderInfo?.data?.filter(item => {
+  const filter = ({ startDate, endDate }) => {
+    let filteredOrder = orderInfo?.data?.filter((item) => {
       var startDateObj = new moment(startDate);
       var endDateObj = new moment(endDate);
-      var itemDateObj = new moment(item.time.split('T')[0]);
-      if((startDateObj > itemDateObj) || (endDateObj < itemDateObj)){
+      var itemDateObj = new moment(item.time.split("T")[0]);
+      if (startDateObj > itemDateObj || endDateObj < itemDateObj) {
         return false;
       }
       return true;
-    })
+    });
     setFilteredOrders(filteredOrder);
-  }
- 
+  };
+
   const onFormSubmit = (event) => {
     formSubmit(event, () => {
       event.preventDefault();
       console.log("form data:", values);
       Axios.put("/order", values).then((response) => {
         if (response.status === 200) {
-          setOpen(false);
-          setValues({});
-          setFieldValid();
           onRequestOrderInfo();
+          handleClose();
         }
       });
     });
@@ -211,7 +227,7 @@ function Content(props) {
                       label="Quantity"
                       name="quantity"
                       fullWidth
-                      pattern="^[+]?([0-9]+([.][0-9]*)?|[.][0-9]+)$"
+                      pattern="^(\d{1,9}|\d{0,9}\.\d{1,9})$"
                       helperText="Please enter a valid quantity"
                       onChange={handleInputChange}
                       value={values["quantity"]}
@@ -225,7 +241,7 @@ function Content(props) {
                       name="limitPrice"
                       disabled={values["priceType"] == "MARKET"}
                       fullWidth
-                      pattern="^[+]?([0-9]+([.][0-9]*)?|[.][0-9]+)$"
+                      pattern="^(\d{1,9}|\d{0,9}\.\d{1,9})$"
                       helperText="Please enter a valid limit price"
                       onChange={handleInputChange}
                       value={values["limitPrice"]}
@@ -264,8 +280,8 @@ function Content(props) {
           <br></br>
           <hr></hr>
           <div className={styling.contentWrapper}>
-            <h2>Your Orders</h2>
-            <DateFilter filter = {filter}/>
+            <br/>
+            <DateFilter filter={filter} />
             {orderInfo.data &&
             typeof orderInfo.data !== undefined &&
             orderInfo.data.length != 0 ? (
@@ -285,7 +301,7 @@ function Content(props) {
                             <b>Quantity</b>
                           </TableCell>
                           <TableCell align="left">
-                            <b>LimitPrice</b>
+                            <b>Limit Price</b>
                           </TableCell>
                           <TableCell align="left">
                             <b>Execution Price</b>
@@ -318,14 +334,29 @@ function Content(props) {
                           <TableRow key={ordern.id}>
                             <TableCell>{ordern?.type}</TableCell>
                             <TableCell>{ordern?.priceType}</TableCell>
-                            <TableCell>{(ordern?.quantity > 0 && ordern?.quantity < 1)  ? Number.parseFloat(ordern?.quantity).toFixed(7): ordern?.quantity}</TableCell>
+                            <TableCell>
+                              {ordern?.quantity > 0 && ordern?.quantity < 1
+                                ? Number.parseFloat(ordern?.quantity).toFixed(7)
+                                : ordern?.quantity}
+                            </TableCell>
                             <TableCell>{ordern?.limitPrice}</TableCell>
                             <TableCell>{ordern?.executionPrice}</TableCell>
-                            <TableCell>{(ordern?.serviceFee > 0 && ordern?.serviceFee < 1)  ? Number.parseFloat(ordern?.serviceFee).toFixed(7): ordern?.serviceFee}</TableCell>
+                            <TableCell>
+                              {ordern?.serviceFee > 0 && ordern?.serviceFee < 1
+                                ? Number.parseFloat(ordern?.serviceFee).toFixed(
+                                    7
+                                  )
+                                : ordern?.serviceFee}
+                            </TableCell>
                             <TableCell>{ordern?.currency?.name}</TableCell>
                             <TableCell>{ordern?.status}</TableCell>
                             <TableCell>
-                              {(ordern?.runningBitcoinBalance > 0 && ordern?.runningBitcoinBalance < 1)  ? Number.parseFloat(ordern?.runningBitcoinBalance).toFixed(7): ordern?.runningBitcoinBalance}
+                              {ordern?.runningBitcoinBalance > 0 &&
+                              ordern?.runningBitcoinBalance < 1
+                                ? Number.parseFloat(
+                                    ordern?.runningBitcoinBalance
+                                  ).toFixed(7)
+                                : ordern?.runningBitcoinBalance}
                             </TableCell>
                             <TableCell>
                               {ordern?.runningCurrencyBalance}

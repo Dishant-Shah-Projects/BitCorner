@@ -88,6 +88,7 @@ export const useForm = (
     setFieldValid,
     setValues,
     values,
+    setIsFormValid
   };
 };
 

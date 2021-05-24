@@ -91,7 +91,6 @@ function Content(props) {
       {bankInfo?.status === 200 ? (
         <div>
           <div className={styling.contentWrapper}>
-            <h2>All Orders</h2>
             <DateFilter filter = {filter}/>
             <h3>Total Service Fee for the given time frame</h3>
             {Object.keys(totalServiceFee).map (
@@ -122,7 +121,7 @@ function Content(props) {
                             <b>Quantity</b>
                           </TableCell>
                           <TableCell align="left">
-                            <b>LimitPrice</b>
+                            <b>Limit Price</b>
                           </TableCell>
                           <TableCell align="left">
                             <b>Execution Price</b>

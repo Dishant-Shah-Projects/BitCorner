@@ -16,9 +16,6 @@ export const CurrencyDropdown = (props) => {
   else{
     cur = currencies;
   }
-  console.log('******');
-  console.log(isCrypto,currencies);
-  console.log('******');
   return (
     <Select options={cur} valueKey="id" displayKey="name" {...props} />
   );

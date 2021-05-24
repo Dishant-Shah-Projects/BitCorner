@@ -165,7 +165,7 @@ function EditOrderModal(props) {
               margin="dense"
               name="quantity"
               label="Quantity"
-              pattern="^[+]?([0-9]+([.][0-9]*)?|[.][0-9]+)$"
+              pattern="^(\d{1,9}|\d{0,9}\.\d{1,9})$"
               helperText="Please enter valid quantity"
               fullWidth
               onChange={handleInputChange}
@@ -179,9 +179,9 @@ function EditOrderModal(props) {
               margin="dense"
               name="limitPrice"
               label="LimitPrice"
-              pattern="^[+]?([0-9]+([.][0-9]*)?|[.][0-9]+)$"
+              pattern="^(\d{1,9}|\d{0,9}\.\d{1,9})$"
               helperText="Please enter valid limit price"
-              disabled={values["priceType"] == "MARKET"}
+              disabled={values["priceType"] === "MARKET"}
               fullWidth
               onChange={handleInputChange}
               value={values["limitPrice"]}
