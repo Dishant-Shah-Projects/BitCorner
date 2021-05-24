@@ -12,6 +12,7 @@ import {
   currencyReducer,
   billReducer,
   billPayReducer,
+  allBillsReducer
 } from "../containers/User/Bills/reducer";
 const data = {
   auth: authReducer,
@@ -22,6 +23,7 @@ const data = {
   currency: currencyReducer,
   bill: billReducer,
   billPay: billPayReducer,
+  allBills: allBillsReducer,
   global: globalReducer,
   allOrder: allOrderReducer,
   marketPrice: marketPriceReducer

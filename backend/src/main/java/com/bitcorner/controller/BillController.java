@@ -308,6 +308,19 @@ public class BillController
         }
     }
 
+    @RequestMapping(method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE, value = "/allBills")
+    @ResponseBody
+    public ResponseEntity<?> getAllBills(){
+        try {
+            List<Bill> billList=billService.getAllBills();
+            return new ResponseEntity<>(billList, HttpStatus.OK);
+        }catch (EntityNotFoundException ex){
+            return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
+        }catch (Exception ex){
+            return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public String getUserId() throws FirebaseAuthException, NullPointerException
     {
         String token = securityService.getBearerToken(request);

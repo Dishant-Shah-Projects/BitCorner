@@ -115,8 +115,8 @@ Content.propTypes = {
 
 export default (props) => (
   <ComponentWrapper
-    name="Bank Account Details"
-    helperText="View and update your bank account information"
+    name="Bills"
+    helperText="View, Add and Pay Bills"
     Component={connect(
       mapStateToProps,
       mapDispatchToProps

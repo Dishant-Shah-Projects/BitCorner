@@ -130,8 +130,11 @@ function PayBillModal(props) {
             <DialogTitle id="form-dialog-title">Pay Bill</DialogTitle>
             <DialogContent>
               <DialogContentText>
-                Please Pay the bill!
+                <b>Please Pay the bill!</b>
               </DialogContentText>
+              <h4>Pay To: {bill?.fromUser?.userName}</h4>
+              <h4>Description: {bill?.description}</h4>
+              <h4>Target Currency Amount: {bill?.amount} </h4>
               <h4>Target Currency: {targetCurrency?.name}</h4>
               {
                 values["target_currency"] != 6 && targetCurrency?.id !== values["target_currency"] && <h4>Exchange Rate: {currency?.currencies?.find(item => item.id == values["target_currency"]).conversionRate / targetCurrency?.conversionRate}</h4>

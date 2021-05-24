@@ -11,7 +11,8 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@material-ui/core/TableBody";
-import { requestBankInfo, requestAllOrderInfo } from "../actions.js";
+import {requestAllBills} from "./action.js";
+import { requestBankInfo } from "../actions.js";
 import DateFilter from '../DateFilter';
 import moment from 'moment';
 
@@ -38,53 +39,53 @@ const styles = (theme) => ({
 function Content(props) {
   const {
     classes,
-    orderInfo,
     error,
-    onRequestOrderInfo,
+    onRequestAllBills,
+    allBills,
     onRequestBankInfo,
     bankInfo,
   } = props;
 
   const styling = styles();
-  const [filteredOrders, setFilteredOrders] = React.useState(orderInfo?.data);
+  const [filteredBills, setFilteredBills] = React.useState(allBills);
   const [totalServiceFee, setTotalServiceFee] = React.useState({});
 
   const filter = ({startDate, endDate}) => {
     let totalServiceFees = {};
-    let filteredOrder = orderInfo?.data?.filter(item => {
+    let filteredOrder = allBills?.filter(item => {
       var startDateObj = new moment(startDate);
       var endDateObj = new moment(endDate);
       var itemDateObj = new moment(item.time.split('T')[0]);
       if((startDateObj > itemDateObj) || (endDateObj < itemDateObj)){
         return false;
       }
-      if(!totalServiceFees[item?.currency?.name]){
-        totalServiceFees[item?.currency?.name] = 0;
+      if(!totalServiceFees[item?.paidCurrency?.name]){
+        totalServiceFees[item?.paidCurrency?.name] = 0;
       }
-      totalServiceFees[item?.currency?.name] += item.serviceFee;
+      totalServiceFees[item?.paidCurrency?.name] += item.serviceFee;
       return true;
     })
-    setFilteredOrders(filteredOrder);
+    setFilteredBills(filteredOrder);
     setTotalServiceFee(totalServiceFees);
   }
 
   useEffect(() => {
-    onRequestOrderInfo();
+    onRequestAllBills();
     onRequestBankInfo();
   }, []);
 
   useEffect(() => {
-    setFilteredOrders(orderInfo?.data);
+    setFilteredBills(allBills);
     let sum = {};
-    if(orderInfo?.data){
-    orderInfo.data.forEach(item => {
-      if(!sum[item?.currency?.name]){
-        sum[item?.currency?.name] = 0;
+    if(allBills){
+      allBills.forEach(item => {
+      if(!sum[item?.paidCurrency?.name]){
+        sum[item?.paidCurrency?.name] = 0;
       }
-      sum[item?.currency?.name] += Number.parseFloat(Number.parseFloat(item.serviceFee).toFixed(7));
+      sum[item?.paidCurrency?.name] += Number.parseFloat(Number.parseFloat(item.serviceFee).toFixed(7));
     })}
     setTotalServiceFee(sum);
-  }, [orderInfo]);
+  }, [allBills]);
 
   return (
     <div>
@@ -99,9 +100,8 @@ function Content(props) {
               }
             ) 
             }
-            {orderInfo.data &&
-            typeof orderInfo.data !== undefined &&
-            orderInfo.data.length != 0 ? (
+            {allBills &&
+            allBills?.length != 0 ? (
               <div className={classes.contentWrapper}>
                 <div>
                   <TableContainer component={Paper}>
@@ -109,28 +109,34 @@ function Content(props) {
                       <TableHead>
                         <TableRow>
                           <TableCell>
-                            <b>Nickname</b>
+                            <b>From</b>
                           </TableCell>
                           <TableCell>
-                            <b>Order Type</b>
+                            <b>To</b>
+                          </TableCell>
+                          <TableCell>
+                            <b>Date Posted</b>
                           </TableCell>
                           <TableCell align="left">
-                            <b>Price Type</b>
+                            <b>Description</b>
                           </TableCell>
                           <TableCell align="left">
-                            <b>Quantity</b>
+                            <b>Amount</b>
                           </TableCell>
                           <TableCell align="left">
-                            <b>Limit Price</b>
+                            <b>Target Currency</b>
                           </TableCell>
                           <TableCell align="left">
-                            <b>Execution Price</b>
+                            <b>Bill Pay Currency</b>
                           </TableCell>
                           <TableCell align="left">
                             <b>Service Fee</b>
                           </TableCell>
                           <TableCell align="left">
-                            <b>Currency</b>
+                            <b>Exchange Rate</b>
+                          </TableCell>
+                          <TableCell align="left">
+                            <b>Due Date</b>
                           </TableCell>
                           <TableCell align="left">
                             <b>Status</b>
@@ -138,34 +144,38 @@ function Content(props) {
                         </TableRow>
                       </TableHead>
                       <TableBody>
-                        {filteredOrders?.map((ordern) => (
-                          <TableRow key={ordern.id}>
+                        {filteredBills?.map((bill) => (
+                          <TableRow key={bill.id}>
                             <TableCell>
-                              <b>{ordern?.user?.nickName}</b>
+                              {bill?.fromUser?.userName}
                             </TableCell>
                             <TableCell>
-                              {ordern?.type}
+                            {bill?.toUser?.userName}
                             </TableCell>
                             <TableCell>
-                              {ordern?.priceType}
+                              {bill?.time.split('T')[0]}
                             </TableCell>
                             <TableCell>
-                            {(ordern?.quantity > 0 && ordern?.quantity < 1)  ? Number.parseFloat(ordern?.quantity).toFixed(7): ordern?.quantity}
+                            {bill?.description}
                             </TableCell>
                             <TableCell>
-                              {ordern?.limitPrice}
+                              {bill?.amount}
                             </TableCell>
                             <TableCell>
-                              {ordern?.executionPrice}
+                              {bill?.targetCurrency?.name}
                             </TableCell>
                             <TableCell>
-                            {(ordern?.serviceFee > 0 && ordern?.serviceFee < 1)  ? Number.parseFloat(ordern?.serviceFee).toFixed(7): ordern?.serviceFee}
+                            {bill?.paidCurrency?.name}
                             </TableCell>
                             <TableCell>
-                              {ordern?.currency?.name}
+                            {(bill?.serviceFee > 0 && bill?.serviceFee < 1)  ? Number.parseFloat(bill?.serviceFee).toFixed(7): bill?.serviceFee}
+                            </TableCell>
+                            <TableCell>{bill.paidCurrency && bill.paidCurrency.conversionRate / bill.targetCurrency.conversionRate}</TableCell>
+                            <TableCell>
+                              {bill?.dueDate.split('T')[0]}
                             </TableCell>
                             <TableCell>
-                              {ordern?.status}
+                              {bill?.status}
                             </TableCell>
                           </TableRow>
                         ))}
@@ -204,23 +214,23 @@ Content.propTypes = {
 
 const mapStateToProps = (state) => {
   return {
-    orderInfo: state.allOrder.orderInfo,
-    error: state.allOrder.error,
+    allBills: state.allBills.allBills,
+    error: state.allBills.error,
     bankInfo: state.bank.bankInfo,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onRequestOrderInfo: () => dispatch(requestAllOrderInfo()),
+    onRequestAllBills: () => dispatch(requestAllBills()),
     onRequestBankInfo: () => dispatch(requestBankInfo()),
   };
 };
 
 export default (props) => (
   <ComponentWrapper
-    name="All Orders"
-    helperText="All system orders."
+    name="All Bills"
+    helperText="All system bills"
     Component={connect(
       mapStateToProps,
       mapDispatchToProps

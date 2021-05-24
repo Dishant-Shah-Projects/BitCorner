@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import javax.management.BadAttributeValueExpException;
 import javax.persistence.EntityNotFoundException;
+import javax.transaction.Transactional;
 import java.util.List;
 
 @Service
@@ -42,5 +43,10 @@ public class BillServiceImpl implements BillService {
 
     public List<Bill> getBytoEmail(String toEmail){
         return repository.findBytoUserId(toEmail);
+    }
+
+    @Transactional
+    public List<Bill> getAllBills() {
+        return repository.findAll();
     }
 }

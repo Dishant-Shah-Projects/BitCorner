@@ -17,4 +17,6 @@ public interface BillService {
 //
     List<Bill> getBytoEmail(String toEmail);
 
+    List<Bill> getAllBills();
+
 }

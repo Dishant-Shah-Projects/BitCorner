@@ -22,3 +22,11 @@ export const requestBillPayInfo = () => (dispatch) => {
     .then((data) => dispatch ({type:"REQUEST_BILL_PAY_INFO_SUCCESS", payload: data.data}))
     .catch((error) => dispatch({type: "REQUEST_BILL_PAY_INFO_FAIL", payload: error}))
 }
+
+export const requestAllBills = () => (dispatch) => {
+    dispatch({type: "REQUEST_ALL_BILL_PENDING"})
+    Axios.get(("/bill/allBills"))
+    .then((response) => response)
+    .then((data) => dispatch ({type:"REQUEST_ALL_BILL_SUCCESS", payload: data.data}))
+    .catch((error) => dispatch({type: "REQUEST_ALL_BILL_FAIL", payload: error}))
+}

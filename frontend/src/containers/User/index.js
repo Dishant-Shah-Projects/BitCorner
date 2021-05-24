@@ -14,6 +14,7 @@ import { Switch, Route } from "react-router-dom";
 import Balance from "./Balance";
 import BankInfo from "./BankInfo";
 import Bills from "./Bills";
+import AllBills from "./Bills/AllBills";
 import Orders from "./Orders";
 import AllOrders from "./Orders/AllOrders";
 import VerifyEmailMessage from "./VerifyEmailMessage";
@@ -228,6 +229,11 @@ function Admin(props) {
               <Route
                 path={`/bills`}
                 component={(props) => <Bills classes={classes} {...props} />}
+                exact
+              />
+              <Route
+                path={`/allBills`}
+                component={(props) => <AllBills classes={classes} {...props} />}
                 exact
               />
               <Route

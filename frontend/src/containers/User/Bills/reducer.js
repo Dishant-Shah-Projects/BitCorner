@@ -52,3 +52,22 @@ export const billPayReducer = (state= defsState, action={}) => {
             return state
     }
 }
+
+const initialState = {
+    isPending: false,
+    allBills:[],
+    error: ''
+}
+
+export const allBillsReducer = (state= initialState, action={}) => {
+    switch(action.type){
+        case "REQUEST_ALL_BILL_PENDING":
+            return Object.assign({}, state, {isPending: true});
+        case "REQUEST_ALL_BILL_SUCCESS":
+            return Object.assign({}, state, {isPending: false, allBills: action.payload});
+        case "REQUEST_ALL_BILL_FAIL":
+            return Object.assign({}, state, {isPending: true, error: action.payload});
+        default:
+            return state
+    }
+}
