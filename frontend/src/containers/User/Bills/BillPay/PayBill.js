@@ -137,7 +137,7 @@ function PayBillModal(props) {
               <h4>Target Currency Amount: {bill?.amount} </h4>
               <h4>Target Currency: {targetCurrency?.name}</h4>
               {
-                values["target_currency"] != 6 && targetCurrency?.id !== values["target_currency"] && <h4>Exchange Rate: {currency?.currencies?.find(item => item.id == values["target_currency"]).conversionRate / targetCurrency?.conversionRate}</h4>
+                bill?.targetCurrency?.id != 6 && values["target_currency"] != 6 && targetCurrency?.id !== values["target_currency"] && <h4>Exchange Rate: {currency?.currencies?.find(item => item.id == values["target_currency"]).conversionRate / targetCurrency?.conversionRate}</h4>
               }    
               <CurrencyDropdown
                 isCrypto={true}

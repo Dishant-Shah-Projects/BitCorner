@@ -22,8 +22,8 @@ function MarketPrice(props) {
     bankInfo,
   } = props;
 
-  const id = 1;
-  const [option, setOption] = React.useState(id);
+
+  const [option, setOption] = React.useState(bankInfo?.data?.primaryCurrencyId || 1);
   const onChange = (e) => {
     setOption(e.target.value);
   };
@@ -46,6 +46,10 @@ function MarketPrice(props) {
       });
     };
   }, []);
+
+  useEffect(() => {
+    setOption(bankInfo?.data?.primaryCurrencyId || 1)
+  }, [bankInfo]);
 
   return (
     <TableContainer>

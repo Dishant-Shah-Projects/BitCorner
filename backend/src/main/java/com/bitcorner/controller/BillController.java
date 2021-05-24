@@ -175,20 +175,22 @@ public class BillController
                 {
                     MarketPrice mp = marketPriceRepository.getOne(bill.getTargetCurrency().getId());
                     BigDecimal payamount = bill.getAmount().divide(mp.getTransactionPrice(), RoundingMode.HALF_UP);
-                    payamount = payamount.multiply(BigDecimal.valueOf(1.05));
-                    balanceService.withdrawBalance(bill.getToUserId(), currid2, payamount.multiply(BigDecimal.valueOf(1.0001)));
+                    BigDecimal payamountWithMargin = payamount.multiply(BigDecimal.valueOf(1.05));
+                    BigDecimal payamountWithServiceFee = payamountWithMargin.multiply(BigDecimal.valueOf(1.0001));
+                    balanceService.withdrawBalance(bill.getToUserId(), currid2, payamountWithServiceFee);
                     balanceService.depositBalance(bill.getFromUserId(), bill.getTargetCurrency().getId(), bill.getAmount());
                     bill.setStatus("Paid");
-                    bill.setServiceFee((payamount.multiply(BigDecimal.valueOf(0.0001))));
+                    bill.setServiceFee(payamountWithServiceFee.subtract(payamount));
                 } else
                 {
                     MarketPrice mp = marketPriceRepository.getOne(currid2);
                     BigDecimal payamount = bill.getAmount().multiply(mp.getTransactionPrice());
-                    payamount = payamount.multiply(BigDecimal.valueOf(1.05));
-                    balanceService.withdrawBalance(bill.getToUserId(), currid2, payamount.multiply(BigDecimal.valueOf(1.0001)));
+                    BigDecimal payamountWithMargin = payamount.multiply(BigDecimal.valueOf(1.05));
+                    BigDecimal payamountWithServiceFee = payamountWithMargin.multiply(BigDecimal.valueOf(1.0001));
+                    balanceService.withdrawBalance(bill.getToUserId(), currid2, payamountWithServiceFee);
                     balanceService.depositBalance(bill.getFromUserId(), bill.getTargetCurrency().getId(), bill.getAmount());
                     bill.setStatus("Paid");
-                    bill.setServiceFee((payamount.multiply(BigDecimal.valueOf(0.0001))));
+                    bill.setServiceFee(payamountWithServiceFee.subtract(payamount));
                 }
 
             } else

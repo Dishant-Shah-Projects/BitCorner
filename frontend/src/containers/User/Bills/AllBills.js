@@ -11,11 +11,10 @@ import TableCell from "@material-ui/core/TableCell";
 import TableContainer from "@material-ui/core/TableContainer";
 import TableRow from "@material-ui/core/TableRow";
 import TableBody from "@material-ui/core/TableBody";
-import {requestAllBills} from "./action.js";
+import { requestAllBills } from "./action.js";
 import { requestBankInfo } from "../actions.js";
-import DateFilter from '../DateFilter';
-import moment from 'moment';
-
+import DateFilter from "../DateFilter";
+import moment from "moment";
 
 const styles = (theme) => ({
   paper: {
@@ -50,24 +49,26 @@ function Content(props) {
   const [filteredBills, setFilteredBills] = React.useState(allBills);
   const [totalServiceFee, setTotalServiceFee] = React.useState({});
 
-  const filter = ({startDate, endDate}) => {
+  const filter = ({ startDate, endDate }) => {
     let totalServiceFees = {};
-    let filteredOrder = allBills?.filter(item => {
+    let filteredOrder = allBills?.filter((item) => {
       var startDateObj = new moment(startDate);
       var endDateObj = new moment(endDate);
-      var itemDateObj = new moment(item.time.split('T')[0]);
-      if((startDateObj > itemDateObj) || (endDateObj < itemDateObj)){
+      var itemDateObj = new moment(item.time.split("T")[0]);
+      if (startDateObj > itemDateObj || endDateObj < itemDateObj) {
         return false;
       }
-      if(!totalServiceFees[item?.paidCurrency?.name]){
-        totalServiceFees[item?.paidCurrency?.name] = 0;
+      if (item?.paidCurrency) {
+        if (!totalServiceFees[item?.paidCurrency?.name]) {
+          totalServiceFees[item?.paidCurrency?.name] = 0;
+        }
+        totalServiceFees[item?.paidCurrency?.name] += item.serviceFee;
       }
-      totalServiceFees[item?.paidCurrency?.name] += item.serviceFee;
       return true;
-    })
+    });
     setFilteredBills(filteredOrder);
     setTotalServiceFee(totalServiceFees);
-  }
+  };
 
   useEffect(() => {
     onRequestAllBills();
@@ -77,13 +78,18 @@ function Content(props) {
   useEffect(() => {
     setFilteredBills(allBills);
     let sum = {};
-    if(allBills){
-      allBills.forEach(item => {
-      if(!sum[item?.paidCurrency?.name]){
-        sum[item?.paidCurrency?.name] = 0;
-      }
-      sum[item?.paidCurrency?.name] += Number.parseFloat(Number.parseFloat(item.serviceFee).toFixed(7));
-    })}
+    if (allBills) {
+      allBills.forEach((item) => {
+        if (item?.paidCurrency) {
+          if (!sum[item?.paidCurrency?.name]) {
+            sum[item?.paidCurrency?.name] = 0;
+          }
+          sum[item?.paidCurrency?.name] += Number.parseFloat(
+            Number.parseFloat(item.serviceFee).toFixed(7)
+          );
+        }
+      });
+    }
     setTotalServiceFee(sum);
   }, [allBills]);
 
@@ -92,16 +98,16 @@ function Content(props) {
       {bankInfo?.status === 200 ? (
         <div>
           <div className={styling.contentWrapper}>
-            <DateFilter filter = {filter}/>
+            <DateFilter filter={filter} />
             <h3>Total Service Fee for the given time frame</h3>
-            {Object.keys(totalServiceFee).map (
-              key => {
-                return (<div>{key} : {totalServiceFee[key].toFixed(7)}</div>)
-              }
-            ) 
-            }
-            {allBills &&
-            allBills?.length != 0 ? (
+            {Object.keys(totalServiceFee).map((key) => {
+              return (
+                <div>
+                  {key} : {totalServiceFee[key].toFixed(7)}
+                </div>
+              );
+            })}
+            {allBills && allBills?.length != 0 ? (
               <div className={classes.contentWrapper}>
                 <div>
                   <TableContainer component={Paper}>
@@ -130,7 +136,7 @@ function Content(props) {
                             <b>Bill Pay Currency</b>
                           </TableCell>
                           <TableCell align="left">
-                            <b>Service Fee</b>
+                            <b>Service Fee +<br/>Margin<br/>(Where Applicable)</b>
                           </TableCell>
                           <TableCell align="left">
                             <b>Exchange Rate</b>
@@ -146,37 +152,31 @@ function Content(props) {
                       <TableBody>
                         {filteredBills?.map((bill) => (
                           <TableRow key={bill.id}>
+                            <TableCell>{bill?.fromUser?.userName}</TableCell>
+                            <TableCell>{bill?.toUser?.userName}</TableCell>
+                            <TableCell>{bill?.time.split("T")[0]}</TableCell>
+                            <TableCell>{bill?.description}</TableCell>
+                            <TableCell>{bill?.amount}</TableCell>
+                            <TableCell>{bill?.targetCurrency?.name}</TableCell>
+                            <TableCell>{bill?.paidCurrency?.name}</TableCell>
                             <TableCell>
-                              {bill?.fromUser?.userName}
+                              {bill?.serviceFee > 0 && bill?.serviceFee < 1
+                                ? Number.parseFloat(bill?.serviceFee).toFixed(7)
+                                : bill?.serviceFee}
                             </TableCell>
                             <TableCell>
-                            {bill?.toUser?.userName}
+                              {bill?.paidCurrency
+                                ? bill?.paidCurrency?.id !=
+                                    bill?.targetCurrency?.id &&
+                                  (bill?.paidCurrency?.id === 6 ||
+                                    bill?.targetCurrency?.id === 6)
+                                  ? "-"
+                                  : bill?.paidCurrency?.conversionRate /
+                                    bill?.targetCurrency?.conversionRate
+                                : "-"}
                             </TableCell>
-                            <TableCell>
-                              {bill?.time.split('T')[0]}
-                            </TableCell>
-                            <TableCell>
-                            {bill?.description}
-                            </TableCell>
-                            <TableCell>
-                              {bill?.amount}
-                            </TableCell>
-                            <TableCell>
-                              {bill?.targetCurrency?.name}
-                            </TableCell>
-                            <TableCell>
-                            {bill?.paidCurrency?.name}
-                            </TableCell>
-                            <TableCell>
-                            {(bill?.serviceFee > 0 && bill?.serviceFee < 1)  ? Number.parseFloat(bill?.serviceFee).toFixed(7): bill?.serviceFee}
-                            </TableCell>
-                            <TableCell>{bill.paidCurrency && bill.paidCurrency.conversionRate / bill.targetCurrency.conversionRate}</TableCell>
-                            <TableCell>
-                              {bill?.dueDate.split('T')[0]}
-                            </TableCell>
-                            <TableCell>
-                              {bill?.status}
-                            </TableCell>
+                            <TableCell>{bill?.dueDate.split("T")[0]}</TableCell>
+                            <TableCell>{bill?.status}</TableCell>
                           </TableRow>
                         ))}
                       </TableBody>
@@ -188,7 +188,7 @@ function Content(props) {
               <Paper className={classes.paper}>
                 <div className={classes.contentWrapper}>
                   <Typography color="textSecondary" align="center">
-                    No orders placed yet!!
+                    No Bills created yet!!
                   </Typography>
                 </div>
               </Paper>

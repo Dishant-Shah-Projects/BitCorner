@@ -198,7 +198,7 @@ function Content(props) {
                     name="street"
                     label="Street"
                     fullWidth
-                    pattern="^[a-zA-Z0-9]+(?:[\s-][a-zA-Z0-9]+)*$"
+                    pattern="^[a-zA-Z0-9,.]+(?:[\s-][a-zA-Z0-9,.]+)*$"
                     helperText="Please enter a valid street name"
                     onChange={handleInputChange}
                     value={values["street"]}
