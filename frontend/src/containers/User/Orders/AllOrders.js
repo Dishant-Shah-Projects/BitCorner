@@ -101,7 +101,7 @@ function Content(props) {
             }
             {orderInfo.data &&
             typeof orderInfo.data !== undefined &&
-            orderInfo.data.length != 0 ? (
+            orderInfo?.data?.length != 0 ? (
               <div className={classes.contentWrapper}>
                 <div>
                   <TableContainer component={Paper}>
