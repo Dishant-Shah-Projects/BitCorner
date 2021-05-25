@@ -8,10 +8,9 @@ import ComponentWrapper from "../ComponentWrapper";
 import { requestBankInfo } from "../actions.js";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
-import BillModal from './BillModal/index'
-import Bill from './MyBill/Bill';
-import BilltoPay from'./BillPay/BilllTable';
-import { BASE_URL } from "../../constants";
+import BillModal from "./BillModal/index";
+import Bill from "./MyBill/Bill";
+import BilltoPay from "./BillPay/BilllTable";
 import Axios from "axios";
 
 const styles = makeStyles((theme) => ({
@@ -53,44 +52,27 @@ function Content(props) {
   };
 
 
-
-  const handleInput = (event) => {
-    event.preventDefault();
-    console.log("FormData", formData);
-    console.log(BASE_URL);
-    Axios.put(BASE_URL + "/bank", formData).then((response) => {
-      if (response.status === 200) {
-        console.log("Successfully Added Bank Account");
-        setOpen(false);
-      } else {
-        console.log("Failed");
-      }
-    });
-  };
-
   useEffect(() => {
     onRequestBankInfo();
-    
   }, []);
 
   return (
     <div>
       {bankInfo?.status === 200 ? (
         <div>
-      <BillModal/>
-      <Bill/>
-      <BilltoPay/>
-      </div>
-    
-    ) : (
-      <Paper className={classes.paper}>
-        <div className={classes.contentWrapper}>
-          <Typography color="textSecondary" align="center">
-            Please set up your bank account to create and pay bills
-          </Typography>
+          <BillModal />
+          <Bill />
+          <BilltoPay />
         </div>
-      </Paper>
-    )}
+      ) : (
+        <Paper className={classes.paper}>
+          <div className={classes.contentWrapper}>
+            <Typography color="textSecondary" align="center">
+              Please set up your bank account to create and pay bills
+            </Typography>
+          </div>
+        </Paper>
+      )}
     </div>
   );
 }
@@ -98,14 +80,14 @@ function Content(props) {
 const mapStateToProps = (state) => {
   return {
     user: state.user,
-    currencies :state.currencies,
-    bankInfo:state.bank.bankInfo
+    currencies: state.currencies,
+    bankInfo: state.bank.bankInfo,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onRequestBankInfo: () => dispatch(requestBankInfo())
+    onRequestBankInfo: () => dispatch(requestBankInfo()),
   };
 };
 
