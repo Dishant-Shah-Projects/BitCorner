@@ -15,6 +15,7 @@ security:
   allowed-origins:
     - https://${DOMAIN}
     - http://localhost:3000
+    - http://ec2-54-67-3-7.us-west-1.compute.amazonaws.com:3000
   allowed-methods:
     - GET
     - POST
