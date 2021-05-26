@@ -165,7 +165,6 @@ function Content(props) {
                 aria-labelledby="form-dialog-title"
               >
                 <form
-                  className={classes.root}
                   noValidate
                   autoComplete="off"
                   onSubmit={onFormSubmit}

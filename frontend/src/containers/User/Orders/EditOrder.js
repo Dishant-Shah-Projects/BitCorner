@@ -51,7 +51,7 @@ function EditOrderModal(props) {
     onrequestOrderInfo,
   } = props;
   const [open, setOpen] = React.useState(false);
-  
+
   const {
     errors,
     setErrors,
@@ -66,7 +66,7 @@ function EditOrderModal(props) {
     {
       type: order.type,
       priceType: order.priceType,
-      quantity: order.quantity,
+      quantity: parseFloat(order.quantity).toFixed(8),
       limitPrice: order.limitPrice,
       currencyId: order.currencyId,
     },

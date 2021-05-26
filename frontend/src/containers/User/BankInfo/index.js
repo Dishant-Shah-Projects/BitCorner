@@ -124,7 +124,6 @@ function Content(props) {
               aria-labelledby="form-dialog-title"
             >
               <form
-                className={classes.root}
                 noValidate
                 autoComplete="off"
                 onSubmit={onFormSubmit}
@@ -144,7 +143,6 @@ function Content(props) {
                     margin="dense"
                     label="Bank Name"
                     name="bankName"
-                    fullWidth
                     pattern="^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$"
                     helperText="Please enter a valid bank name"
                     onChange={handleInputChange}
