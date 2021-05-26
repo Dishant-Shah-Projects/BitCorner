@@ -2,6 +2,7 @@ package com.bitcorner.controller;
 
 import com.bitcorner.auth.model.User;
 import com.bitcorner.dataModel.ErrorResponse;
+import com.bitcorner.dataModel.SuccessResponse;
 import com.bitcorner.entity.*;
 import com.bitcorner.service.CurrencyService;
 import com.bitcorner.service.OrderService;
@@ -157,13 +158,13 @@ public class OrderTableController {
             String userId=getUserId();
             order_table.setUserId(userId);
             order_table.setStatus("Cancelled");
-            order_table.setExecutionPrice(null);
-            order_table.setServiceFee(null);
+            order_table.setExecutionPrice(BigDecimal.valueOf(0));
+            order_table.setServiceFee(BigDecimal.valueOf(0));
             order_table.setId(orderId);
             Date d = new Date();
             order_table.setTime(d);
             Orderservice.update(order_table);
-            return new ResponseEntity<>(order_table, HttpStatus.OK);
+            return new ResponseEntity<>(new SuccessResponse("Order Cancelled Successfully!"), HttpStatus.OK);
         }
         catch (EntityNotFoundException ex){
             return new ResponseEntity<>(new ErrorResponse(ex.getMessage()), HttpStatus.NOT_FOUND);
