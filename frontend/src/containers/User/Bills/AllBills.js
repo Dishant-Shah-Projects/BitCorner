@@ -84,7 +84,7 @@ function Content(props) {
             sum[item?.paidCurrency?.name] = 0;
           }
           sum[item?.paidCurrency?.name] += Number.parseFloat(
-            Number.parseFloat(item.serviceFee).toFixed(7)
+            Number.parseFloat(item.serviceFee).toFixed(8)
           );
         }
       });
@@ -102,7 +102,7 @@ function Content(props) {
             {Object.keys(totalServiceFee).map((key) => {
               return (
                 <div>
-                  {key} : {totalServiceFee[key].toFixed(7)}
+                  {key} : {totalServiceFee[key].toFixed(8)}
                 </div>
               );
             })}
@@ -160,7 +160,7 @@ function Content(props) {
                             <TableCell>{bill?.paidCurrency?.name}</TableCell>
                             <TableCell>
                               {bill?.serviceFee > 0 && bill?.serviceFee < 1
-                                ? Number.parseFloat(bill?.serviceFee).toFixed(7)
+                                ? Number.parseFloat(bill?.serviceFee).toFixed(8)
                                 : bill?.serviceFee}
                             </TableCell>
                             <TableCell>

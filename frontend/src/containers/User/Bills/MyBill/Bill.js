@@ -128,7 +128,7 @@ function Bill(props) {
               <TableCell>{row.description}</TableCell>
               <TableCell>
                 {row.amount > 0 && row.amount < 1
-                  ? Number.parseFloat(row.amount).toFixed(7)
+                  ? Number.parseFloat(row.amount).toFixed(8)
                   : row.amount}
               </TableCell>
               <TableCell>{row.paymentMethod}</TableCell>

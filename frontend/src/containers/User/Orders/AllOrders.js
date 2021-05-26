@@ -81,7 +81,7 @@ function Content(props) {
       if(!sum[item?.currency?.name]){
         sum[item?.currency?.name] = 0;
       }
-      sum[item?.currency?.name] += Number.parseFloat(Number.parseFloat(item.serviceFee).toFixed(7));
+      sum[item?.currency?.name] += Number.parseFloat(Number.parseFloat(item.serviceFee).toFixed(8));
     })}
     setTotalServiceFee(sum);
   }, [orderInfo]);
@@ -95,7 +95,7 @@ function Content(props) {
             <h3>Total Service Fee for the given time frame</h3>
             {Object.keys(totalServiceFee).map (
               key => {
-                return (<div>{key} : {totalServiceFee[key].toFixed(7)}</div>)
+                return (<div>{key} : {totalServiceFee[key].toFixed(8)}</div>)
               }
             ) 
             }
@@ -150,7 +150,7 @@ function Content(props) {
                               {ordern?.priceType}
                             </TableCell>
                             <TableCell>
-                            {(ordern?.quantity > 0 && ordern?.quantity < 1)  ? Number.parseFloat(ordern?.quantity).toFixed(7): ordern?.quantity}
+                            {(ordern?.quantity > 0 && ordern?.quantity < 1)  ? Number.parseFloat(ordern?.quantity).toFixed(8): ordern?.quantity}
                             </TableCell>
                             <TableCell>
                               {ordern?.limitPrice}
@@ -159,7 +159,7 @@ function Content(props) {
                               {ordern?.executionPrice}
                             </TableCell>
                             <TableCell>
-                            {(ordern?.serviceFee > 0 && ordern?.serviceFee < 1)  ? Number.parseFloat(ordern?.serviceFee).toFixed(7): ordern?.serviceFee}
+                            {(ordern?.serviceFee > 0 && ordern?.serviceFee < 1)  ? Number.parseFloat(ordern?.serviceFee).toFixed(8): ordern?.serviceFee}
                             </TableCell>
                             <TableCell>
                               {ordern?.currency?.name}

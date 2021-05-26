@@ -332,7 +332,7 @@ function Content(props) {
                             <TableCell>{ordern?.priceType}</TableCell>
                             <TableCell>
                               {ordern?.quantity > 0 && ordern?.quantity < 1
-                                ? Number.parseFloat(ordern?.quantity).toFixed(7)
+                                ? Number.parseFloat(ordern?.quantity).toFixed(8)
                                 : ordern?.quantity}
                             </TableCell>
                             <TableCell>{ordern?.limitPrice}</TableCell>
@@ -351,7 +351,7 @@ function Content(props) {
                               ordern?.runningBitcoinBalance < 1
                                 ? Number.parseFloat(
                                     ordern?.runningBitcoinBalance
-                                  ).toFixed(7)
+                                  ).toFixed(8)
                                 : ordern?.runningBitcoinBalance}
                             </TableCell>
                             <TableCell>
