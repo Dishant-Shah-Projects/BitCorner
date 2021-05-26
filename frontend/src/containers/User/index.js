@@ -223,7 +223,9 @@ function Admin(props) {
 
               <Route
                 path={`/allOrders`}
-                component={(props) => <AllOrders classes={classes} {...props} />}
+                component={(props) => (
+                  <AllOrders classes={classes} {...props} />
+                )}
                 exact
               />
               <Route

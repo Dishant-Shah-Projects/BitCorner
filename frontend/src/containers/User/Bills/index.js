@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
-import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import { connect } from "react-redux";
 import ComponentWrapper from "../ComponentWrapper";
@@ -13,7 +12,7 @@ import Bill from "./MyBill/Bill";
 import BilltoPay from "./BillPay/BilllTable";
 import Axios from "axios";
 
-const styles = makeStyles((theme) => ({
+const styles = (theme) => ({
   paper: {
     maxWidth: 936,
     margin: "auto",
@@ -34,12 +33,11 @@ const styles = makeStyles((theme) => ({
   table: {
     minWidth: 600,
   },
-}));
+});
 
 function Content(props) {
   const { classes, onRequestBankInfo, isPending, bankInfo, error } = props;
   const [open, setOpen] = React.useState(false);
-  const styling = styles();
   const formData = {
     primaryCurrency: {
       id: 1,
@@ -50,7 +48,6 @@ function Content(props) {
       base: false,
     },
   };
-
 
   useEffect(() => {
     onRequestBankInfo();

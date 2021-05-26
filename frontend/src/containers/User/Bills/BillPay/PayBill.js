@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
-import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import { connect } from "react-redux";
 import { requestBillPayInfo } from "../action";
@@ -16,7 +15,7 @@ import CurrencyDropdown from "../../CurrencyDropdown/index";
 
 import { useForm } from "../../../../hooks/useForm";
 
-const styles = makeStyles((theme) => ({
+const styles = (theme) => ({
   paper: {
     maxWidth: 936,
     margin: "auto",
@@ -37,19 +36,13 @@ const styles = makeStyles((theme) => ({
   table: {
     minWidth: 600,
   },
-}));
+});
 
 function PayBillModal(props) {
-  const {
-    classes,
-    currency,
-    onrequestBillPayInfo,
-    bill,
-    bankInfo,
-  } = props;
+  const { classes, currency, onrequestBillPayInfo, bill, bankInfo } = props;
   const [open, setOpen] = React.useState(false);
   const [targetCurrency, setTargetCurrency] = React.useState({});
-  const styling = styles();
+  
 
   const {
     errors,
@@ -70,8 +63,6 @@ function PayBillModal(props) {
     }
   );
 
-
-
   const handleClickOpen = () => setOpen(true);
 
   const handleClose = () => setOpen(false);
@@ -83,12 +74,10 @@ function PayBillModal(props) {
         null
       ).then((response) => {
         if (response.status === 200) {
-          console.log("Successfully UPDATED Bank Account");
           setOpen(false);
-          values["target_currency"]=bill?.targetCurrency?.id;
+          values["target_currency"] = bill?.targetCurrency?.id;
           onrequestBillPayInfo();
-        }
-        else{
+        } else {
           setOpen(false);
         }
       });
@@ -96,88 +85,101 @@ function PayBillModal(props) {
   };
 
   useEffect(() => {
-    let targetCurrencyObj = currency?.currencies?.find(item => item.id === bill?.targetCurrency?.id);
+    let targetCurrencyObj = currency?.currencies?.find(
+      (item) => item.id === bill?.targetCurrency?.id
+    );
     setTargetCurrency(targetCurrencyObj);
   }, [bill]);
 
-  let disabled = false
-  if(bill.status==="Paid" || bill.status==="Cancelled"||bill.status==="Rejected"){
-    disabled = true
+  let disabled = false;
+  if (
+    bill.status === "Paid" ||
+    bill.status === "Cancelled" ||
+    bill.status === "Rejected"
+  ) {
+    disabled = true;
   }
 
   return (
     <>
-          <Button
-            style={{ margin: "0 auto", display: "flex" }}
-            variant="outlined"
-            color="primary"
-            onClick={handleClickOpen}
-            disabled={disabled}
-          >
-            <PaymentIcon />
-          </Button>
-        <Dialog
-          open={open}
-          onClose={handleClose}
-          aria-labelledby="form-dialog-title"
+      <Button
+        style={{ margin: "0 auto", display: "flex" }}
+        variant="outlined"
+        color="primary"
+        onClick={handleClickOpen}
+        disabled={disabled}
+      >
+        <PaymentIcon />
+      </Button>
+      <Dialog
+        open={open}
+        onClose={handleClose}
+        aria-labelledby="form-dialog-title"
+      >
+        <form
+          className={classes.root}
+          noValidate
+          autoComplete="off"
+          onSubmit={onFormSubmit}
         >
-          <form
-            className={styling.root}
-            noValidate
-            autoComplete="off"
-            onSubmit={onFormSubmit}
-          >
-            <DialogTitle id="form-dialog-title">Pay Bill</DialogTitle>
-            <DialogContent>
-              <DialogContentText>
-                <b>Please Pay the bill!</b>
-              </DialogContentText>
-              <h4>Pay To: {bill?.fromUser?.userName}</h4>
-              <h4>Description: {bill?.description}</h4>
-              <h4>Target Currency Amount: {bill?.amount} </h4>
-              <h4>Target Currency: {targetCurrency?.name}</h4>
-              {
-                bill?.targetCurrency?.id != 6 && values["target_currency"] != 6 && targetCurrency?.id !== values["target_currency"] && <h4>Exchange Rate: {currency?.currencies?.find(item => item.id == values["target_currency"]).conversionRate / targetCurrency?.conversionRate}</h4>
-              }    
-              <CurrencyDropdown
-                isCrypto={true}
-                required
-                margin="dense"
-                id="country"
-                label="Currency"
-                name="target_currency"
-                fullWidth
-                helperText="Please select atleast one"
-                onChange={handleInputChange}
-                value={values["target_currency"]}
-                error={errors["target_currency"]}
-              />
-            </DialogContent>
-            
-            <DialogActions>
-              <Button onClick={handleClose} color="primary">
-                Cancel
-              </Button>
-              <Button type="submit" color="primary">
-                Pay Bill
-              </Button>
-            </DialogActions>
-          </form>
-        </Dialog>
-        </>
+          <DialogTitle id="form-dialog-title">Pay Bill</DialogTitle>
+          <DialogContent>
+            <DialogContentText>
+              <b>Please Pay the bill!</b>
+            </DialogContentText>
+            <h4>Pay To: {bill?.fromUser?.userName}</h4>
+            <h4>Description: {bill?.description}</h4>
+            <h4>Target Currency Amount: {bill?.amount} </h4>
+            <h4>Target Currency: {targetCurrency?.name}</h4>
+            {bill?.targetCurrency?.id != 6 &&
+              values["target_currency"] != 6 &&
+              targetCurrency?.id !== values["target_currency"] && (
+                <h4>
+                  Exchange Rate:{" "}
+                  {currency?.currencies?.find(
+                    (item) => item.id == values["target_currency"]
+                  ).conversionRate / targetCurrency?.conversionRate}
+                </h4>
+              )}
+            <CurrencyDropdown
+              isCrypto={true}
+              required
+              margin="dense"
+              id="country"
+              label="Currency"
+              name="target_currency"
+              fullWidth
+              helperText="Please select atleast one"
+              onChange={handleInputChange}
+              value={values["target_currency"]}
+              error={errors["target_currency"]}
+            />
+          </DialogContent>
+
+          <DialogActions>
+            <Button onClick={handleClose} color="primary">
+              Cancel
+            </Button>
+            <Button type="submit" color="primary">
+              Pay Bill
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
+    </>
   );
 }
 
 const mapStateToProps = (state) => {
   return {
     bankInfo: state.bank.bankInfo,
-    currency: state.currency
+    currency: state.currency,
   };
 };
 
 const mapDispatchToProps = (dispatch) => {
   return {
-    onrequestBillPayInfo: () => dispatch(requestBillPayInfo())
+    onrequestBillPayInfo: () => dispatch(requestBillPayInfo()),
   };
 };
 

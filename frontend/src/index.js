@@ -30,10 +30,8 @@ const renderApp = () => {
 
 firebase.auth().onAuthStateChanged((user) => {
   if (user) {
-    console.log("User loggeed in is: ", user);
     store.dispatch({ type: "SIGNIN", payload: user });
     user.getIdToken(true).then((idToken) => {
-      console.log(idToken);
       axios.defaults.headers.common["Authorization"] = `Bearer ${idToken}`;
       renderApp();
     });

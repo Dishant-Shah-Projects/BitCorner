@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import Typography from "@material-ui/core/Typography";
 import { withStyles } from "@material-ui/core/styles";
-import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import { connect } from "react-redux";
 import ComponentWrapper from "../ComponentWrapper";
@@ -23,7 +22,7 @@ import Paper from "@material-ui/core/Paper";
 import CurrencyDropdown from "../CurrencyDropdown/index";
 import Axios from "axios";
 
-const styles = makeStyles((theme) => ({
+const styles = (theme) => ({
   paper: {
     maxWidth: 936,
     margin: "auto",
@@ -47,7 +46,7 @@ const styles = makeStyles((theme) => ({
   dialogCenter: {
     textAlign: "center",
   },
-}));
+});
 
 function Content(props) {
   const { classes, onRequestBankInfo, isPending, bankInfo, error, isLoaded } =
@@ -85,15 +84,12 @@ function Content(props) {
   );
 
   const [open, setOpen] = React.useState(false);
-  const styling = styles();
-
   const handleClickOpen = () => setOpen(true);
 
   const handleClose = () => setOpen(false);
 
   const onFormSubmit = (event) => {
     formSubmit(event, () => {
-      event.preventDefault();
       Axios.put("/bank", values).then((response) => {
         if (response.status === 200) {
           setOpen(false);
@@ -109,8 +105,8 @@ function Content(props) {
 
   return (
     <div>
-      {isPending && isLoaded && error.response.status === 404 ? (
-        <div className={styling.contentWrapper}>
+      {isPending && isLoaded && error?.response?.status === 404 ? (
+        <div className={classes.contentWrapper}>
           <div>
             <Button
               style={{ margin: "0 auto", display: "flex" }}
@@ -128,7 +124,7 @@ function Content(props) {
               aria-labelledby="form-dialog-title"
             >
               <form
-                className={styling.root}
+                className={classes.root}
                 noValidate
                 autoComplete="off"
                 onSubmit={onFormSubmit}
@@ -136,7 +132,7 @@ function Content(props) {
                 <DialogTitle id="form-dialog-title">
                   Set up Bank Account
                 </DialogTitle>
-                <DialogContent style={{textAlign:'center'}}>
+                <DialogContent style={{ textAlign: "center" }}>
                   <DialogContentText>
                     To start trading Bitcoins or to start paying bills please
                     set up a bank account
@@ -277,48 +273,58 @@ function Content(props) {
             </Dialog>
           )}
         </div>
-      ) : bankInfo.data && typeof bankInfo.data !== undefined ? (
+      ) : bankInfo?.data ? (
         <Paper className={classes.paper}>
           <div className={classes.contentWrapper}>
             <TableContainer component={Paper}>
               <Table className={classes.table} aria-label="simple table">
                 <TableBody>
                   <TableRow>
-                    <TableCell style={{fontWeight:'bold'}}>Bank Name</TableCell>
-                    <TableCell>{bankInfo.data["bankName"]}</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>
+                      Bank Name
+                    </TableCell>
+                    <TableCell>{bankInfo?.data["bankName"]}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell  style={{fontWeight:'bold'}}>Account Number</TableCell>
-                    <TableCell>{bankInfo.data["accountNumber"]}</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>
+                      Account Number
+                    </TableCell>
+                    <TableCell>{bankInfo?.data["accountNumber"]}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell style={{fontWeight:'bold'}}>Owner Name</TableCell>
-                    <TableCell>{bankInfo.data["ownerName"]}</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>
+                      Owner Name
+                    </TableCell>
+                    <TableCell>{bankInfo?.data["ownerName"]}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell style={{fontWeight:'bold'}}>Street</TableCell>
-                    <TableCell>{bankInfo.data["street"]}</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Street</TableCell>
+                    <TableCell>{bankInfo?.data["street"]}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell style={{fontWeight:'bold'}}>City</TableCell>
-                    <TableCell>{bankInfo.data["city"]}</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>City</TableCell>
+                    <TableCell>{bankInfo?.data["city"]}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell style={{fontWeight:'bold'}}>State</TableCell>
-                    <TableCell>{bankInfo.data["state"]}</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>State</TableCell>
+                    <TableCell>{bankInfo?.data["state"]}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell style={{fontWeight:'bold'}}>Zip</TableCell>
-                    <TableCell>{bankInfo.data["zip"]}</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>Zip</TableCell>
+                    <TableCell>{bankInfo?.data["zip"]}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell style={{fontWeight:'bold'}}>Country</TableCell>
-                    <TableCell>{bankInfo.data["country"]}</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>
+                      Country
+                    </TableCell>
+                    <TableCell>{bankInfo?.data["country"]}</TableCell>
                   </TableRow>
                   <TableRow>
-                    <TableCell style={{fontWeight:'bold'}}>Primary Currency</TableCell>
+                    <TableCell style={{ fontWeight: "bold" }}>
+                      Primary Currency
+                    </TableCell>
                     <TableCell>
-                      {bankInfo.data["primaryCurrency"]["name"]}
+                      {bankInfo?.data["primaryCurrency"]["name"]}
                     </TableCell>
                   </TableRow>
                 </TableBody>
@@ -337,10 +343,10 @@ function Content(props) {
 
 const mapStateToProps = (state) => {
   return {
-    bankInfo: state.bank.bankInfo,
-    isPending: state.bank.isPending,
-    error: state.bank.error,
-    isLoaded: state.bank.isLoaded,
+    bankInfo: state?.bank?.bankInfo,
+    isPending: state?.bank?.isPending,
+    error: state?.bank?.error,
+    isLoaded: state?.bank?.isLoaded,
   };
 };
 

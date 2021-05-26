@@ -81,8 +81,6 @@ function BilltoPay(props) {
   );
   const filter = ({ startDate, endDate }) => {
     let filteredOrder = bills?.bills?.filter((item) => {
-      console.log("ITEMS");
-      console.log(item);
       var startDateObj = new moment(startDate);
       var endDateObj = new moment(endDate);
       var itemDateObj = new moment(item.time.split("T")[0]);
@@ -195,7 +193,6 @@ function BilltoPay(props) {
   );
 }
 const mapStateToProps = (state) => {
-  console.log(state);
   return {
     bills: state.billPay,
     currency: state.currency,

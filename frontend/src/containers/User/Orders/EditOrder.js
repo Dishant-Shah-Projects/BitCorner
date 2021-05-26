@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
-import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import { connect } from "react-redux";
 import { requestCurrencyInfo } from "../Bills/action";
@@ -20,7 +19,7 @@ import FormControlLabel from "@material-ui/core/FormControlLabel";
 import EditIcon from "@material-ui/icons/Edit";
 import TextField from "../../../components/TextField";
 import { useForm } from "../../../hooks/useForm";
-const styles = makeStyles((theme) => ({
+const styles = (theme) => ({
   paper: {
     maxWidth: 936,
     margin: "auto",
@@ -41,7 +40,7 @@ const styles = makeStyles((theme) => ({
   table: {
     minWidth: 600,
   },
-}));
+});
 
 function EditOrderModal(props) {
   const {
@@ -52,7 +51,7 @@ function EditOrderModal(props) {
     onrequestOrderInfo,
   } = props;
   const [open, setOpen] = React.useState(false);
-  const styling = styles();
+  
   const {
     errors,
     setErrors,
@@ -117,7 +116,7 @@ function EditOrderModal(props) {
         aria-labelledby="form-dialog-title"
       >
         <form
-          className={styling.root}
+          className={classes.root}
           noValidate
           autoComplete="off"
           onSubmit={FormSubmit}

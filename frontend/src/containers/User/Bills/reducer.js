@@ -9,8 +9,6 @@ export const currencyReducer = (state= defaultState, action={}) => {
         case "REQUEST_CURRENCY_INFO_PENDING":
             return Object.assign({}, state, {isPending: true});
         case "REQUEST_CURRENCY_INFO_SUCCESS":
-            console.log("DEBUG HERE");
-            console.log(action.payload);
             return Object.assign({}, state, {currencies: action.payload});
         case "REQUEST_CURRENCY_INFO_FAIL":
             return Object.assign({}, state, {error: action.payload});

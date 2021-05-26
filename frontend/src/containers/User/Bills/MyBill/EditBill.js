@@ -1,7 +1,6 @@
 import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
-import { makeStyles } from "@material-ui/core/styles";
 import Button from "@material-ui/core/Button";
 import { connect } from "react-redux";
 import { requestBillInfo, requestCurrencyInfo } from "../action";
@@ -16,7 +15,7 @@ import TextField from "../../../../components/TextField";
 import { useForm } from "../../../../hooks/useForm";
 import CurrencyDropdown from "../../CurrencyDropdown/index";
 import InputLabel from "@material-ui/core/InputLabel";
-const styles = makeStyles((theme) => ({
+const styles = (theme) => ({
   paper: {
     maxWidth: 936,
     margin: "auto",
@@ -37,12 +36,12 @@ const styles = makeStyles((theme) => ({
   table: {
     minWidth: 600,
   },
-}));
+});
 
 function EditBillModal(props) {
   const { classes, onrequestBillInfo, bill } = props;
   const [open, setOpen] = React.useState(false);
-  const styling = styles();
+  
   const {
     errors,
     setErrors,
@@ -111,7 +110,7 @@ function EditBillModal(props) {
         aria-labelledby="form-dialog-title"
       >
         <form
-          className={styling.root}
+          className={classes.root}
           noValidate
           autoComplete="off"
           onSubmit={handleInput}

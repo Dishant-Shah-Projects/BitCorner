@@ -57,7 +57,6 @@ export const Content = (props) => {
   );
   const onFormSubmit = (event) => {
     formSubmit(event, () => {
-      console.log("values", values);
       axios.put(`user?nickname=${values["nickname"]}`).then((response) => {
         onRequestUserInfo();
       });

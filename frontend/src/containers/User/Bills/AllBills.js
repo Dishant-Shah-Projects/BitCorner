@@ -45,7 +45,6 @@ function Content(props) {
     bankInfo,
   } = props;
 
-  const styling = styles();
   const [filteredBills, setFilteredBills] = React.useState(allBills);
   const [totalServiceFee, setTotalServiceFee] = React.useState({});
 
@@ -97,7 +96,7 @@ function Content(props) {
     <div>
       {bankInfo?.status === 200 ? (
         <div>
-          <div className={styling.contentWrapper}>
+          <div className={classes.contentWrapper}>
             <DateFilter filter={filter} />
             <h3>Total Service Fee for the given time frame</h3>
             {Object.keys(totalServiceFee).map((key) => {

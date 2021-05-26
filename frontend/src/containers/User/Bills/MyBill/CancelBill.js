@@ -1,18 +1,18 @@
 import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import { withStyles } from "@material-ui/core/styles";
-import { makeStyles } from "@material-ui/core/styles";
+
 import Button from "@material-ui/core/Button";
 import { connect } from "react-redux";
 // import ComponentWrapper from "../ComponentWrapper";
-import { requestBillInfo  } from "../action";
+import { requestBillInfo } from "../action";
 
 import Axios from "axios";
 
 import { useForm } from "../../../../hooks/useForm";
 import CancelPresentationIcon from "@material-ui/icons/CancelPresentation";
 
-const styles = makeStyles((theme) => ({
+const styles = (theme) => ({
   paper: {
     maxWidth: 936,
     margin: "auto",
@@ -30,11 +30,11 @@ const styles = makeStyles((theme) => ({
   table: {
     minWidth: 600,
   },
-}));
+});
 
 function CancelBill(props) {
-  const { classes, bill , onrequestBillInfo } = props;
-  const styling = styles();
+  const { classes, bill, onrequestBillInfo } = props;
+  
 
   const {
     errors,
@@ -48,25 +48,27 @@ function CancelBill(props) {
     values,
   } = useForm(
     {
-        id:bill.id
+      id: bill.id,
     },
     {}
   );
 
   const FormSubmit = (event) => {
-    Axios.put(`/bill/cancel?&ID=${bill.id}`,null).then((response) => {
+    Axios.put(`/bill/cancel?&ID=${bill.id}`, null).then((response) => {
       if (response.status === 200) {
-        
         onrequestBillInfo();
       } else {
       }
     });
   };
 
-
-  let disabled = false
-  if(bill.status==="Paid" || bill.status==="Cancelled"||bill.status==="Rejected"){
-    disabled = true
+  let disabled = false;
+  if (
+    bill.status === "Paid" ||
+    bill.status === "Cancelled" ||
+    bill.status === "Rejected"
+  ) {
+    disabled = true;
   }
   return (
     <Button
@@ -81,11 +83,9 @@ function CancelBill(props) {
   );
 }
 
-
-
 const mapDispatchToProps = (dispatch) => {
   return {
-    onrequestBillInfo: () => dispatch(requestBillInfo())
+    onrequestBillInfo: () => dispatch(requestBillInfo()),
   };
 };
 
@@ -93,6 +93,7 @@ CancelBill.propTypes = {
   classes: PropTypes.object.isRequired,
 };
 
-export default connect(null,
+export default connect(
+  null,
   mapDispatchToProps
 )(withStyles(styles)(CancelBill));

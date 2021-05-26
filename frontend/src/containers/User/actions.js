@@ -70,21 +70,28 @@ export const requestAllOrderInfo = () => (dispatch) => {
     );
 };
 
-export const requestMarketPrice = () => (dispatch,getState) => {
+export const requestMarketPrice = () => (dispatch, getState) => {
   dispatch({ type: "REQUEST_MARKET_PRICE" });
-  getState().auth.user.getIdToken(true).then((idToken) => {
-    let headers = {'Authorization':`Bearer ${idToken}`};
-    let url = process.env.REACT_APP_API_URL+'marketprice';
-    fetch(url,{method:'GET',headers:headers})
-    .then((response) => response.json()
-    .then(data => {
-        let marketPrice = {};
-        data.forEach((item) => {
-        marketPrice[item.id] = item;
-    })
-    dispatch({ type: "REQUEST_MARKET_PRICE_SUCCESS", payload: marketPrice })})) 
-    .catch((error) =>
-      dispatch({ type: "REQUEST_MARKET_PRICE_FAIL", payload: error })
-    );
-  });
+  getState()
+    .auth.user.getIdToken(true)
+    .then((idToken) => {
+      let headers = { Authorization: `Bearer ${idToken}` };
+      let url = process.env.REACT_APP_API_URL + "marketprice";
+      fetch(url, { method: "GET", headers: headers })
+        .then((response) =>
+          response.json().then((data) => {
+            let marketPrice = {};
+            data.forEach((item) => {
+              marketPrice[item.id] = item;
+            });
+            dispatch({
+              type: "REQUEST_MARKET_PRICE_SUCCESS",
+              payload: marketPrice,
+            });
+          })
+        )
+        .catch((error) =>
+          dispatch({ type: "REQUEST_MARKET_PRICE_FAIL", payload: error })
+        );
+    });
 };

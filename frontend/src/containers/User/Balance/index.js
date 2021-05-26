@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import PropTypes from "prop-types";
 import Typography from "@material-ui/core/Typography";
 import Paper from "@material-ui/core/Paper";
-import { makeStyles } from "@material-ui/core/styles";
 import { withStyles } from "@material-ui/core/styles";
 import ComponentWrapper from "../ComponentWrapper";
 
@@ -17,7 +16,7 @@ import { connect } from "react-redux";
 import { requestUserBalance, requestBankInfo } from "../actions.js";
 import BalanceGrid from "./BalanceGrid";
 
-const styles = makeStyles({
+const styles = {
   root: {
     maxWidth: 100,
   },
@@ -27,7 +26,7 @@ const styles = makeStyles({
   table: {
     minWidth: 650,
   },
-});
+};
 
 function Content(props) {
   const {
@@ -40,7 +39,6 @@ function Content(props) {
     isLoaded,
     bankInfo,
   } = props;
-  const styling = styles();
 
   useEffect(() => {
     onRequestUserBalance();
@@ -56,20 +54,28 @@ function Content(props) {
         <Paper className={classes.paper}>
           <div className={classes.contentWrapper}>
             <TableContainer component={Paper}>
-              <Table className={styling.table} aria-label="simple table">
+              <Table className={classes.table} aria-label="simple table">
                 <TableHead>
                   <TableRow>
-                    <TableCell align="center"><b>Currency</b></TableCell>
-                    <TableCell align="center"><b>Balance</b></TableCell>
+                    <TableCell align="center">
+                      <b>Currency</b>
+                    </TableCell>
+                    <TableCell align="center">
+                      <b>Balance</b>
+                    </TableCell>
                     <TableCell align="center">
                       <b>Withdraw/Desposit Amount</b>
                     </TableCell>
-                    <TableCell align="center"><b>Deposit</b></TableCell>
-                    <TableCell align="center"><b>Withdraw</b></TableCell>
+                    <TableCell align="center">
+                      <b>Deposit</b>
+                    </TableCell>
+                    <TableCell align="center">
+                      <b>Withdraw</b>
+                    </TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {balanceInfo.data.map((balanceInfo) => {
+                  {balanceInfo?.data?.map((balanceInfo) => {
                     return <BalanceGrid balanceInfo={balanceInfo} />;
                   })}
                 </TableBody>
@@ -92,11 +98,11 @@ function Content(props) {
 
 const mapStateToProps = (state) => {
   return {
-    balanceInfo: state.userBalance.balanceInfo,
-    isPending: state.userBalance.isPending,
-    error: state.userBalance.error,
-    isLoaded: state.userBalance.isLoaded,
-    bankInfo: state.bank.bankInfo,
+    balanceInfo: state?.userBalance?.balanceInfo,
+    isPending: state?.userBalance?.isPending,
+    error: state?.userBalance?.error,
+    isLoaded: state?.userBalance?.isLoaded,
+    bankInfo: state?.bank?.bankInfo,
   };
 };
 

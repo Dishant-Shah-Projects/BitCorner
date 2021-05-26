@@ -89,7 +89,6 @@ function Content(props) {
   );
   const [open, setOpen] = React.useState(false);
   const [filteredOrders, setFilteredOrders] = React.useState(orderInfo?.data);
-  const styling = styles();
 
   const handleClickOpen = () => setOpen(true);
   const handleClose = () => {
@@ -109,7 +108,7 @@ function Content(props) {
     });
     setIsFormValid(false);
     setOpen(false);
-  }
+  };
 
   const filter = ({ startDate, endDate }) => {
     let filteredOrder = orderInfo?.data?.filter((item) => {
@@ -126,8 +125,6 @@ function Content(props) {
 
   const onFormSubmit = (event) => {
     formSubmit(event, () => {
-      event.preventDefault();
-      console.log("form data:", values);
       Axios.put("/order", values).then((response) => {
         if (response.status === 200) {
           onRequestOrderInfo();
@@ -150,7 +147,7 @@ function Content(props) {
     <div>
       {bankInfo?.status === 200 ? (
         <div>
-          <div className={styling.contentWrapper}>
+          <div className={classes.contentWrapper}>
             <div>
               <Button
                 style={{ margin: "0 auto", display: "flex" }}
@@ -168,7 +165,7 @@ function Content(props) {
                 aria-labelledby="form-dialog-title"
               >
                 <form
-                  className={styling.root}
+                  className={classes.root}
                   noValidate
                   autoComplete="off"
                   onSubmit={onFormSubmit}
@@ -279,8 +276,8 @@ function Content(props) {
           </div>
           <br></br>
           <hr></hr>
-          <div className={styling.contentWrapper}>
-            <br/>
+          <div className={classes.contentWrapper}>
+            <br />
             <DateFilter filter={filter} />
             {orderInfo.data &&
             typeof orderInfo.data !== undefined &&

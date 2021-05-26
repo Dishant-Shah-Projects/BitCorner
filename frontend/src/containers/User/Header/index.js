@@ -10,8 +10,7 @@ import Tooltip from "@material-ui/core/Tooltip";
 import { connect } from "react-redux";
 import LogoutIcon from "@material-ui/icons/ExitToApp";
 import firebase from "../../Firebase";
-import MarketPrice from '../MarketPrice/MarketPrice';
-
+import MarketPrice from "../MarketPrice/MarketPrice";
 
 function CommonHeader(props) {
   const { classes, onDrawerToggle, user, userInfo } = props;
@@ -34,12 +33,12 @@ function CommonHeader(props) {
           </Hidden>
           <Grid item>
             <Tooltip title="Market price">
-                  <MarketPrice/>
-              </Tooltip>
-              <br/>
-            </Grid>
+              <MarketPrice />
+            </Tooltip>
+            <br />
+          </Grid>
           <Grid item xs />
-        
+
           <Grid item>
             <Tooltip title="display name">
               <IconButton color="inherit" className={classes.iconButtonAvatar}>
@@ -76,7 +75,7 @@ function CommonHeader(props) {
 const mapStateToProps = (state) => {
   return {
     user: state.auth.user,
-    userInfo: state.userInfo?.userInfo
+    userInfo: state.userInfo?.userInfo,
   };
 };
 
