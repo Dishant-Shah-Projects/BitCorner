@@ -8,8 +8,6 @@ Website Link: https://bit-corner.herokuapp.com/
 
 Necessary Instructions:
 
-
-
 Backend Build Instructions:
         Make sure that you have the jdk 11 installed on the system as well as maven or an IDE that runs maven. 
         To run the backend utilize an IDE to open the maven project and run the project or use the following commands:
