@@ -26,7 +26,7 @@ Frontend Build Instructions:
         Builds the app for production to the build folder
 
 Code Used:
-    In this project, to work with spring security and with firebase, some of the code from these two tutorials was utilized and modified for our purposes.
+    In this project, to work with spring security firebase and send emails, some of the code from the below tutorials was utilized and modified for our purposes.
     The links are shown below and referenced in the report. 
         https://medium.com/@purikunal22/securing-springboot-api-using-firebase-authentication-16d72dd250cc 
         https://thepro.io/post/firebase-authentication-for-spring-boot-rest-api-5V 
