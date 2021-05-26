@@ -3,8 +3,8 @@ Aditya Shah -  aditya.shah@sjsu.edu - 008799297
 Dishant Shah - dishant.shah@sjsu.edu - 014615614
 Mohammadsalman Mal - mohmmadsalmanmohmmadilyas.mal@sjsu.edu - 014597609
 Sahithi Khandavalli - sahithi.khandavalli@sjsu.edu - 015281240
-Website Link: 
-https://bit-corner.herokuapp.com/ 
+
+Website Link: https://bit-corner.herokuapp.com/ 
 
 Necessary Instructions:
 
